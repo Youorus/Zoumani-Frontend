@@ -1,0 +1,125 @@
+.link {
+  position: fixed;
+  z-index: var(--z-contact);
+  right: clamp(0.85rem, 2.4vw, 1.75rem);
+  bottom: clamp(0.85rem, 2.4vw, 1.75rem);
+  display: inline-flex;
+  width: auto;
+  min-height: 3.75rem;
+  max-width: 3.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  overflow: hidden;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--contact-action-foreground) 12%, transparent);
+  border-radius: var(--shape-radius-full);
+  background: var(--contact-action);
+  box-shadow: 0 1.25rem 3rem -1.25rem color-mix(in srgb, var(--contact-action-foreground) 48%, transparent);
+  color: var(--contact-action-foreground);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    max-width 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.link::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--contact-action) 76%, transparent);
+  border-radius: inherit;
+  content: "";
+  animation: whatsapp-pulse 2.8s ease-out infinite;
+}
+
+.link:hover,
+.link:focus-visible {
+  max-width: 13rem;
+  padding-right: 1.05rem;
+  box-shadow: 0 1.4rem 3.25rem -1.1rem color-mix(in srgb, var(--contact-action-foreground) 56%, transparent);
+  transform: translateY(-0.2rem);
+}
+
+.icon {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  flex: none;
+  place-items: center;
+  border-radius: var(--shape-radius-full);
+  background: color-mix(in srgb, var(--surface-elevated) 92%, transparent);
+}
+
+.icon svg {
+  width: 1.45rem;
+  height: 1.45rem;
+  fill: var(--contact-action);
+}
+
+.label {
+  display: grid;
+  max-width: 0;
+  gap: 0.05rem;
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  transition:
+    max-width 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 180ms ease;
+}
+
+.link:hover .label,
+.link:focus-visible .label {
+  max-width: 8rem;
+  opacity: 1;
+}
+
+.label small {
+  font-size: 0.62rem;
+  font-weight: 700;
+  opacity: 0.68;
+}
+
+@keyframes whatsapp-pulse {
+  from {
+    opacity: 0.55;
+    transform: scale(0.94);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.22);
+  }
+}
+
+@media (max-width: 39.99rem) {
+  .link {
+    width: 3.55rem;
+    min-height: 3.55rem;
+    max-width: 3.55rem;
+    justify-content: center;
+    padding: 0.45rem;
+  }
+
+  .icon {
+    width: 2.55rem;
+    height: 2.55rem;
+  }
+
+  .label {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link,
+  .link::before,
+  .label {
+    animation: none;
+    transition: none;
+  }
+}

@@ -1,0 +1,244 @@
+:root {
+  --orange-teranga: #ff6b00;
+  --soleil-africain: #ffc837;
+  --terre-rouge: #8d2e2e;
+  --argile-profonde: #6f2e1f;
+  --noir-ebene: #2b1d17;
+  --sable-clair: #fff8f0;
+  --violet-colis-prive: #56207a;
+  --vert-whatsapp: #25d366;
+
+  --font-body:
+    "Avenir Next",
+    "Segoe UI",
+    "Helvetica Neue",
+    sans-serif;
+  --font-display:
+    "Iowan Old Style",
+    "Palatino Linotype",
+    "Book Antiqua",
+    serif;
+
+  --lagoon-depth: #0f766e;
+  --oasis-foam: #d9fff8;
+  --savannah-night: #16324f;
+  --savannah-sand: #f7f5ef;
+
+  --shape-radius-xs: 0.5rem;
+  --shape-radius-sm: 0.875rem;
+  --shape-radius-md: 1.25rem;
+  --shape-radius-lg: 1.75rem;
+  --shape-radius-full: 999px;
+
+  --elevation-soft: 0 12px 32px -18px rgb(43 29 23 / 0.28);
+  --elevation-lifted: 0 24px 48px -24px rgb(43 29 23 / 0.34);
+
+  --z-base: 0;
+  --z-nav: 30;
+  --z-overlay: 40;
+  --z-contact: 50;
+  --z-toast: 60;
+}
+
+:root,
+[data-brand="zoumani"] {
+  --background: #fff8f0;
+  --foreground: #2b1d17;
+  --surface: #fffdf9;
+  --surface-elevated: #ffffff;
+  --primary: #ff6b00;
+  --primary-foreground: #fff8f0;
+  --secondary: #ffc837;
+  --secondary-foreground: #2b1d17;
+  --accent: #8d2e2e;
+  --accent-foreground: #fff8f0;
+  --border: rgb(43 29 23 / 0.12);
+  --muted: rgb(255 200 55 / 0.18);
+  --muted-foreground: rgb(43 29 23 / 0.66);
+  --success: #177245;
+  --warning: #d97706;
+  --error: #b42318;
+  --info: #0f766e;
+  --inverse-surface: #2b1609;
+  --inverse-foreground: #fffaf5;
+  --inverse-muted-foreground: rgb(255 250 245 / 0.76);
+  --rating: #f3a600;
+  --hero-canvas: #241207;
+  --hero-glass: rgb(74 39 17 / 0.68);
+  --hero-glass-border: rgb(255 250 245 / 0.18);
+  --hero-scrim:
+    linear-gradient(90deg, rgb(16 8 3 / 0.9) 0%, rgb(16 8 3 / 0.64) 36%, rgb(16 8 3 / 0.16) 68%, rgb(16 8 3 / 0.38) 100%),
+    linear-gradient(180deg, rgb(16 8 3 / 0.24) 0%, transparent 42%, rgb(16 8 3 / 0.34) 100%);
+  --promo-traveler-overlay: linear-gradient(90deg, rgb(126 31 11 / 0.18) 0%, rgb(171 42 15 / 0.88) 38%, rgb(108 29 14 / 0.7) 100%);
+  --promo-parcel-overlay: linear-gradient(90deg, transparent 0%, rgb(228 135 0 / 0.32) 32%, rgb(238 153 0 / 0.82) 100%);
+  --marketing-page: #fff8f0;
+  --marketing-panel: #fffdf9;
+  --marketing-panel-foreground: #2b1d17;
+  --marketing-panel-muted-foreground: rgb(43 29 23 / 0.66);
+  --marketing-panel-border: rgb(43 29 23 / 0.12);
+  --partner-colis-prive: var(--violet-colis-prive);
+  --about-canvas: color-mix(in srgb, var(--sable-clair) 88%, var(--soleil-africain));
+  --about-foreground: var(--noir-ebene);
+  --about-muted-foreground: rgb(43 29 23 / 0.68);
+  --about-border: rgb(141 46 46 / 0.17);
+  --about-illustration: rgb(255 107 0 / 0.24);
+  --navigation-surface: rgb(43 22 9 / 0.88);
+  --navigation-border: rgb(255 250 245 / 0.17);
+  --navigation-foreground: var(--inverse-foreground);
+  --navigation-shadow: 0 18px 48px -28px rgb(43 22 9 / 0.72);
+  --footer-canvas: var(--argile-profonde);
+  --footer-foreground: var(--inverse-foreground);
+  --footer-muted-foreground: rgb(255 250 245 / 0.72);
+  --footer-border: rgb(255 250 245 / 0.15);
+  --footer-highlight: color-mix(in srgb, var(--primary) 74%, var(--terre-rouge));
+  --contact-action: var(--vert-whatsapp);
+  --contact-action-foreground: var(--noir-ebene);
+}
+
+[data-brand="zoumani-v2"] {
+  --background: #f7f5ef;
+  --foreground: #16324f;
+  --surface: #fdfcf8;
+  --surface-elevated: #ffffff;
+  --primary: #0f766e;
+  --primary-foreground: #d9fff8;
+  --secondary: #16324f;
+  --secondary-foreground: #f7f5ef;
+  --accent: #ff6b00;
+  --accent-foreground: #fff8f0;
+  --border: rgb(22 50 79 / 0.14);
+  --muted: rgb(15 118 110 / 0.14);
+  --muted-foreground: rgb(22 50 79 / 0.66);
+  --success: #177245;
+  --warning: #c26a00;
+  --error: #b42318;
+  --info: #0f766e;
+  --inverse-surface: #10283e;
+  --inverse-foreground: #f7fffd;
+  --inverse-muted-foreground: rgb(247 255 253 / 0.76);
+  --rating: #ffb84d;
+  --hero-canvas: #0d2e31;
+  --hero-glass: rgb(8 49 52 / 0.7);
+  --hero-glass-border: rgb(217 255 248 / 0.18);
+  --hero-scrim:
+    linear-gradient(90deg, rgb(5 25 27 / 0.92) 0%, rgb(5 25 27 / 0.66) 38%, rgb(5 25 27 / 0.18) 70%, rgb(5 25 27 / 0.42) 100%),
+    linear-gradient(180deg, rgb(5 25 27 / 0.2) 0%, transparent 42%, rgb(5 25 27 / 0.38) 100%);
+  --promo-traveler-overlay: linear-gradient(90deg, rgb(8 67 65 / 0.28) 0%, rgb(11 87 83 / 0.88) 38%, rgb(7 56 57 / 0.74) 100%);
+  --promo-parcel-overlay: linear-gradient(90deg, transparent 0%, rgb(8 88 84 / 0.3) 32%, rgb(8 88 84 / 0.88) 100%);
+  --marketing-page: #f7f5ef;
+  --marketing-panel: #fdfcf8;
+  --marketing-panel-foreground: #16324f;
+  --marketing-panel-muted-foreground: rgb(22 50 79 / 0.66);
+  --marketing-panel-border: rgb(22 50 79 / 0.14);
+  --partner-colis-prive: var(--violet-colis-prive);
+  --about-canvas: color-mix(in srgb, var(--savannah-sand) 88%, var(--oasis-foam));
+  --about-foreground: var(--savannah-night);
+  --about-muted-foreground: rgb(22 50 79 / 0.68);
+  --about-border: rgb(15 118 110 / 0.18);
+  --about-illustration: rgb(15 118 110 / 0.2);
+  --navigation-surface: rgb(10 45 48 / 0.9);
+  --navigation-border: rgb(217 255 248 / 0.17);
+  --navigation-foreground: var(--inverse-foreground);
+  --navigation-shadow: 0 18px 48px -28px rgb(5 25 27 / 0.72);
+  --footer-canvas: var(--savannah-night);
+  --footer-foreground: var(--inverse-foreground);
+  --footer-muted-foreground: rgb(247 255 253 / 0.72);
+  --footer-border: rgb(247 255 253 / 0.15);
+  --footer-highlight: color-mix(in srgb, var(--primary) 78%, var(--savannah-night));
+  --contact-action: var(--vert-whatsapp);
+  --contact-action-foreground: var(--noir-ebene);
+}
+
+[data-color-scheme="dark"] {
+  --background: #17120f;
+  --foreground: #f7ede0;
+  --surface: #221914;
+  --surface-elevated: #2a1f19;
+  --primary: #ff8a38;
+  --primary-foreground: #1c120b;
+  --secondary: #3f2f1e;
+  --secondary-foreground: #f7ede0;
+  --accent: #ffc837;
+  --accent-foreground: #2b1d17;
+  --border: rgb(247 237 224 / 0.12);
+  --muted: rgb(247 237 224 / 0.08);
+  --muted-foreground: rgb(247 237 224 / 0.7);
+  --success: #34d399;
+  --warning: #fbbf24;
+  --error: #fb7185;
+  --info: #38bdf8;
+  --inverse-surface: #100c0a;
+  --inverse-foreground: #fffaf5;
+  --inverse-muted-foreground: rgb(255 250 245 / 0.72);
+  --hero-glass: rgb(22 15 11 / 0.76);
+  --hero-glass-border: rgb(255 250 245 / 0.14);
+  --about-canvas: color-mix(in srgb, var(--sable-clair) 88%, var(--soleil-africain));
+  --about-foreground: var(--noir-ebene);
+  --about-muted-foreground: rgb(43 29 23 / 0.68);
+  --about-border: rgb(141 46 46 / 0.17);
+  --about-illustration: rgb(255 107 0 / 0.24);
+  --navigation-surface: rgb(23 18 15 / 0.92);
+  --navigation-border: rgb(247 237 224 / 0.14);
+  --footer-canvas: var(--argile-profonde);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  --color-inverse-surface: var(--inverse-surface);
+  --color-inverse-foreground: var(--inverse-foreground);
+  --color-inverse-muted-foreground: var(--inverse-muted-foreground);
+  --color-rating: var(--rating);
+  --color-hero-canvas: var(--hero-canvas);
+  --color-hero-glass: var(--hero-glass);
+  --color-hero-glass-border: var(--hero-glass-border);
+  --color-marketing-page: var(--marketing-page);
+  --color-marketing-panel: var(--marketing-panel);
+  --color-marketing-panel-foreground: var(--marketing-panel-foreground);
+  --color-marketing-panel-muted-foreground: var(--marketing-panel-muted-foreground);
+  --color-marketing-panel-border: var(--marketing-panel-border);
+  --color-about-canvas: var(--about-canvas);
+  --color-about-foreground: var(--about-foreground);
+  --color-about-muted-foreground: var(--about-muted-foreground);
+  --color-about-border: var(--about-border);
+  --color-navigation-surface: var(--navigation-surface);
+  --color-navigation-border: var(--navigation-border);
+  --color-navigation-foreground: var(--navigation-foreground);
+  --color-footer-canvas: var(--footer-canvas);
+  --color-footer-foreground: var(--footer-foreground);
+  --color-footer-muted-foreground: var(--footer-muted-foreground);
+  --color-footer-border: var(--footer-border);
+  --color-footer-highlight: var(--footer-highlight);
+  --color-contact-action: var(--contact-action);
+  --color-contact-action-foreground: var(--contact-action-foreground);
+
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+
+  --radius-sm: var(--shape-radius-xs);
+  --radius-md: var(--shape-radius-sm);
+  --radius-lg: var(--shape-radius-md);
+  --radius-xl: var(--shape-radius-lg);
+  --radius-full: var(--shape-radius-full);
+
+  --shadow-soft: var(--elevation-soft);
+  --shadow-lifted: var(--elevation-lifted);
+
+  --breakpoint-tablet: 48rem;
+  --breakpoint-desktop: 80rem;
+}

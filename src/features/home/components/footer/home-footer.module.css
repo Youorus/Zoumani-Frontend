@@ -1,0 +1,286 @@
+.footer {
+  position: relative;
+  overflow: hidden;
+  padding-block: 5.5rem 2rem;
+  scroll-margin-top: 5.5rem;
+  background:
+    radial-gradient(circle at 88% 18%, color-mix(in srgb, var(--secondary) 20%, transparent), transparent 28rem),
+    linear-gradient(145deg, color-mix(in srgb, var(--footer-highlight) 18%, transparent), transparent 48%),
+    var(--footer-canvas);
+  color: var(--footer-foreground);
+}
+
+.footer::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--footer-foreground) 12%, transparent) 0.7px,
+    transparent 0.8px
+  );
+  background-size: 1.35rem 1.35rem;
+  content: "";
+  mask-image: linear-gradient(to bottom, var(--footer-foreground), transparent 78%);
+  opacity: 0.26;
+}
+
+.routeArtwork {
+  position: absolute;
+  top: 1rem;
+  right: -5rem;
+  width: min(39rem, 47vw);
+  pointer-events: none;
+  opacity: 0.52;
+}
+
+.routeArtwork path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--footer-foreground) 30%, transparent);
+  stroke-width: 1.3;
+  stroke-dasharray: 4 9;
+}
+
+.routeArtwork circle {
+  fill: var(--secondary);
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+}
+
+.callout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: center;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid color-mix(in srgb, var(--footer-foreground) 18%, transparent);
+  border-radius: var(--shape-radius-lg);
+  background:
+    radial-gradient(circle at 85% 20%, color-mix(in srgb, var(--secondary) 30%, transparent), transparent 19rem),
+    var(--footer-highlight);
+  box-shadow: 0 2.5rem 6rem -4rem color-mix(in srgb, var(--inverse-surface) 72%, transparent);
+}
+
+.eyebrow {
+  color: var(--secondary);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.callout h2 {
+  max-width: 43rem;
+  margin-top: 0.85rem;
+  font-family: var(--font-display), serif;
+  font-size: clamp(2.75rem, 5.3vw, 5rem);
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+}
+
+.calloutDescription {
+  max-width: 39rem;
+  margin-top: 1.25rem;
+  color: var(--footer-muted-foreground);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.actions {
+  display: grid;
+  min-width: 15rem;
+  gap: 0.75rem;
+}
+
+.action {
+  display: inline-flex;
+  min-height: 3.25rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-inline: 1.25rem;
+  border-radius: var(--shape-radius-full);
+  background: var(--footer-foreground);
+  color: var(--footer-canvas);
+  font-size: 0.85rem;
+  font-weight: 800;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.action:hover {
+  background: var(--secondary);
+  transform: translateX(0.2rem);
+}
+
+.actionSecondary {
+  border: 1px solid color-mix(in srgb, var(--footer-foreground) 34%, transparent);
+  background: color-mix(in srgb, var(--footer-canvas) 28%, transparent);
+  color: var(--footer-foreground);
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: minmax(16rem, 1.2fr) repeat(2, minmax(9rem, 0.55fr)) minmax(15rem, 0.85fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  padding-block: 5rem 4rem;
+}
+
+.brandStatement {
+  max-width: 23rem;
+  margin-top: 1.2rem;
+  color: var(--footer-muted-foreground);
+  font-family: var(--font-display), serif;
+  font-size: 1.25rem;
+  font-style: italic;
+  line-height: 1.55;
+}
+
+.linkGroup h3,
+.contact h3 {
+  color: var(--footer-foreground);
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.linkGroup ul {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.35rem;
+}
+
+.linkGroup a {
+  color: var(--footer-muted-foreground);
+  font-size: 0.87rem;
+  transition: color 160ms ease;
+}
+
+.linkGroup a:hover {
+  color: var(--secondary);
+}
+
+.contact p {
+  margin-top: 1.35rem;
+  color: var(--footer-muted-foreground);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.whatsappLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+  color: var(--footer-foreground);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.whatsappLink span {
+  display: grid;
+  width: 2.3rem;
+  height: 2.3rem;
+  place-items: center;
+  border-radius: var(--shape-radius-full);
+  background: var(--contact-action);
+}
+
+.whatsappLink svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: var(--contact-action-foreground);
+}
+
+.bottom {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--footer-border);
+  color: var(--footer-muted-foreground);
+  font-size: 0.7rem;
+}
+
+.signature {
+  color: var(--footer-foreground);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 63.99rem) {
+  .callout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .actions {
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mainGrid {
+    grid-template-columns: 1.2fr repeat(2, 0.7fr);
+  }
+
+  .contact {
+    grid-column: 1 / -1;
+    max-width: 28rem;
+  }
+}
+
+@media (max-width: 39.99rem) {
+  .footer {
+    padding-block: 3.5rem 5.5rem;
+  }
+
+  .callout {
+    padding: 2.25rem 1.4rem;
+    border-radius: var(--shape-radius-md);
+  }
+
+  .callout h2 {
+    font-size: 2.75rem;
+  }
+
+  .actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mainGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.75rem 1.5rem;
+    padding-block: 4rem 3rem;
+  }
+
+  .brand,
+  .contact {
+    grid-column: 1 / -1;
+  }
+
+  .bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .routeArtwork {
+    top: 9rem;
+    right: -11rem;
+    width: 28rem;
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action,
+  .linkGroup a {
+    transition: none;
+  }
+}
