@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Zoumani">
+  <defs>
+    <linearGradient id="z" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff8a38"/>
+      <stop offset="1" stop-color="#ff6b00"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#z)"/>
+  <path d="M150 154h212L214 358h148" fill="none" stroke="#fff8f0" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

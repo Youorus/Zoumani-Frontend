@@ -1,13 +1,117 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { PropsWithChildren } from "react";
 
 import "./globals.css";
 
+import { JsonLd } from "@/components/seo/json-ld";
+import { siteConfig, siteUrl, isIndexable } from "@/lib/seo/site";
+import {
+  buildGraph,
+  organizationSchema,
+  websiteSchema,
+} from "@/lib/seo/structured-data";
+
 import { AppProviders } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Zoumani Frontend Foundation",
-  description: "Architecture frontend production-ready pour Zoumani.",
+  // Permet a tous les champs URL des pages enfants d'utiliser des chemins relatifs.
+  metadataBase: new URL(siteUrl),
+
+  title: {
+    default: siteConfig.title,
+    template: siteConfig.titleTemplate,
+  },
+  description: siteConfig.description,
+  keywords: [...siteConfig.keywords],
+  applicationName: siteConfig.name,
+  generator: "Next.js",
+  referrer: "origin-when-cross-origin",
+  category: "travel",
+  authors: [{ name: siteConfig.name, url: siteUrl }],
+  creator: siteConfig.name,
+  publisher: siteConfig.legalName,
+
+  // Pas de hreflang : le basculement FR/EN est un etat client, il n'existe
+  // qu'une seule URL indexable par page.
+  alternates: {
+    canonical: "/",
+  },
+
+  openGraph: {
+    type: "website",
+    siteName: siteConfig.name,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    url: "/",
+    locale: siteConfig.locale,
+    alternateLocale: ["en_US"],
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.name} — ${siteConfig.shortDescription}`,
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.shortDescription,
+    site: siteConfig.twitter,
+    creator: siteConfig.twitter,
+    images: ["/opengraph-image"],
+  },
+
+  // Tant qu'aucun domaine public n'est configure, le site reste hors index.
+  robots: isIndexable
+    ? {
+        index: true,
+        follow: true,
+        nocache: false,
+        googleBot: {
+          index: true,
+          follow: true,
+          noimageindex: false,
+          "max-video-preview": -1,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+        },
+      }
+    : { index: false, follow: false },
+
+  verification: {
+    google: siteConfig.verification.google,
+    yandex: siteConfig.verification.yandex,
+    other: siteConfig.verification.bing
+      ? { "msvalidate.01": siteConfig.verification.bing }
+      : undefined,
+  },
+
+  manifest: "/manifest.webmanifest",
+
+  appleWebApp: {
+    capable: true,
+    title: siteConfig.shortTitle,
+    statusBarStyle: "default",
+  },
+
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: siteConfig.themeColor },
+    { media: "(prefers-color-scheme: dark)", color: "#17120f" },
+  ],
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
@@ -15,6 +119,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html lang="fr" suppressHydrationWarning>
       <body>
         <AppProviders>{children}</AppProviders>
+        <JsonLd schema={buildGraph(organizationSchema, websiteSchema)} />
       </body>
     </html>
   );

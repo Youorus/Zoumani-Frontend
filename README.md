@@ -31,9 +31,34 @@ Voir `.env.example` :
 
 | Variable | Description |
 | --- | --- |
-| `NEXT_PUBLIC_APP_URL` | URL publique de l'application |
+| `NEXT_PUBLIC_APP_URL` | URL publique du site. Base des URLs canoniques, du sitemap et du robots.txt |
 | `NEXT_PUBLIC_API_URL` | URL de l'API (par défaut, l'API mock locale) |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | Numéro WhatsApp au format international |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Code Google Search Console (optionnel) |
+| `NEXT_PUBLIC_BING_SITE_VERIFICATION` | Code Bing Webmaster Tools (optionnel) |
+| `NEXT_PUBLIC_YANDEX_VERIFICATION` | Code Yandex Webmaster (optionnel) |
+
+> `NEXT_PUBLIC_APP_URL` est la seule valeur à changer pour brancher le domaine
+> définitif. Tant qu'elle pointe sur `localhost`, le site se déclare
+> volontairement non indexable (`robots.txt` bloquant + `noindex`).
+
+## Référencement
+
+Le SEO est centralisé dans `src/lib/seo/` :
+
+- `site.ts` — titres, description, mots-clés, réseaux sociaux, codes de vérification
+- `structured-data.ts` — JSON-LD `Organization`, `WebSite`, `Service`, `HowTo`, `FAQPage`
+
+Généré automatiquement par Next : `/sitemap.xml`, `/robots.txt`,
+`/manifest.webmanifest`, `/opengraph-image` (1200×630), favicon et icônes PWA.
+
+## Déploiement
+
+Déployé sur Dokploy via le `Dockerfile` (build multi-étages, sortie
+`standalone`, exécution sans privilèges). Chaque push sur `main` déclenche
+automatiquement un nouveau déploiement.
+
+Sonde de disponibilité : `GET /api/health`.
 
 ## Scripts
 
