@@ -93,16 +93,6 @@ export function TrustedPartners({ copy }: { copy: HomeContent["partners"] }) {
         </p>
       </div>
 
-      <div className={styles.protectionCallout}>
-        <span className={styles.protectionIcon} aria-hidden="true">
-          <ShieldCheck size={28} strokeWidth={1.8} />
-        </span>
-        <div>
-          <p className={styles.protectionEyebrow}>{copy.protectionEyebrow}</p>
-          <h3 className={styles.protectionTitle}>{copy.protectionTitle}</h3>
-          <p className={styles.protectionDescription}>{copy.protectionDescription}</p>
-        </div>
-      </div>
 
       <div className={styles.marqueeStack} aria-label={copy.listLabel}>
         <PartnerMarquee

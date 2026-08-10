@@ -79,7 +79,6 @@ export function HeroSection({ backgroundImageUrl }: HeroSectionProps) {
       <div className="bg-marketing-page">
         <PromoCards copy={copy.promos} />
         <TrustedPartners copy={copy.partners} />
-        <TrustStats copy={copy.stats} />
         <HowItWorks copy={copy.howItWorks} />
         <AboutSection copy={copy.about} />
         <HomeFooter copy={copy.footer} whatsapp={copy.whatsapp} />
