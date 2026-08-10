@@ -32,6 +32,7 @@ Voir `.env.example` :
 | Variable | Description |
 | --- | --- |
 | `NEXT_PUBLIC_APP_URL` | URL publique du site. Base des URLs canoniques, du sitemap et du robots.txt |
+| `NEXT_PUBLIC_SEO_INDEXABLE` | `true` pour autoriser l'indexation. Absent ou `false` ⇒ `noindex` + robots.txt bloquant |
 | `NEXT_PUBLIC_API_URL` | URL de l'API (par défaut, l'API mock locale) |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | Numéro WhatsApp au format international |
 | `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Code Google Search Console (optionnel) |
@@ -39,8 +40,10 @@ Voir `.env.example` :
 | `NEXT_PUBLIC_YANDEX_VERIFICATION` | Code Yandex Webmaster (optionnel) |
 
 > `NEXT_PUBLIC_APP_URL` est la seule valeur à changer pour brancher le domaine
-> définitif. Tant qu'elle pointe sur `localhost`, le site se déclare
-> volontairement non indexable (`robots.txt` bloquant + `noindex`).
+> définitif. L'indexation est un choix explicite : sans
+> `NEXT_PUBLIC_SEO_INDEXABLE=true`, le site reste hors index — ce qui évite
+> qu'un domaine temporaire ou de préproduction entre en concurrence avec le
+> domaine définitif dans les résultats de recherche.
 
 ## Référencement
 

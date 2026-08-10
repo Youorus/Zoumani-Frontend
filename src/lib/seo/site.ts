@@ -67,8 +67,16 @@ export function absoluteUrl(path = "/"): string {
 }
 
 /**
- * Le site n'est indexable que lorsqu'une URL publique réelle est configurée.
- * Évite qu'un environnement de préproduction ou localhost se retrouve dans l'index.
+ * L'indexation est une décision explicite, jamais déduite de l'environnement :
+ * il faut poser NEXT_PUBLIC_SEO_INDEXABLE=true pour autoriser les moteurs.
+ *
+ * Sans ce drapeau, le site répond `noindex` et un robots.txt bloquant. C'est ce
+ * qui empêche un domaine temporaire (preview, sslip.io, préproduction) de se
+ * retrouver dans l'index et de faire concurrence au domaine définitif.
+ *
+ * Le garde-fou localhost reste actif quoi qu'il arrive.
  */
 export const isIndexable =
-  !siteUrl.includes("localhost") && !siteUrl.includes("127.0.0.1");
+  process.env.NEXT_PUBLIC_SEO_INDEXABLE === "true" &&
+  !siteUrl.includes("localhost") &&
+  !siteUrl.includes("127.0.0.1");
