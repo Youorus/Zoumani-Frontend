@@ -22,6 +22,19 @@ const nextConfig: NextConfig = {
   // quand un ancien onglet demande des assets d'un build precedent.
   deploymentId: process.env.DEPLOYMENT_ID,
 
+  async redirects() {
+    return [
+      {
+        // Une seule adresse canonique : www redirige en 301 vers le domaine nu.
+        // Evite que le meme contenu soit servi sous deux hotes differents.
+        source: "/:path*",
+        has: [{ type: "host", value: "www\\.(?<domain>.*)" }],
+        destination: "https://:domain/:path*",
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {
