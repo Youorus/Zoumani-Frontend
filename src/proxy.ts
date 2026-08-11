@@ -34,8 +34,16 @@ import { SESSION_COOKIES } from "@/lib/auth/session-cookies";
  * JavaScript de la page de connexion elle-même.
  */
 
-/** Préfixes exigeant une session. Tout le reste est public. */
-const PROTECTED_PREFIXES = ["/app", "/admin", "/compte"] as const;
+/**
+ * Préfixes exigeant une session. Tout le reste est public.
+ *
+ * ⚠️ Ce sont des **URL**, pas des dossiers. Un groupe de routes — le
+ * `(app)` de `src/app/(app)/trips` — n'apparaît jamais dans l'adresse :
+ * cette page-là se sert à `/trips`. Protéger `/app` ne protégeait donc
+ * rien du tout, et c'est exactement le genre d'erreur qui ne se voit pas :
+ * la liste a l'air complète, et toutes les pages restent ouvertes.
+ */
+const PROTECTED_PREFIXES = ["/compte", "/trips", "/admin"] as const;
 
 /** Où l'on envoie quelqu'un qui n'est pas connecté. */
 const LOGIN_PATH = "/connexion";

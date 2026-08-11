@@ -144,6 +144,65 @@
   font-size: 0.85rem;
 }
 
+/*
+ * Une indication de saisie, pas une erreur : même position, même taille,
+ * mais dans le ton du texte courant. Les distinguer par la couleur seule
+ * ne suffirait pas — d'où l'opacité, qui reste lisible en niveaux de gris.
+ */
+.fieldHint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+
+/*
+ * Le pays et le numéro, côte à côte.
+ *
+ * Le pays occupe une part fixe et étroite : c'est un drapeau et un
+ * indicatif, il n'a pas besoin de plus, et tout ce qu'on lui donne est
+ * pris au numéro — le champ que l'on tape réellement.
+ */
+.phoneRow {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: minmax(7.5rem, 11rem) minmax(0, 1fr);
+  align-items: start;
+}
+
+.phoneCountry {
+  min-width: 0;
+}
+
+/*
+ * L'indicatif est collé au champ plutôt qu'à l'intérieur : posé dans le
+ * champ, il serait sélectionné par les gestionnaires de mots de passe et
+ * recopié dans le numéro.
+ */
+.phoneNumber {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.callingCode {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0.75;
+}
+
+/*
+ * Le drapeau est un emoji : sa taille suit celle du texte, et les
+ * systèmes qui n'en ont pas le rendu affichent les deux lettres du pays —
+ * une dégradation lisible plutôt qu'un carré vide.
+ */
+.flag {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
 .reassurance {
   margin-top: 1rem;
   font-size: 0.85rem;
@@ -188,6 +247,12 @@
 
 @media (max-width: 34rem) {
   .row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Sous cette largeur, deux colonnes rendraient le numéro trop étroit
+     pour qu'on y voie ce qu'on tape. */
+  .phoneRow {
     grid-template-columns: 1fr;
   }
 }

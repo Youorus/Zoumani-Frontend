@@ -46,6 +46,16 @@ export interface UpstreamResult {
   body: unknown;
   /** Vrai si la session a été rafraîchie pendant l'appel. */
   refreshed: boolean;
+  /**
+   * `Cache-Control` rendu par l'API, quand elle en pose un.
+   *
+   * Retransmis tel quel au navigateur. **L'API décide seule** de ce qui
+   * est cachable : elle est la seule à savoir si une réponse est
+   * personnelle. Un `public` posé sur une route personnalisée serait un
+   * défaut de l'API, et c'est là qu'il se corrigerait — le reproduire ici
+   * créerait une seconde règle, et deux règles finissent par diverger.
+   */
+  cacheControl: string | null;
 }
 
 interface CallOptions {
@@ -136,16 +146,26 @@ export async function callApi(options: CallOptions): Promise<UpstreamResult> {
   const first = await rawCall(options, await readAccessToken());
 
   if (first.status !== 401) {
-    return { status: first.status, body: await parse(first), refreshed: false };
+    return {
+      status: first.status,
+      body: await parse(first),
+      refreshed: false,
+      cacheControl: first.headers.get("cache-control"),
+    };
   }
 
   // Le jeton d'accès a expiré — le cas nominal après quinze minutes.
   if (!(await refreshSession())) {
-    return { status: 401, body: await parse(first), refreshed: false };
+    return { status: 401, body: await parse(first), refreshed: false, cacheControl: null };
   }
 
   const second = await rawCall(options, await readAccessToken());
-  return { status: second.status, body: await parse(second), refreshed: true };
+  return {
+    status: second.status,
+    body: await parse(second),
+    refreshed: true,
+    cacheControl: second.headers.get("cache-control"),
+  };
 }
 
 /**
@@ -157,5 +177,10 @@ export async function callApi(options: CallOptions): Promise<UpstreamResult> {
  */
 export async function callPublicApi(options: CallOptions): Promise<UpstreamResult> {
   const response = await rawCall(options, null);
-  return { status: response.status, body: await parse(response), refreshed: false };
+  return {
+    status: response.status,
+    body: await parse(response),
+    refreshed: false,
+    cacheControl: response.headers.get("cache-control"),
+  };
 }

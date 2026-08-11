@@ -4,7 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, ArrowRight, CheckCircle2, LoaderCircle } from "lucide-react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ import {
   type EmailInput,
   type RegistrationInput,
 } from "../schemas/auth.schema";
+import { PhoneField } from "./phone-field";
 import styles from "./auth-view.module.css";
 
 /**
@@ -49,6 +51,26 @@ export function AuthView({
   const router = useRouter();
   const content = authContent[language];
   const flow = useAuthFlow();
+
+  const destination = destinationFor(redirectTo, flow.isRegistering);
+
+  /*
+   * On n'attend pas un clic pour entrer.
+   *
+   * Toutes les plateformes sérieuses redirigent d'elles-mêmes : rester
+   * sur un écran « c'est bon » avec un bouton fait douter — la personne
+   * se demande si quelque chose a échoué. L'écran de succès reste
+   * affiché le temps que la navigation se fasse, et sert de repli.
+   *
+   * `replace` et non `push` : la page de connexion n'a rien à faire dans
+   * l'historique. Un retour arrière depuis l'espace y ramènerait
+   * quelqu'un de déjà connecté, sur un formulaire sans objet.
+   */
+  useEffect(() => {
+    if (flow.screen === "done") {
+      router.replace(destination);
+    }
+  }, [flow.screen, router, destination]);
 
   const stepIndex = { email: 0, "email-code": 1, registration: 2, "phone-code": 3, done: 4 }[
     flow.screen
@@ -95,6 +117,7 @@ export function AuthView({
         {flow.screen === "registration" ? (
           <RegistrationStep
             content={content}
+            language={language}
             busy={flow.busy}
             onSubmit={flow.submitRegistration}
           />
@@ -120,10 +143,13 @@ export function AuthView({
               {flow.isRegistering ? content.done.titleNew : content.done.titleReturning}
             </h1>
             <p className={styles.description}>{content.done.description}</p>
+            {/* Le bouton reste, et il sert : si la redirection automatique
+                échoue — navigation bloquée, retour arrière — la personne
+                n'est pas coincée sur un écran sans issue. */}
             <button
               type="button"
               className={styles.submit}
-              onClick={() => router.push(safeDestination(redirectTo))}
+              onClick={() => router.replace(destination)}
             >
               {content.done.action}
               <ArrowRight size={18} aria-hidden="true" />
@@ -232,17 +258,26 @@ function CodeStep({
 
 function RegistrationStep({
   content,
+  language,
   busy,
   onSubmit,
 }: {
   content: (typeof authContent)["fr"];
+  language: HomeLanguage;
   busy: boolean;
   onSubmit: (input: RegistrationInput) => Promise<void>;
 }) {
   const form = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
-    defaultValues: { phoneCountryCode: "CM" },
+    // Volontairement vide : le pays est deviné à partir de la langue du
+    // navigateur une fois le référentiel chargé. Un défaut posé ici
+    // écraserait cette devinette, ou lui survivrait à tort.
+    defaultValues: { phoneCountryCode: "" },
   });
+  // `useWatch` plutôt que `form.watch` : le second rend une fonction,
+  // que le compilateur React ne peut pas mémoriser — il renonce alors à
+  // optimiser tout le composant, et le prévient par un avertissement.
+  const countryCode = useWatch({ control: form.control, name: "phoneCountryCode" });
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
@@ -272,23 +307,23 @@ function RegistrationStep({
         </label>
       </div>
 
-      <label className={styles.field}>
-        <span className={styles.fieldLabel}>{content.registration.phone}</span>
-        <Input
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel-national"
-          {...form.register("phoneNationalNumber")}
-        />
-        <span className={styles.fieldError} style={{ color: "inherit", opacity: 0.7 }}>
-          {content.registration.phoneHelp}
-        </span>
-        {form.formState.errors.phoneNationalNumber ? (
-          <span className={styles.fieldError}>
-            {form.formState.errors.phoneNationalNumber.message}
-          </span>
-        ) : null}
-      </label>
+      <PhoneField
+        language={language}
+        label={content.registration.phone}
+        help={content.registration.phoneHelp}
+        searchLabel={content.registration.country}
+        searchPlaceholder={content.registration.countrySearch}
+        emptyText={content.registration.countryEmpty}
+        countryCode={countryCode}
+        onCountryChange={(code) =>
+          form.setValue("phoneCountryCode", code, { shouldValidate: true })
+        }
+        register={form.register("phoneNationalNumber")}
+        error={
+          form.formState.errors.phoneCountryCode?.message ??
+          form.formState.errors.phoneNationalNumber?.message
+        }
+      />
 
       <label className={styles.consent}>
         <Checkbox {...form.register("acceptsTerms")} />
@@ -340,6 +375,28 @@ function messageFor(
     return `${serverMessage} ${content.errors.support}`;
   }
   return serverMessage || content.errors.generic;
+}
+
+/** Où atterrir par défaut : l'espace personnel, jamais l'accueil public. */
+const HOME_AFTER_LOGIN = "/compte";
+
+/**
+ * Où envoyer la personne, une fois la session ouverte.
+ *
+ * La destination voulue au départ l'emporte : quelqu'un qui cliquait sur
+ * un voyage doit retrouver ce voyage, pas un tableau de bord. À défaut,
+ * son espace — et non l'accueil public, qui donnerait l'impression de
+ * n'être allé nulle part.
+ */
+function destinationFor(redirectTo: string | undefined, isNew: boolean): Route {
+  const target = safeDestination(redirectTo);
+  if (target !== "/") {
+    return target;
+  }
+  // L'espace ignore que le compte vient d'être créé — le serveur ne le
+  // dit pas, et n'a pas à le dire. C'est le client qui sait s'il est
+  // passé par l'écran d'inscription ; il le transmet.
+  return (isNew ? `${HOME_AFTER_LOGIN}?bienvenue=1` : HOME_AFTER_LOGIN) as Route;
 }
 
 /**

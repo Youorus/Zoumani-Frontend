@@ -45,6 +45,8 @@ interface AuthContent {
     firstName: string;
     lastName: string;
     country: string;
+    countrySearch: string;
+    countryEmpty: string;
     phone: string;
     phoneHelp: string;
     terms: string;
@@ -100,6 +102,8 @@ export const authContent: Record<HomeLanguage, AuthContent> = {
       firstName: "Prénom",
       lastName: "Nom",
       country: "Pays",
+      countrySearch: "Chercher un pays ou un indicatif",
+      countryEmpty: "Aucun pays ne correspond.",
       phone: "Numéro de téléphone",
       phoneHelp: "Nous y enverrons un code pour terminer.",
       terms: "J'accepte les conditions d'utilisation",
@@ -153,6 +157,8 @@ export const authContent: Record<HomeLanguage, AuthContent> = {
       firstName: "First name",
       lastName: "Last name",
       country: "Country",
+      countrySearch: "Search a country or a dialling code",
+      countryEmpty: "No matching country.",
       phone: "Phone number",
       phoneHelp: "We'll send a code there to finish.",
       terms: "I accept the terms of use",

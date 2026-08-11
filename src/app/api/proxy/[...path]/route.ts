@@ -70,10 +70,20 @@ function forward(method: string): Handler {
       ...(hasBody && !isMultipart ? { body: await safeJson(request) } : {}),
     });
 
+    // Ce que l'API a dit de la fraîcheur de sa réponse la suit jusqu'au
+    // navigateur. Sans cela, un référentiel déclaré valable vingt-quatre
+    // heures serait redemandé à chaque affichage du formulaire.
+    const responseHeaders = result.cacheControl
+      ? { "cache-control": result.cacheControl }
+      : undefined;
+
     if (result.body === null) {
-      return new NextResponse(null, { status: result.status });
+      return new NextResponse(null, { status: result.status, headers: responseHeaders });
     }
-    return NextResponse.json(result.body, { status: result.status });
+    return NextResponse.json(result.body, {
+      status: result.status,
+      headers: responseHeaders,
+    });
   };
 }
 

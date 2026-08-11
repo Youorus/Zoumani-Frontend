@@ -2,7 +2,7 @@
 
 import { Command } from "cmdk";
 import { Check, ChevronDown, MapPin, Search } from "lucide-react";
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils/cn";
 
@@ -13,6 +13,15 @@ export interface ComboboxOption {
   label: string;
   description?: string;
   keywords?: readonly string[];
+  /**
+   * Ce qui s'affiche dans la pastille de gauche.
+   *
+   * Un drapeau, une initiale, une icône. À défaut, le repère de lieu —
+   * qui reste le bon symbole pour ce à quoi ce composant a d'abord servi.
+   */
+  icon?: ReactNode;
+  /** Ce qui s'affiche à gauche du libellé une fois l'option choisie. */
+  triggerIcon?: ReactNode;
 }
 
 interface ComboboxProps {
@@ -73,8 +82,16 @@ export function Combobox({
             className,
           )}
         >
-          <span className={cn("truncate", !selectedOption && "text-marketing-panel-muted-foreground")}>
-            {selectedOption?.label ?? placeholder}
+          <span className="flex min-w-0 items-center gap-2">
+            {selectedOption?.triggerIcon ?? selectedOption?.icon ?? null}
+            <span
+              className={cn(
+                "truncate",
+                !selectedOption && "text-marketing-panel-muted-foreground",
+              )}
+            >
+              {selectedOption?.label ?? placeholder}
+            </span>
           </span>
           <ChevronDown
             className={cn(
@@ -122,7 +139,7 @@ export function Combobox({
                   className="group flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm outline-none transition-colors data-[selected=true]:bg-primary/10"
                 >
                   <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary transition-colors group-data-[selected=true]:bg-primary group-data-[selected=true]:text-primary-foreground">
-                    <MapPin className="size-4" aria-hidden="true" />
+                    {option.icon ?? <MapPin className="size-4" aria-hidden="true" />}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-bold">{option.label}</span>

@@ -20,7 +20,7 @@ describe("protection des routes", () => {
   });
 
   it("redirige une route protégée sans session", () => {
-    const response = proxy(requestFor("/app/voyages", false));
+    const response = proxy(requestFor("/compte", false));
 
     expect(response.status).toBe(307);
     expect(response.headers.get("location")).toContain("/connexion");
@@ -29,15 +29,15 @@ describe("protection des routes", () => {
   it("conserve la destination voulue", () => {
     // Après connexion, la personne reprend là où elle allait plutôt que
     // sur un accueil générique.
-    const response = proxy(requestFor("/app/voyages?filtre=actifs", false));
+    const response = proxy(requestFor("/trips?filtre=actifs", false));
     const location = response.headers.get("location") ?? "";
 
     expect(location).toContain("suite=");
-    expect(decodeURIComponent(location)).toContain("/app/voyages?filtre=actifs");
+    expect(decodeURIComponent(location)).toContain("/trips?filtre=actifs");
   });
 
   it("laisse passer une route protégée avec session", () => {
-    const response = proxy(requestFor("/app/voyages", true));
+    const response = proxy(requestFor("/compte", true));
 
     expect(response.headers.get("location")).toBeNull();
   });
@@ -47,11 +47,20 @@ describe("protection des routes", () => {
   });
 
   it("ne confond pas un préfixe avec un mot plus long", () => {
-    // `/application-mobile` n'est pas `/app` : sans la vérification du
+    // `/comptes-rendus` n'est pas `/compte` : sans la vérification du
     // séparateur, une page publique se retrouverait derrière la connexion.
-    const response = proxy(requestFor("/applications", false));
+    const response = proxy(requestFor("/comptes-rendus", false));
 
     expect(response.headers.get("location")).toBeNull();
+  });
+
+  it("protège les pages du groupe applicatif, servies sans son nom", () => {
+    // Le test qui a manqué. Un groupe de routes — le `(app)` de
+    // `src/app/(app)/trips` — n'apparaît **pas** dans l'URL : cette page
+    // se sert à `/trips`. La liste protégeait `/app`, donc rien, et rien
+    // ne le signalait.
+    expect(proxy(requestFor("/trips", false)).status).toBe(307);
+    expect(proxy(requestFor("/trips/abc", false)).status).toBe(307);
   });
 });
 
@@ -67,6 +76,6 @@ describe("champ d'application", () => {
     expect(pattern.test("/api/auth/session")).toBe(false);
     expect(pattern.test("/_next/static/chunk.js")).toBe(false);
     expect(pattern.test("/logo.png")).toBe(false);
-    expect(pattern.test("/app/voyages")).toBe(true);
+    expect(pattern.test("/compte")).toBe(true);
   });
 });
