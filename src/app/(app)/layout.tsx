@@ -4,6 +4,10 @@ import type { PropsWithChildren } from "react";
 
 import { AccountShell } from "@/features/account/components/account-shell";
 import { callApi } from "@/lib/api/upstream.server";
+import {
+  stageOf,
+  type RawVerification,
+} from "@/features/verification/types/verification.types";
 import { toAuthenticatedUser, type RawCurrentUser } from "@/lib/auth/auth.types";
 
 /**
@@ -41,17 +45,31 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AppGroupLayout({ children }: PropsWithChildren) {
-  const { status, body } = await callApi({ method: "GET", path: "/auth/me" });
+  // Les deux appels partent ensemble : ils ne dépendent pas l'un de
+  // l'autre, et les enchaîner doublerait l'attente avant le premier pixel.
+  const [me, dossier] = await Promise.all([
+    callApi({ method: "GET", path: "/auth/me" }),
+    callApi({ method: "GET", path: "/identity-verifications/me" }),
+  ]);
 
-  if (status === 401) {
+  if (me.status === 401) {
     redirect("/connexion?suite=%2Fcompte");
   }
-  if (status !== 200) {
-    throw new Error(`L'API a répondu ${status} sur /auth/me.`);
+  if (me.status !== 200) {
+    throw new Error(`L'API a répondu ${me.status} sur /auth/me.`);
   }
 
   return (
-    <AccountShell user={toAuthenticatedUser(body as RawCurrentUser)}>
+    <AccountShell
+      user={toAuthenticatedUser(me.body as RawCurrentUser)}
+      // 404 signifie « rien commencé », pas « erreur » : quelqu'un qui
+      // arrive pour la première fois n'a évidemment pas de dossier.
+      stage={
+        dossier.status === 200
+          ? stageOf((dossier.body as RawVerification).status)
+          : "absent"
+      }
+    >
       {children}
     </AccountShell>
   );

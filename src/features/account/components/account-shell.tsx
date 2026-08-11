@@ -6,6 +6,7 @@ import { accountContent } from "@/features/account/content/account-content";
 import type { AuthenticatedUser } from "@/lib/auth/auth.types";
 
 import { accountLanguage } from "@/features/account/lib/account-language";
+import type { VerificationStage } from "@/features/verification/types/verification.types";
 
 import { AccountCopyProvider } from "./account-copy-provider";
 import { AccountMenu } from "./account-menu";
@@ -31,9 +32,20 @@ import { NotificationBell } from "./notification-bell";
  */
 export function AccountShell({
   user,
+  stage,
   children,
 }: {
   user: AuthenticatedUser;
+  /**
+   * Où en est la vérification d'identité.
+   *
+   * Lue **une fois** par le gabarit et transmise, plutôt que demandée
+   * par chaque composant qui l'affiche. Le badge de l'avatar et l'entrée
+   * du menu montrent la même chose : les laisser interroger l'API
+   * chacun de leur côté produirait deux requêtes par page, et un instant
+   * où les deux se contredisent.
+   */
+  stage: VerificationStage;
   children: ReactNode;
 }) {
   const language = accountLanguage(user.preferredLanguage);
@@ -53,7 +65,7 @@ export function AccountShell({
                 être atteint du pouce, en marchant, à bout de bras. */}
             <div className="flex items-center gap-2 sm:gap-3">
               <NotificationBell />
-              <AccountMenu user={user} />
+              <AccountMenu user={user} stage={stage} />
             </div>
           </div>
         </header>

@@ -167,7 +167,7 @@ function IdentityCard({
 
       {verified ? null : (
         <Link
-          href="/compte/profil"
+          href="/compte/identite"
           className="focus-ring inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border px-5 py-3 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:w-fit"
         >
           {copy.cta}
