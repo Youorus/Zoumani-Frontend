@@ -7,16 +7,19 @@ import {
   Package,
   Search,
   ShieldCheck,
+  LoaderCircle,
 } from "lucide-react";
+import type { Route } from "next";
+import { useRouter } from "next/navigation";
 import type { FormEvent, ReactNode } from "react";
-import { startTransition, useState } from "react";
+import { useState, useTransition } from "react";
 
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
-import { useToast } from "@/components/ui/toast";
+import { searchCities } from "@/features/shipment-search/data/search-cities";
 import { cn } from "@/lib/utils/cn";
 
-import type { HomeContent } from "./home-content";
+import type { HomeContent, HomeLanguage } from "./home-content";
 
 const guaranteeIcons = [
   CircleCheck,
@@ -25,19 +28,11 @@ const guaranteeIcons = [
   CircleCheck,
 ] as const;
 
-const cityOptions: readonly ComboboxOption[] = [
-  { value: "paris", label: "Paris, France", description: "Paris Charles-de-Gaulle · CDG" },
-  { value: "lyon", label: "Lyon, France", description: "Lyon-Saint Exupéry · LYS" },
-  { value: "bruxelles", label: "Bruxelles, Belgique", description: "Brussels Airport · BRU" },
-  { value: "abidjan", label: "Abidjan, Côte d'Ivoire", description: "Félix-Houphouët-Boigny · ABJ" },
-  { value: "dakar", label: "Dakar, Sénégal", description: "Blaise-Diagne · DSS" },
-  { value: "douala", label: "Douala, Cameroun", description: "Aéroport international · DLA" },
-  { value: "bamako", label: "Bamako, Mali", description: "Modibo-Keïta · BKO" },
-  { value: "conakry", label: "Conakry, Guinée", description: "Ahmed-Sékou-Touré · CKY" },
-  { value: "cotonou", label: "Cotonou, Bénin", description: "Bernardin-Gantin · COO" },
-  { value: "casablanca", label: "Casablanca, Maroc", description: "Mohammed-V · CMN" },
-  { value: "nairobi", label: "Nairobi, Kenya", description: "Jomo-Kenyatta · NBO" },
-] as const;
+const cityOptions: readonly ComboboxOption[] = searchCities.map((city) => ({
+  value: city.value,
+  label: `${city.city}, ${city.country}`,
+  description: city.airport,
+}));
 
 interface SearchFieldProps {
   icon: typeof MapPin;
@@ -66,30 +61,45 @@ function SearchField({ icon: Icon, label, children, className }: SearchFieldProp
 interface ShipmentSearchProps {
   className?: string;
   copy: HomeContent["search"];
+  language: HomeLanguage;
+  /**
+   * Que faire de la recherche, quand la page sait déjà quoi en faire.
+   *
+   * Absent — sur la page d'accueil — la barre navigue vers `/search` : un
+   * visiteur y arrive sans contexte, et une page dédiée lui en donne un,
+   * partageable et indexable.
+   *
+   * Fourni — dans l'espace connecté — les résultats s'affichent sous la
+   * barre, sans quitter l'écran. Quelqu'un qui affine sa destination trois
+   * fois de suite ne doit pas traverser trois pages pour cela.
+   */
+  onSearch?: (filters: { from: string; to: string; weight: number }) => void;
 }
 
-export function ShipmentSearch({ className, copy }: ShipmentSearchProps) {
+export function ShipmentSearch({ className, copy, language, onSearch }: ShipmentSearchProps) {
+  const router = useRouter();
   const [departure, setDeparture] = useState("paris");
   const [destination, setDestination] = useState("abidjan");
   const [weight, setWeight] = useState("1");
-  const { toast } = useToast();
+  const [isNavigating, startNavigation] = useTransition();
   const selectedWeight = copy.weightOptions.find((option) => option.value === weight);
-  const departureLabel = cityOptions.find((option) => option.value === departure)?.label ?? departure;
-  const destinationLabel = cityOptions.find((option) => option.value === destination)?.label ?? destination;
 
   function swapLocations() {
-    startTransition(() => {
-      setDeparture(destination);
-      setDestination(departure);
-    });
+    setDeparture(destination);
+    setDestination(departure);
   }
 
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    toast({
-      variant: "success",
-      title: copy.toastTitle,
-      description: `${departureLabel} → ${destinationLabel}. ${copy.toastDescription}`,
+
+    if (onSearch) {
+      onSearch({ from: departure, to: destination, weight: Number(weight) });
+      return;
+    }
+
+    const params = new URLSearchParams({ from: departure, to: destination, weight, lang: language });
+    startNavigation(() => {
+      router.push(`/search?${params.toString()}` as Route);
     });
   }
 
@@ -180,9 +190,10 @@ export function ShipmentSearch({ className, copy }: ShipmentSearchProps) {
 
             <button
               type="submit"
+              disabled={isNavigating}
               className="focus-ring inline-flex min-h-16 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 hover:bg-primary/92 lg:min-h-16"
             >
-              <Search className="size-5" />
+              {isNavigating ? <LoaderCircle className="size-5 animate-spin" /> : <Search className="size-5" />}
               {copy.submitLabel}
             </button>
           </div>
