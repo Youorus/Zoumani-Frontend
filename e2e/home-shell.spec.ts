@@ -16,10 +16,10 @@ test("the main navigation remains fixed while the page scrolls", async ({ page }
   await page.goto("/");
   await waitForHydration(page);
 
-  const navigation = page.locator("[data-home-navigation]");
+  const navigation = page.locator("[data-home-navigation]:visible");
   await expect(navigation).toHaveCSS("position", "fixed");
 
-  await page.locator("#trust").scrollIntoViewIfNeeded();
+  await page.locator("#trust:visible").scrollIntoViewIfNeeded();
   await expect(navigation).toHaveAttribute("data-scrolled", "true");
 
   const bounds = await navigation.boundingBox();
@@ -38,7 +38,7 @@ test("the footer and WhatsApp contact stay usable across breakpoints", async ({ 
   await page.goto("/");
   await waitForHydration(page);
 
-  const footer = page.locator("footer#help");
+  const footer = page.locator("footer#help:visible");
   const whatsapp = page.getByRole("link", { name: "Contacter Zoumani sur WhatsApp" });
 
   for (const viewport of [

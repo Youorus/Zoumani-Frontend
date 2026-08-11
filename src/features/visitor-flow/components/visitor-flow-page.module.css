@@ -1,0 +1,187 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 8% 18%, color-mix(in srgb, var(--secondary) 18%, transparent), transparent 24rem),
+    radial-gradient(circle at 92% 72%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 30rem),
+    var(--marketing-page);
+  color: var(--marketing-panel-foreground);
+}
+
+.page::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--marketing-panel-foreground) 7%, transparent) 0.7px,
+    transparent 0.8px
+  );
+  background-size: 1.35rem 1.35rem;
+  content: "";
+  mask-image: linear-gradient(to bottom, var(--marketing-panel-foreground), transparent 82%);
+  opacity: 0.25;
+}
+
+.routeArtwork {
+  position: absolute;
+  top: 7rem;
+  right: -8rem;
+  width: min(41rem, 50vw);
+  pointer-events: none;
+  opacity: 0.32;
+}
+
+.routeArtwork path {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 5 12;
+}
+
+.routeArtwork circle {
+  fill: var(--marketing-page);
+  stroke: var(--primary);
+  stroke-width: 2;
+}
+
+.header {
+  position: sticky;
+  z-index: var(--z-nav);
+  top: 0;
+  padding: 0.75rem 1rem 0;
+}
+
+.headerInner {
+  display: flex;
+  min-height: 4rem;
+  max-width: 80rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-inline: auto;
+  padding: 0.5rem 0.75rem 0.5rem 1rem;
+  border: 1px solid var(--marketing-panel-border);
+  border-radius: var(--shape-radius-full);
+  background: color-mix(in srgb, var(--marketing-panel) 90%, transparent);
+  box-shadow: var(--elevation-soft);
+  backdrop-filter: blur(18px) saturate(125%);
+}
+
+.headerContext {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  color: var(--marketing-panel-muted-foreground);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.headerContext::before {
+  width: 1px;
+  height: 1.6rem;
+  background: var(--marketing-panel-border);
+  content: "";
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.language {
+  display: grid;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  place-items: center;
+  border: 1px solid var(--marketing-panel-border);
+  border-radius: var(--shape-radius-full);
+  color: var(--marketing-panel-muted-foreground);
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.helpLink {
+  display: inline-flex;
+  height: 2.6rem;
+  align-items: center;
+  gap: 0.55rem;
+  padding-inline: 0.85rem;
+  border-radius: var(--shape-radius-full);
+  background: color-mix(in srgb, var(--contact-action) 16%, var(--marketing-panel));
+  color: var(--marketing-panel-foreground);
+  font-size: 0.73rem;
+  font-weight: 800;
+}
+
+.helpLink svg {
+  width: 1rem;
+  height: 1rem;
+  fill: var(--contact-action);
+}
+
+.main {
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 10rem);
+  padding-block: clamp(3rem, 7vw, 6rem) 5rem;
+}
+
+.footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  max-width: 80rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-inline: auto;
+  padding: 1.4rem 1rem 2rem;
+  border-top: 1px solid var(--marketing-panel-border);
+  color: var(--marketing-panel-muted-foreground);
+  font-size: 0.68rem;
+}
+
+.footer strong {
+  color: var(--marketing-panel-foreground);
+}
+
+@media (max-width: 47.99rem) {
+  .header {
+    padding: 0.6rem 0.65rem 0;
+  }
+
+  .headerInner {
+    min-height: 3.7rem;
+    padding-inline: 0.8rem 0.55rem;
+  }
+
+  .headerContext,
+  .helpLink span {
+    display: none;
+  }
+
+  .helpLink {
+    width: 2.6rem;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .routeArtwork {
+    top: 8rem;
+    right: -14rem;
+    width: 31rem;
+    opacity: 0.2;
+  }
+
+  .main {
+    padding-block: 2.75rem 4rem;
+  }
+
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+}

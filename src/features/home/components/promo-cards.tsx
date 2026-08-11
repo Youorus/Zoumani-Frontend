@@ -2,11 +2,19 @@ import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { buildSignupHref } from "@/features/account/lib/build-signup-href";
+
 import { AfricaRouteIllustration } from "./africa-route-illustration";
-import type { HomeContent } from "./home-content";
+import type { HomeContent, HomeLanguage } from "./home-content";
 import styles from "./home-hero.module.css";
 
-export function PromoCards({ copy }: { copy: HomeContent["promos"] }) {
+export function PromoCards({
+  copy,
+  language,
+}: {
+  copy: HomeContent["promos"];
+  language: HomeLanguage;
+}) {
   return (
     <section
       id="services"
@@ -31,7 +39,7 @@ export function PromoCards({ copy }: { copy: HomeContent["promos"] }) {
             {copy.travelerDescription}
           </p>
           <Link
-            href="/trips"
+            href={buildSignupHref("traveler", language)}
             className="focus-ring mt-4 inline-flex h-11 w-full max-w-[240px] items-center justify-between rounded-lg bg-marketing-panel px-6 text-sm font-bold text-primary shadow-soft transition-transform group-hover:translate-x-1"
           >
             {copy.travelerCta}

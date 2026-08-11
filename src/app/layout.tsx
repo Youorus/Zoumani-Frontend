@@ -114,6 +114,15 @@ export const viewport: Viewport = {
   ],
 };
 
+/*
+ * Volontairement **non** asynchrone, et sans lecture de cookie.
+ *
+ * Y lire la session ferait basculer toute l'application en rendu
+ * dynamique : la page d'accueil, qui est l'entrée des moteurs de
+ * recherche, cesserait d'être servie statiquement. Le seul gain aurait
+ * été d'éviter un bref « Je suis voyageur » avant que le bouton ne
+ * devienne « Mon espace ». Ce n'est pas un échange raisonnable.
+ */
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="fr" suppressHydrationWarning>

@@ -24,7 +24,7 @@ test("the parcel story stays readable and contained at every breakpoint", async 
 
   for (const viewport of viewports) {
     await page.setViewportSize(viewport);
-    const section = page.locator("#fonctionnement");
+    const section = page.locator("#fonctionnement:visible");
     await section.scrollIntoViewIfNeeded();
 
     await expect(
@@ -89,8 +89,8 @@ test("the orange route becomes continuous as the story advances", async ({ page 
   await page.goto("/");
   await waitForHydration(page);
 
-  const timeline = page.locator("[data-story-timeline]");
-  const progressRoute = page.locator('[data-story-route="progress"]');
+  const timeline = page.locator("[data-story-timeline]:visible");
+  const progressRoute = page.locator('[data-story-route="progress"]:visible');
 
   const timelineMetrics = await timeline.evaluate((element) => {
     const rect = element.getBoundingClientRect();
@@ -133,7 +133,7 @@ test("the English story remains contained on mobile", async ({ page }) => {
   await expect(englishOption).toBeVisible();
   await englishOption.click();
 
-  const section = page.locator("#fonctionnement");
+  const section = page.locator("#fonctionnement:visible");
   await section.scrollIntoViewIfNeeded();
   await expect(
     section.getByRole("heading", {
@@ -142,7 +142,7 @@ test("the English story remains contained on mobile", async ({ page }) => {
     }),
   ).toBeVisible();
 
-  const aboutSection = page.locator("#trust");
+  const aboutSection = page.locator("#trust:visible");
   await aboutSection.scrollIntoViewIfNeeded();
   await expect(
     aboutSection.getByRole("heading", {
@@ -151,7 +151,7 @@ test("the English story remains contained on mobile", async ({ page }) => {
     }),
   ).toBeVisible();
 
-  const footer = page.locator("footer#help");
+  const footer = page.locator("footer#help:visible");
   await footer.scrollIntoViewIfNeeded();
   await expect(
     footer.getByRole("heading", {

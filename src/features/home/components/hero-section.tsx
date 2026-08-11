@@ -17,7 +17,6 @@ import { PromoCards } from "./promo-cards";
 import { ShipmentSearch } from "./shipment-search";
 import { SocialProof } from "./social-proof";
 import { TrustCard } from "./trust-card";
-import { TrustStats } from "./trust-stats";
 import { TrustedPartners } from "./trusted-partners";
 
 interface HeroSectionProps {
@@ -73,15 +72,16 @@ export function HeroSection({ backgroundImageUrl }: HeroSectionProps) {
         <ShipmentSearch
           className={`${styles.searchReveal} mt-9 lg:absolute lg:inset-x-0 lg:bottom-11 lg:mt-0`}
           copy={copy.search}
+          language={language}
         />
       </section>
 
       <div className="bg-marketing-page">
-        <PromoCards copy={copy.promos} />
+        <PromoCards copy={copy.promos} language={language} />
         <TrustedPartners copy={copy.partners} />
-        <HowItWorks copy={copy.howItWorks} />
+        <HowItWorks copy={copy.howItWorks} language={language} />
         <AboutSection copy={copy.about} />
-        <HomeFooter copy={copy.footer} whatsapp={copy.whatsapp} />
+        <HomeFooter copy={copy.footer} language={language} whatsapp={copy.whatsapp} />
       </div>
       <FloatingWhatsApp copy={copy.whatsapp} />
     </>

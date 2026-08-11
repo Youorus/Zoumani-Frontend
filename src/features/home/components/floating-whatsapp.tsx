@@ -1,7 +1,8 @@
+import { WhatsAppIcon } from "@/components/shared/whatsapp-icon";
+import { buildWhatsAppUrl } from "@/lib/contact/build-whatsapp-url";
+
 import type { HomeContent } from "./home-content";
 import styles from "./floating-whatsapp.module.css";
-import { WhatsAppIcon } from "./whatsapp-icon";
-import { buildWhatsAppUrl } from "../lib/build-whatsapp-url";
 
 export function FloatingWhatsApp({ copy }: { copy: HomeContent["whatsapp"] }) {
   return (
