@@ -26,6 +26,13 @@ export class AuthError extends Error {
     message: string,
     readonly reason: string | undefined,
     readonly status: number,
+    /**
+     * Champ mis en cause par l'API, dans **sa** convention de nommage —
+     * `phone_number`, `phone_country_code`. Renseigné pour tout ce qui se
+     * corrige dans le formulaire ; absent pour ce qui n'a pas de champ,
+     * comme un parcours périmé.
+     */
+    readonly field?: string,
   ) {
     super(message);
     this.name = "AuthError";
@@ -34,7 +41,7 @@ export class AuthError extends Error {
 
 async function unwrap(response: Response): Promise<unknown> {
   const payload = (await response.json().catch(() => null)) as
-    | { error?: { message?: string; details?: { reason?: string } } }
+    | { error?: { message?: string; details?: { reason?: string; field?: string } } }
     | null;
 
   if (!response.ok) {
@@ -42,6 +49,7 @@ async function unwrap(response: Response): Promise<unknown> {
       payload?.error?.message ?? "Une erreur est survenue.",
       payload?.error?.details?.reason,
       response.status,
+      payload?.error?.details?.field,
     );
   }
   return payload;

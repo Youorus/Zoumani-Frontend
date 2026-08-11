@@ -20,6 +20,7 @@ import {
   type EmailInput,
   type RegistrationInput,
 } from "../schemas/auth.schema";
+import { registrationFieldError, type ServerFieldError } from "../lib/server-field-error";
 import { ConsentCheckbox } from "./consent-checkbox";
 import { PhoneField } from "./phone-field";
 import styles from "./auth-view.module.css";
@@ -53,6 +54,11 @@ export function AuthView({
   const flow = useAuthFlow();
 
   const destination = destinationFor(redirectTo, flow.isRegistering);
+
+  // Une erreur qui désigne un champ s'affiche **sous ce champ**, jamais
+  // en bandeau : dupliquer le message aux deux endroits ferait chercher
+  // deux problèmes là où il n'y en a qu'un.
+  const fieldError = registrationFieldError(flow.error);
 
   /*
    * On n'attend pas un clic pour entrer.
@@ -90,7 +96,7 @@ export function AuthView({
       ) : null}
 
       <section className={flow.screen === "done" ? styles.success : styles.panel}>
-        {flow.error ? (
+        {flow.error && !fieldError ? (
           <p className={styles.error} role="alert">
             <AlertCircle size={18} aria-hidden="true" />
             <span>{messageFor(flow.error.reason, flow.error.message, content)}</span>
@@ -119,6 +125,7 @@ export function AuthView({
             content={content}
             language={language}
             busy={flow.busy}
+            serverError={fieldError}
             onSubmit={flow.submitRegistration}
           />
         ) : null}
@@ -260,11 +267,14 @@ function RegistrationStep({
   content,
   language,
   busy,
+  serverError,
   onSubmit,
 }: {
   content: (typeof authContent)["fr"];
   language: HomeLanguage;
   busy: boolean;
+  /** Refus du serveur portant sur un champ précis de ce formulaire. */
+  serverError: ServerFieldError | null;
   onSubmit: (input: RegistrationInput) => Promise<void>;
 }) {
   const form = useForm<RegistrationInput>({
@@ -278,6 +288,22 @@ function RegistrationStep({
   // que le compilateur React ne peut pas mémoriser — il renonce alors à
   // optimiser tout le composant, et le prévient par un avertissement.
   const countryCode = useWatch({ control: form.control, name: "phoneCountryCode" });
+
+  /*
+   * Le refus du serveur rejoint les erreurs du formulaire.
+   *
+   * `setError` et non un affichage à part : le message se place là où
+   * l'utilisateur regarde déjà, et disparaît à la correction suivante
+   * comme n'importe quelle autre erreur de saisie. Deux mécanismes
+   * d'affichage donneraient deux comportements — l'un qui s'efface,
+   * l'autre qui reste.
+   */
+  const { setError } = form;
+  useEffect(() => {
+    if (serverError) {
+      setError(serverError.field, { type: "server", message: serverError.message });
+    }
+  }, [serverError, setError]);
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
