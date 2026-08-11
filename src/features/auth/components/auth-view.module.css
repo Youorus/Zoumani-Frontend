@@ -1,0 +1,193 @@
+/*
+ * Parcours d'accès — une colonne étroite, un seul geste par écran.
+ *
+ * La largeur est volontairement contrainte : chaque écran ne demande
+ * qu'une chose, et un formulaire large invite l'œil à chercher ce qu'il
+ * aurait manqué.
+ */
+
+.shell {
+  width: min(100% - 2rem, 30rem);
+  margin-inline: auto;
+}
+
+.panel {
+  padding: 2rem 1.75rem 1.75rem;
+  border: 1px solid var(--marketing-panel-border);
+  border-radius: var(--shape-radius-lg, 1.25rem);
+  background: color-mix(in srgb, var(--marketing-panel) 92%, transparent);
+  box-shadow: var(--elevation-soft);
+}
+
+.eyebrow {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.title {
+  margin: 0 0 0.6rem;
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+.description {
+  margin: 0 0 1.5rem;
+  line-height: 1.55;
+  opacity: 0.82;
+}
+
+.field {
+  display: block;
+  margin-bottom: 1.1rem;
+}
+
+.fieldLabel {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.row {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/*
+ * Le code se saisit en gros, espacé, en chiffres tabulaires : on le
+ * recopie depuis un écran voisin, et la moindre ambiguïté entre deux
+ * chiffres coûte une tentative sur les cinq permises.
+ */
+.codeInput {
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5em;
+  text-align: center;
+}
+
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.submit {
+  display: inline-flex;
+  width: 100%;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 0;
+  border-radius: var(--shape-radius-full);
+  background: var(--marketing-accent, #111);
+  color: var(--marketing-accent-contrast, #fff);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.secondaryActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.1rem;
+  font-size: 0.88rem;
+}
+
+.linkButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.linkButton:hover {
+  opacity: 1;
+}
+
+/* L'erreur se lit avant le champ : elle explique pourquoi on est encore là. */
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1.1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--shape-radius-md, 0.75rem);
+  background: color-mix(in srgb, var(--feedback-danger, #b3261e) 12%, transparent);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.fieldError {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--feedback-danger, #b3261e);
+  font-size: 0.85rem;
+}
+
+.reassurance {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.success {
+  padding: 2.5rem 1.75rem;
+  text-align: center;
+}
+
+.successIcon {
+  margin: 0 auto 1rem;
+  color: var(--feedback-success, #1b7f4d);
+}
+
+/*
+ * Fil d'étapes : trois points, pas de libellés. Nommer les étapes
+ * obligerait à annoncer « inscription » avant de savoir si le compte
+ * existe — précisément ce que ce parcours évite.
+ */
+.progress {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-bottom: 1.4rem;
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.25;
+  transition: opacity 0.2s ease;
+}
+
+.dotActive {
+  opacity: 0.9;
+}
+
+@media (max-width: 34rem) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

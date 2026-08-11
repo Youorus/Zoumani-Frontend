@@ -55,10 +55,12 @@ export async function loginWithPassword(email: string, password: string): Promis
 /** Où en est le parcours de connexion en deux étapes. */
 export interface LoginStep {
   challengeId: string;
-  step: "email_pending" | "phone_pending";
+  step: "email_pending" | "registration_pending" | "phone_pending";
   /** Destination masquée du code envoyé — `a•••@example.com`, `…3456`. */
   sentTo: string | null;
   expiresIn: number;
+  /** Champs à recueillir quand `step` vaut `registration_pending`. */
+  requiredFields: string[];
 }
 
 interface RawLoginStep {
@@ -66,6 +68,7 @@ interface RawLoginStep {
   step: LoginStep["step"];
   sent_to: string | null;
   expires_in: number;
+  required_fields?: string[];
 }
 
 function toStep(raw: RawLoginStep): LoginStep {
@@ -74,6 +77,7 @@ function toStep(raw: RawLoginStep): LoginStep {
     step: raw.step,
     sentTo: raw.sent_to,
     expiresIn: raw.expires_in,
+    requiredFields: raw.required_fields ?? [],
   };
 }
 
@@ -109,6 +113,55 @@ export async function submitPhoneCode(
 ): Promise<void> {
   await unwrap(await post("/api/auth/login/phone", { challenge_id: challengeId, code }));
 }
+
+/**
+ * Crée le compte, une fois l'adresse prouvée.
+ *
+ * L'adresse **n'est pas** transmise : elle vient du parcours côté serveur,
+ * où elle a été prouvée. La renvoyer permettrait d'en substituer une autre
+ * et de créer un compte sur une boîte qu'on ne contrôle pas.
+ *
+ * Aucun mot de passe non plus : ce parcours n'en demande jamais.
+ */
+export async function completeRegistration(
+  challengeId: string,
+  input: {
+    firstName: string;
+    lastName: string;
+    phoneCountryCode: string;
+    phoneNationalNumber: string;
+  },
+): Promise<LoginStep> {
+  const payload = (await unwrap(
+    await post("/api/auth/login/register", {
+      challenge_id: challengeId,
+      first_name: input.firstName,
+      last_name: input.lastName,
+      phone_country_code: input.phoneCountryCode,
+      // Les espaces de saisie sont retirés ici : le serveur les refuse, et
+      // les laisser transformerait une frappe naturelle en erreur.
+      phone_national_number: input.phoneNationalNumber.replace(/\s/g, ""),
+      terms_version: CONSENT_VERSIONS.terms,
+      privacy_policy_version: CONSENT_VERSIONS.privacyPolicy,
+      accepts_terms: true,
+      accepts_privacy_policy: true,
+    }),
+  )) as RawLoginStep;
+  return toStep(payload);
+}
+
+/**
+ * Versions des textes légaux affichées à l'inscription.
+ *
+ * Consignées ici parce que c'est **cette** version que la personne a lue.
+ * Le serveur enregistre ce que le client déclare avoir montré : lui
+ * laisser choisir reviendrait à consigner un consentement à un texte que
+ * personne n'a vu.
+ */
+export const CONSENT_VERSIONS = {
+  terms: "1.0",
+  privacyPolicy: "1.0",
+} as const;
 
 /** Demande un code pour prouver son adresse ou son numéro. */
 export async function requestContactVerification(
