@@ -1,20 +1,29 @@
-import { env } from "@/lib/env/env";
-
 import { ApiError } from "./api-errors";
-import { resolveAccessToken } from "./auth-interceptor";
 import type { ApiErrorPayload, ApiRequestOptions, HttpMethod } from "./api-types";
 
 const DEFAULT_TIMEOUT_MS = 10_000;
+
+/**
+ * Préfixe du passe-plat authentifié.
+ *
+ * Le navigateur ne parle **jamais** à l'API directement : il appelle sa
+ * propre origine, et le serveur ajoute le jeton lu dans un cookie
+ * `httpOnly` (ADR-0010). Trois conséquences :
+ *
+ * 1. aucun jeton ne transite par le JavaScript de page — une faille XSS ne
+ *    peut donc pas voler la session ;
+ * 2. aucune configuration CORS avec identifiants à tenir exacte ;
+ * 3. le rafraîchissement est invisible : il a lieu côté serveur.
+ */
+const PROXY_PREFIX = "/api/proxy";
 
 function buildUrl(path: string) {
   if (/^https?:\/\//i.test(path)) {
     return path;
   }
 
-  const normalizedBaseUrl = env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-
-  return `${normalizedBaseUrl}${normalizedPath}`;
+  return `${PROXY_PREFIX}${normalizedPath}`;
 }
 
 function createTimeoutSignal(timeoutMs: number) {
@@ -124,7 +133,10 @@ async function request<TResponse, TBody = unknown>(
   const mergedSignal = mergeSignals(signal, timeoutController?.signal);
 
   try {
-    const accessToken = auth ? await resolveAccessToken() : null;
+    // `auth` n'a plus d'effet sur les en-têtes : le jeton est ajouté par
+    // le serveur, à partir d'un cookie que ce code ne peut pas lire. La
+    // valeur reste dans le type le temps que les appelants migrent.
+    void auth;
     const requestHeaders = new Headers(headers);
 
     if (!(body instanceof FormData)) {
@@ -133,13 +145,12 @@ async function request<TResponse, TBody = unknown>(
 
     requestHeaders.set("Accept", "application/json");
 
-    if (accessToken) {
-      requestHeaders.set("Authorization", `Bearer ${accessToken}`);
-    }
-
     const response = await fetch(buildUrl(path), {
       method,
       headers: requestHeaders,
+      // Sans cela, le navigateur n'envoie pas le cookie de session et le
+      // serveur ne verrait jamais qui appelle.
+      credentials: "same-origin",
       body: body
         ? body instanceof FormData
           ? body
