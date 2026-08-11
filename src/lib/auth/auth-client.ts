@@ -52,32 +52,80 @@ export async function loginWithPassword(email: string, password: string): Promis
   await unwrap(await post("/api/auth/login", { email, password }));
 }
 
-/** Demande un code de connexion par téléphone. */
-export async function requestLoginCode(
-  countryCode: string,
-  nationalNumber: string,
-): Promise<void> {
-  await unwrap(
-    await post("/api/auth/code", {
-      country_code: countryCode,
-      national_number: nationalNumber,
-    }),
-  );
+/** Où en est le parcours de connexion en deux étapes. */
+export interface LoginStep {
+  challengeId: string;
+  step: "email_pending" | "phone_pending";
+  /** Destination masquée du code envoyé — `a•••@example.com`, `…3456`. */
+  sentTo: string | null;
+  expiresIn: number;
 }
 
-/** Ouvre une session avec un code reçu par téléphone. */
-export async function loginWithCode(
-  countryCode: string,
-  nationalNumber: string,
+interface RawLoginStep {
+  challenge_id: string;
+  step: LoginStep["step"];
+  sent_to: string | null;
+  expires_in: number;
+}
+
+function toStep(raw: RawLoginStep): LoginStep {
+  return {
+    challengeId: raw.challenge_id,
+    step: raw.step,
+    sentTo: raw.sent_to,
+    expiresIn: raw.expires_in,
+  };
+}
+
+/**
+ * Étape 1 — demande un code par e-mail.
+ *
+ * Réussit **toujours**, même pour une adresse inconnue : l'API refuse de
+ * dire qui est inscrit, et l'interface ne doit pas contredire ce choix en
+ * affichant « compte introuvable ».
+ */
+export async function startLogin(email: string): Promise<LoginStep> {
+  const payload = (await unwrap(
+    await post("/api/auth/login/start", { email }),
+  )) as RawLoginStep;
+  return toStep(payload);
+}
+
+/** Étape 2 — valide le code de l'e-mail ; l'API envoie alors le SMS. */
+export async function submitEmailCode(
+  challengeId: string,
+  code: string,
+): Promise<LoginStep> {
+  const payload = (await unwrap(
+    await post("/api/auth/login/email", { challenge_id: challengeId, code }),
+  )) as RawLoginStep;
+  return toStep(payload);
+}
+
+/** Étape 3 — valide le code du SMS. La session est ouverte au retour. */
+export async function submitPhoneCode(
+  challengeId: string,
   code: string,
 ): Promise<void> {
-  await unwrap(
-    await post("/api/auth/code/verify", {
-      country_code: countryCode,
-      national_number: nationalNumber,
-      code,
-    }),
-  );
+  await unwrap(await post("/api/auth/login/phone", { challenge_id: challengeId, code }));
+}
+
+/** Demande un code pour prouver son adresse ou son numéro. */
+export async function requestContactVerification(
+  channel: "email" | "phone",
+): Promise<{ sentTo: string; expiresIn: number }> {
+  const payload = (await unwrap(
+    await post(`/api/proxy/auth/contact/${channel}/request`),
+  )) as { sent_to: string; expires_in: number };
+  return { sentTo: payload.sent_to, expiresIn: payload.expires_in };
+}
+
+/** Confirme son adresse ou son numéro avec le code reçu. */
+export async function confirmContactVerification(
+  channel: "email" | "phone",
+  code: string,
+): Promise<void> {
+  await unwrap(await post(`/api/proxy/auth/contact/${channel}/confirm`, { code }));
 }
 
 /** Ferme la session. */

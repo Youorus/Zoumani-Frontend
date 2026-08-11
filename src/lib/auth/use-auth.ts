@@ -5,11 +5,13 @@ import { useCallback } from "react";
 import { useAuthStore } from "./auth-store";
 import { can, canAny, type Permission } from "./auth.types";
 import {
-  loginWithCode,
   loginWithPassword,
   logout as logoutRequest,
-  requestLoginCode,
   restoreSession,
+  startLogin,
+  submitEmailCode,
+  submitPhoneCode,
+  type LoginStep,
 } from "./auth-client";
 
 /**
@@ -42,9 +44,30 @@ export function useAuth() {
     [refresh],
   );
 
-  const signInWithCode = useCallback(
-    async (countryCode: string, nationalNumber: string, code: string) => {
-      await loginWithCode(countryCode, nationalNumber, code);
+  /**
+   * Étape 1 — demande un code par e-mail.
+   *
+   * Réussit **toujours**, même pour une adresse inconnue : l'API refuse de
+   * dire qui est inscrit, et l'interface ne doit pas la contredire en
+   * affichant « compte introuvable ». L'écran passe donc à la saisie du
+   * code dans les deux cas.
+   */
+  const beginLogin = useCallback(
+    async (email: string): Promise<LoginStep> => startLogin(email),
+    [],
+  );
+
+  /** Étape 2 — valide le code de l'e-mail ; le SMS part alors. */
+  const submitEmailStep = useCallback(
+    async (challengeId: string, code: string): Promise<LoginStep> =>
+      submitEmailCode(challengeId, code),
+    [],
+  );
+
+  /** Étape 3 — valide le code du SMS. La session s'ouvre au retour. */
+  const submitPhoneStep = useCallback(
+    async (challengeId: string, code: string) => {
+      await submitPhoneCode(challengeId, code);
       await refresh();
     },
     [refresh],
@@ -61,8 +84,9 @@ export function useAuth() {
     isAuthenticated: status === "authenticated",
     isLoading: status === "loading",
     signInWithPassword,
-    signInWithCode,
-    requestCode: requestLoginCode,
+    beginLogin,
+    submitEmailStep,
+    submitPhoneStep,
     signOut,
     refresh,
     can: (permission: Permission) => can(user, permission),
