@@ -1,10 +1,9 @@
 "use client";
 
+import { CreditCard, MessageCircle, Package, Plane, UserRound } from "lucide-react";
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
 
 import { useAccountCopy } from "@/features/account/components/account-copy-provider";
-import type { AccountCopy } from "@/features/account/content/account-content";
 
 /**
  * Une section de l'espace qui n'existe pas encore.
@@ -19,14 +18,30 @@ import type { AccountCopy } from "@/features/account/content/account-content";
  * Elle disparaîtra section par section, à mesure que les circuits
  * arrivent. C'est un échafaudage, et il est écrit pour être démonté.
  */
+/**
+ * Le symbole de chaque section, choisi **ici**.
+ *
+ * Il ne peut pas venir de la page : celle-ci est rendue sur le serveur,
+ * et un composant React n'est pas sérialisable. Le lui passer produit
+ * « Functions cannot be passed directly to Client Components » — une
+ * erreur qui n'apparaît qu'à la compilation d'une page pré-rendue, donc
+ * jamais pendant qu'on développe.
+ */
+const ICONS = {
+  shipments: Package,
+  trips: Plane,
+  messages: MessageCircle,
+  profile: UserRound,
+  payments: CreditCard,
+} as const;
+
 export function ComingSoon({
   section,
-  icon: Icon,
 }: {
   /** Quelle entrée du menu cette page prolonge. */
-  section: keyof AccountCopy["menu"];
-  icon: LucideIcon;
+  section: keyof typeof ICONS;
 }) {
+  const Icon = ICONS[section];
   const copy = useAccountCopy();
 
   return (

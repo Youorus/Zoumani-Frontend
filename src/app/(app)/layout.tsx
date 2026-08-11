@@ -25,6 +25,21 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+/*
+ * Jamais pré-calculé, jamais mis en cache.
+ *
+ * Chaque page d'ici dépend de **qui** la demande. Sans cette ligne, la
+ * compilation tente de les figer en HTML — sans cookie, donc sans
+ * session, et sans API à joindre puisqu'elle ne tourne pas pendant un
+ * build. La construction échoue alors sur une page qu'il n'aurait jamais
+ * fallu figer.
+ *
+ * Le pire est qu'elle **réussissait** en développement : l'API tournait
+ * sur le poste, la requête aboutissait, et l'on figeait sans le savoir
+ * l'espace d'un utilisateur dans un fichier servi à tous.
+ */
+export const dynamic = "force-dynamic";
+
 export default async function AppGroupLayout({ children }: PropsWithChildren) {
   const { status, body } = await callApi({ method: "GET", path: "/auth/me" });
 
