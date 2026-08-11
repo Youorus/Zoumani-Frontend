@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, ChevronRight, Clock, ShieldAlert } from "lucide-react";
+import { AlertCircle, BadgeCheck, ChevronRight, Clock, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 
 import { useAccountCopy } from "@/features/account/components/account-copy-provider";
@@ -33,9 +33,15 @@ export function VerificationMenuEntry({ stage }: { stage: VerificationStage }) {
       ? { Icon: BadgeCheck, tone: "text-success", label: copy.verified }
       : stage === "refuse"
         ? { Icon: ShieldAlert, tone: "text-error", label: copy.rejected }
-        : stage === "en_cours"
-          ? { Icon: Clock, tone: "text-warning", label: copy.pending }
-          : { Icon: ShieldAlert, tone: "text-muted-foreground", label: copy.absent };
+        : stage === "a_corriger"
+          ? { Icon: AlertCircle, tone: "text-warning", label: copy.toFix }
+          : stage === "en_cours"
+            ? { Icon: Clock, tone: "text-warning", label: copy.pending }
+            : {
+                Icon: ShieldAlert,
+                tone: "text-muted-foreground",
+                label: copy.absent,
+              };
 
   return (
     <DropdownMenuItem asChild>

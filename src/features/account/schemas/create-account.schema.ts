@@ -14,7 +14,9 @@ export const createAccountSchema = z.object({
     .min(8, "Utilisez au moins 8 caractères.")
     .regex(/[A-Z]/, "Ajoutez au moins une majuscule.")
     .regex(/[0-9]/, "Ajoutez au moins un chiffre."),
-  terms: z.boolean().refine(Boolean, "Vous devez accepter les conditions pour continuer."),
+  terms: z
+    .boolean()
+    .refine(Boolean, "Vous devez accepter les conditions pour continuer."),
 });
 
 export type CreateAccountInput = z.infer<typeof createAccountSchema>;

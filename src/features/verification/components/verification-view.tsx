@@ -1,6 +1,13 @@
 "use client";
 
-import { AlertCircle, BadgeCheck, Clock, LoaderCircle, Lock, ShieldAlert } from "lucide-react";
+import {
+  AlertCircle,
+  BadgeCheck,
+  Clock,
+  LoaderCircle,
+  Lock,
+  ShieldAlert,
+} from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,7 +24,8 @@ import {
   type DocumentType,
   type VerificationFiles,
 } from "../hooks/use-verification-form";
-import type { Verification } from "../types/verification.types";
+import type { Verification, VerificationRequest } from "../types/verification.types";
+import { CorrectionsView } from "./corrections-view";
 import { FileField } from "./file-field";
 
 /**
@@ -38,13 +46,23 @@ import { FileField } from "./file-field";
  */
 export function VerificationView({
   verification,
+  requests,
   language,
 }: {
   verification: Verification | null;
+  /** Ce qu'un opérateur attend de la personne, s'il attend quelque chose. */
+  requests: VerificationRequest[];
   language: HomeLanguage;
 }) {
   const copy = verificationContent[language];
   const stage = verification?.stage ?? "absent";
+
+  // Avant tout le reste : c'est le seul état où le dossier est bloqué
+  // **des deux côtés**, et où quelques minutes de la personne le
+  // débloquent. Le montrer après l'attente ou le refus le noierait.
+  if (stage === "a_corriger" && requests.some((request) => !request.answered)) {
+    return <CorrectionsView copy={copy} requests={requests} />;
+  }
 
   if (stage === "verifie") {
     return (
@@ -71,7 +89,9 @@ export function VerificationView({
     );
   }
 
-  return <Formulaire copy={copy} verification={verification} refuse={stage === "refuse"} />;
+  return (
+    <Formulaire copy={copy} verification={verification} refuse={stage === "refuse"} />
+  );
 }
 
 function Formulaire({
@@ -215,7 +235,10 @@ function Formulaire({
               placeholder="CM"
               value={draft.nationality}
               onChange={(e) =>
-                setDraft({ ...draft, nationality: e.target.value.toUpperCase() })
+                setDraft({
+                  ...draft,
+                  nationality: e.target.value.toUpperCase(),
+                })
               }
               required
             />
@@ -227,7 +250,10 @@ function Formulaire({
               autoComplete="country"
               value={draft.countryOfResidence}
               onChange={(e) =>
-                setDraft({ ...draft, countryOfResidence: e.target.value.toUpperCase() })
+                setDraft({
+                  ...draft,
+                  countryOfResidence: e.target.value.toUpperCase(),
+                })
               }
               required
             />
@@ -256,7 +282,11 @@ function Formulaire({
           <Select
             value={files.documentType}
             onValueChange={(value) =>
-              setFiles({ ...files, documentType: value as DocumentType, back: null })
+              setFiles({
+                ...files,
+                documentType: value as DocumentType,
+                back: null,
+              })
             }
           >
             <SelectTrigger aria-label={copy.document.type}>
@@ -292,7 +322,10 @@ function Formulaire({
               placeholder="CM"
               value={files.issuingCountry}
               onChange={(e) =>
-                setFiles({ ...files, issuingCountry: e.target.value.toUpperCase() })
+                setFiles({
+                  ...files,
+                  issuingCountry: e.target.value.toUpperCase(),
+                })
               }
               required
             />
@@ -316,7 +349,7 @@ function Formulaire({
         </div>
       </section>
 
-      {localError ?? error ? (
+      {(localError ?? error) ? (
         <p className="mb-4 flex items-center gap-2 text-sm text-error" role="alert">
           <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
           {localError ?? error?.message ?? copy.errors.generic}
@@ -328,7 +361,9 @@ function Formulaire({
         disabled={busy}
         className="focus-ring inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 font-bold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-60 sm:w-auto"
       >
-        {busy ? <LoaderCircle className="size-5 animate-spin" aria-hidden="true" /> : null}
+        {busy ? (
+          <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
+        ) : null}
         {busy ? copy.submitting : refuse ? copy.rejected.action : copy.submit}
       </button>
     </form>
@@ -372,8 +407,12 @@ function Etat({
   return (
     <div className="mx-auto w-full max-w-2xl">
       <div className="panel-surface p-6 sm:p-8">
-        <span className={`grid size-12 place-items-center rounded-xl ${tone}`}>{icon}</span>
-        <h1 className="mt-4 font-display text-2xl text-foreground sm:text-3xl">{title}</h1>
+        <span className={`grid size-12 place-items-center rounded-xl ${tone}`}>
+          {icon}
+        </span>
+        <h1 className="mt-4 font-display text-2xl text-foreground sm:text-3xl">
+          {title}
+        </h1>
         <p className="mt-2 max-w-xl leading-6 text-muted-foreground">{body}</p>
         {action ? (
           <Link

@@ -3,8 +3,10 @@ import type { Metadata } from "next";
 import { accountLanguage } from "@/features/account/lib/account-language";
 import { VerificationView } from "@/features/verification/components/verification-view";
 import {
+  toRequests,
   toVerification,
   type RawVerification,
+  type RawVerificationRequest,
 } from "@/features/verification/types/verification.types";
 import { callApi } from "@/lib/api/upstream.server";
 import { toAuthenticatedUser, type RawCurrentUser } from "@/lib/auth/auth.types";
@@ -23,9 +25,13 @@ export const metadata: Metadata = {
 };
 
 export default async function IdentitePage() {
-  const [me, dossier] = await Promise.all([
+  const [me, dossier, demandes] = await Promise.all([
     callApi({ method: "GET", path: "/auth/me" }),
     callApi({ method: "GET", path: "/identity-verifications/me" }),
+    // Chargées d'emblée : ce sont elles qui décident de l'écran affiché,
+    // et les demander après aurait montré l'attente une fraction de
+    // seconde avant de la remplacer par une demande de correction.
+    callApi({ method: "GET", path: "/identity-verifications/me/requests" }),
   ]);
 
   const user = toAuthenticatedUser(me.body as RawCurrentUser);
@@ -36,6 +42,11 @@ export default async function IdentitePage() {
         // 404 signifie « rien commencé », pas « erreur ».
         verification={
           dossier.status === 200 ? toVerification(dossier.body as RawVerification) : null
+        }
+        requests={
+          demandes.status === 200
+            ? toRequests(demandes.body as RawVerificationRequest[])
+            : []
         }
         language={accountLanguage(user.preferredLanguage)}
       />

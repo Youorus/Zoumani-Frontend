@@ -56,7 +56,11 @@ export function AccountShell({
       <div className="flex min-h-screen flex-col bg-background">
         <header className="sticky top-0 z-[var(--z-nav)] border-b border-border/70 bg-background/92 backdrop-blur">
           <div className="mx-auto flex w-full max-w-[1492px] items-center justify-between gap-4 px-4 py-3 sm:px-8 lg:px-12">
-            <Link href="/" className="focus-ring rounded-xl" aria-label="Zoumani, accueil">
+            <Link
+              href="/"
+              className="focus-ring rounded-xl"
+              aria-label="Zoumani, accueil"
+            >
               <ZoumaniLogo />
             </Link>
 

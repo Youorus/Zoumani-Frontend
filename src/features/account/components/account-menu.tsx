@@ -89,7 +89,10 @@ export function AccountMenu({
             {/* En bas à droite, là où tout le monde a appris à la
                 chercher : c'est la position qu'emploient les réseaux
                 sociaux depuis quinze ans. */}
-            <VerificationBadge stage={stage} className="absolute -right-0.5 -bottom-0.5" />
+            <VerificationBadge
+              stage={stage}
+              className="absolute -right-0.5 -bottom-0.5"
+            />
           </span>
         </button>
       </DropdownMenuTrigger>

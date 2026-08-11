@@ -6,11 +6,16 @@
  * Le backend distingue `submitted`, `under_review` et `resubmitted` : un
  * opérateur a besoin de savoir si un dossier attend dans la file, s'il
  * est pris en charge, ou s'il revient après correction. **La personne qui
- * attend, elle, n'a que faire de cette nuance** — pour elle il n'y a que
- * quatre situations : rien commencé, en cours d'examen, vérifié, refusé.
+ * attend, elle, n'a que faire de cette nuance.**
  *
- * Traduire les neuf en quatre est donc le travail de l'interface, et il
- * se fait ici, à un seul endroit. Le faire dans chaque composant
+ * Une distinction compte en revanche énormément : `action_required` n'est
+ * pas de l'attente. C'est le seul statut où **on attend quelque chose
+ * d'elle**, et le confondre avec « en cours d'examen » laisse un dossier
+ * bloqué indéfiniment — la personne patiente, l'opérateur patiente, et
+ * rien n'avance jusqu'à ce que l'un des deux écrive au support.
+ *
+ * Traduire les neuf en cinq est donc le travail de l'interface, et il se
+ * fait ici, à un seul endroit. Le faire dans chaque composant
  * garantirait qu'un jour l'un d'eux oublie `resubmitted` et affiche
  * « refusé » à quelqu'un dont le dossier est en cours d'examen.
  */
@@ -28,7 +33,8 @@ export type VerificationStatus =
   | "expired";
 
 /** Ce que la personne a besoin de comprendre, et rien de plus. */
-export type VerificationStage = "absent" | "en_cours" | "verifie" | "refuse";
+export type VerificationStage =
+  "absent" | "en_cours" | "a_corriger" | "verifie" | "refuse";
 
 /** Le dossier, en `snake_case` : c'est exactement ce que rend l'API. */
 export interface RawVerification {
@@ -80,9 +86,12 @@ export function stageOf(status: VerificationStatus): VerificationStage {
     case "not_started":
     case "draft":
       return "absent";
+    case "action_required":
+      // Le seul statut où la balle est dans son camp.
+      return "a_corriger";
     default:
-      // `submitted`, `under_review`, `action_required`, `resubmitted` :
-      // dans les quatre cas, la personne attend une réponse.
+      // `submitted`, `under_review`, `resubmitted` : dans les trois cas,
+      // la personne attend une réponse et n'a rien à faire.
       return "en_cours";
   }
 }
@@ -106,4 +115,52 @@ export function toVerification(raw: RawVerification): Verification {
     submittedAt: raw.submitted_at,
     verifiedAt: raw.verified_at,
   };
+}
+
+/** Ce qu'un opérateur peut demander. */
+export type RequestKind =
+  | "replace_document"
+  | "add_document"
+  | "retake_selfie"
+  | "provide_information"
+  | "correct_information";
+
+/** Une demande de correction, telle que l'API la rend. */
+export interface RawVerificationRequest {
+  id: string;
+  kind: RequestKind;
+  status: string;
+  message: string;
+  document_id: string | null;
+  user_response: string | null;
+  created_at: string;
+  responded_at: string | null;
+}
+
+export interface VerificationRequest {
+  id: string;
+  kind: RequestKind;
+  /** Ce que l'opérateur a écrit, mot pour mot. */
+  message: string;
+  documentId: string | null;
+  answered: boolean;
+  answer: string | null;
+}
+
+/**
+ * Les demandes en attente de réponse.
+ *
+ * Celles déjà traitées sont écartées : les afficher mêlerait ce qui
+ * reste à faire à ce qui est fait, sur l'écran précis où l'on cherche
+ * « qu'est-ce qu'on me demande ».
+ */
+export function toRequests(raw: RawVerificationRequest[]): VerificationRequest[] {
+  return raw.map((request) => ({
+    id: request.id,
+    kind: request.kind,
+    message: request.message,
+    documentId: request.document_id,
+    answered: request.responded_at !== null,
+    answer: request.user_response,
+  }));
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, Clock, ShieldAlert } from "lucide-react";
+import { AlertCircle, BadgeCheck, Clock, ShieldAlert } from "lucide-react";
 
 import { useAccountCopy } from "@/features/account/components/account-copy-provider";
 import { cn } from "@/lib/utils/cn";
@@ -39,10 +39,27 @@ export function VerificationBadge({
 
   const { Icon, tone, label } =
     stage === "verifie"
-      ? { Icon: BadgeCheck, tone: "bg-success text-white", label: copy.badgeVerified }
+      ? {
+          Icon: BadgeCheck,
+          tone: "bg-success text-white",
+          label: copy.badgeVerified,
+        }
       : stage === "refuse"
-        ? { Icon: ShieldAlert, tone: "bg-error text-white", label: copy.badgeRejected }
-        : { Icon: Clock, tone: "bg-warning text-white", label: copy.pending };
+        ? {
+            Icon: ShieldAlert,
+            tone: "bg-error text-white",
+            label: copy.badgeRejected,
+          }
+        : stage === "a_corriger"
+          ? // Un point d'exclamation et non une horloge : attendre et
+            // devoir agir ne se ressemblent pas, et c'est exactement la
+            // confusion qui bloque un dossier des semaines.
+            {
+              Icon: AlertCircle,
+              tone: "bg-warning text-white",
+              label: copy.badgeToFix,
+            }
+          : { Icon: Clock, tone: "bg-warning text-white", label: copy.pending };
 
   return (
     <span

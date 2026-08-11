@@ -58,9 +58,7 @@ export function AccountHome({
     <div className="mx-auto w-full max-w-[1492px] px-4 sm:px-8 lg:px-12">
       <header className="mb-5 sm:mb-6">
         <h1 className="font-display text-2xl leading-tight text-foreground sm:text-3xl lg:text-4xl">
-          {welcome
-            ? copy.welcome(user.firstName)
-            : copy.greeting(user.firstName)}
+          {welcome ? copy.welcome(user.firstName) : copy.greeting(user.firstName)}
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
           {copy.search.description}
@@ -81,7 +79,9 @@ export function AccountHome({
         className="px-0 sm:px-0 lg:px-0"
         copy={homeContent[language].search}
         language={language}
-        onSearch={({ from, to, weight }) => setFilters({ from, to, weight, lang: language })}
+        onSearch={({ from, to, weight }) =>
+          setFilters({ from, to, weight, lang: language })
+        }
       />
 
       {filters ? (

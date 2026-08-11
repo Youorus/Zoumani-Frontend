@@ -50,7 +50,10 @@ export function useVerificationForm() {
   const [error, setError] = useState<AuthError | null>(null);
 
   const send = useCallback(
-    async (draft: IdentityDraft, files: VerificationFiles): Promise<Verification | null> => {
+    async (
+      draft: IdentityDraft,
+      files: VerificationFiles,
+    ): Promise<Verification | null> => {
       setBusy(true);
       setError(null);
       try {

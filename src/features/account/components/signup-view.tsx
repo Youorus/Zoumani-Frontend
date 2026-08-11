@@ -85,7 +85,9 @@ export function SignupView({
       setRole(nextRole);
       const nextParams = new URLSearchParams(searchParams.toString());
       nextParams.set("role", nextRole);
-      router.replace(`${pathname}?${nextParams.toString()}` as Route, { scroll: false });
+      router.replace(`${pathname}?${nextParams.toString()}` as Route, {
+        scroll: false,
+      });
     });
   }
 
@@ -149,13 +151,18 @@ export function SignupView({
                   <span>
                     <small>{copy.routeLabel}</small>
                     <strong>
-                      {formatSearchCity(searchContext.from)} → {formatSearchCity(searchContext.to)} · {searchContext.weight} kg
+                      {formatSearchCity(searchContext.from)} →{" "}
+                      {formatSearchCity(searchContext.to)} · {searchContext.weight} kg
                     </strong>
                   </span>
                 </div>
               ) : null}
 
-              <form className={styles.form} onSubmit={handleSubmit((values) => account.mutate(values))} noValidate>
+              <form
+                className={styles.form}
+                onSubmit={handleSubmit((values) => account.mutate(values))}
+                noValidate
+              >
                 <div className={styles.field}>
                   <label htmlFor="signup-first-name">{copy.fields.firstName}</label>
                   <Input
@@ -164,7 +171,9 @@ export function SignupView({
                     aria-invalid={Boolean(errors.firstName)}
                     {...register("firstName")}
                   />
-                  {errors.firstName ? <p className={styles.error}>{errors.firstName.message}</p> : null}
+                  {errors.firstName ? (
+                    <p className={styles.error}>{errors.firstName.message}</p>
+                  ) : null}
                 </div>
                 <div className={styles.field}>
                   <label htmlFor="signup-last-name">{copy.fields.lastName}</label>
@@ -174,7 +183,9 @@ export function SignupView({
                     aria-invalid={Boolean(errors.lastName)}
                     {...register("lastName")}
                   />
-                  {errors.lastName ? <p className={styles.error}>{errors.lastName.message}</p> : null}
+                  {errors.lastName ? (
+                    <p className={styles.error}>{errors.lastName.message}</p>
+                  ) : null}
                 </div>
                 <div className={styles.field}>
                   <label htmlFor="signup-email">{copy.fields.email}</label>
@@ -186,7 +197,9 @@ export function SignupView({
                     aria-invalid={Boolean(errors.email)}
                     {...register("email")}
                   />
-                  {errors.email ? <p className={styles.error}>{errors.email.message}</p> : null}
+                  {errors.email ? (
+                    <p className={styles.error}>{errors.email.message}</p>
+                  ) : null}
                 </div>
                 <div className={styles.field}>
                   <label htmlFor="signup-phone">{copy.fields.phone}</label>
@@ -198,7 +211,9 @@ export function SignupView({
                     aria-invalid={Boolean(errors.phone)}
                     {...register("phone")}
                   />
-                  {errors.phone ? <p className={styles.error}>{errors.phone.message}</p> : null}
+                  {errors.phone ? (
+                    <p className={styles.error}>{errors.phone.message}</p>
+                  ) : null}
                 </div>
                 <div className={`${styles.field} ${styles.fullField}`}>
                   <label htmlFor="signup-password">{copy.fields.password}</label>
@@ -213,7 +228,9 @@ export function SignupView({
                     <button
                       className={`${styles.passwordToggle} focus-ring`}
                       type="button"
-                      aria-label={showPassword ? copy.fields.hidePassword : copy.fields.showPassword}
+                      aria-label={
+                        showPassword ? copy.fields.hidePassword : copy.fields.showPassword
+                      }
                       onClick={() => setShowPassword((visible) => !visible)}
                     >
                       {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
@@ -238,13 +255,25 @@ export function SignupView({
                   />
                   <div>
                     <label htmlFor="signup-terms">{copy.fields.terms}</label>
-                    {errors.terms ? <p className={styles.error}>{errors.terms.message}</p> : null}
+                    {errors.terms ? (
+                      <p className={styles.error}>{errors.terms.message}</p>
+                    ) : null}
                   </div>
                 </div>
-                <button className={`${styles.submit} focus-ring`} type="submit" disabled={account.isPending}>
-                  {account.isPending ? <LoaderCircle className="animate-spin" size={16} /> : <LockKeyhole size={16} />}
+                <button
+                  className={`${styles.submit} focus-ring`}
+                  type="submit"
+                  disabled={account.isPending}
+                >
+                  {account.isPending ? (
+                    <LoaderCircle className="animate-spin" size={16} />
+                  ) : (
+                    <LockKeyhole size={16} />
+                  )}
                   {account.isPending ? copy.submitting : roleCopy.submit}
-                  {!account.isPending ? <ArrowRight size={15} aria-hidden="true" /> : null}
+                  {!account.isPending ? (
+                    <ArrowRight size={15} aria-hidden="true" />
+                  ) : null}
                 </button>
               </form>
               <p className={styles.secureNote}>

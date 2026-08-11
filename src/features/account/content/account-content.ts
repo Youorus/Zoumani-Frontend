@@ -66,6 +66,8 @@ const accountFr = {
     absent: "Identité non vérifiée",
     absentAction: "Vérifier mon identité",
     pending: "Vérification en cours",
+    toFix: "Une précision est attendue",
+    badgeToFix: "Action attendue de votre part",
     pendingHint: "Nous revenons vers vous sous 48 heures ouvrées.",
     verified: "Identité vérifiée",
     rejected: "Vérification refusée",
@@ -136,8 +138,7 @@ export const accountContent = {
       pendingDescription:
         "It will be asked before your first trip or your first parcel. Doing it now saves you the wait on that day.",
       verified: "Your identity is verified",
-      verifiedDescription:
-        "You can post a trip and accept parcels with confidence.",
+      verifiedDescription: "You can post a trip and accept parcels with confidence.",
       cta: "Verify my identity",
     },
 
@@ -145,6 +146,8 @@ export const accountContent = {
       absent: "Identity not verified",
       absentAction: "Verify my identity",
       pending: "Verification in progress",
+      toFix: "Something is expected from you",
+      badgeToFix: "Action needed from you",
       pendingHint: "We will get back to you within two working days.",
       verified: "Identity verified",
       rejected: "Verification declined",

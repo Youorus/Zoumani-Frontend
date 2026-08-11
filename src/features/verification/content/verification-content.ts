@@ -55,7 +55,8 @@ const fr = {
     },
     front: "Recto",
     back: "Verso",
-    backHint: "Nécessaire pour une carte d'identité et un titre de séjour, pas pour un passeport.",
+    backHint:
+      "Nécessaire pour une carte d'identité et un titre de séjour, pas pour un passeport.",
     issuingCountry: "Pays qui a délivré la pièce",
     expiry: "Date d'expiration",
     selfie: "Photo de vous avec votre pièce",
@@ -78,6 +79,22 @@ const fr = {
     title: "Votre identité est vérifiée",
     body: "Vous pouvez proposer un trajet et confier un colis. Votre badge est visible de tous : c'est ce qui rassure en premier.",
     action: "Retour à mon espace",
+  },
+
+  corrections: {
+    title: "Il manque quelque chose à votre dossier",
+    body: "Notre équipe a examiné vos documents et a besoin d'une précision avant de conclure. Répondez ci-dessous : votre dossier repart aussitôt à l'examen.",
+    kinds: {
+      replace_document: "Un document à remplacer",
+      add_document: "Un document à ajouter",
+      retake_selfie: "Une nouvelle photo de vous",
+      provide_information: "Une précision à apporter",
+      correct_information: "Une information à corriger",
+    },
+    newFile: "Le nouveau fichier",
+    answer: "Votre réponse",
+    answerPlaceholder: "Facultatif — précisez si besoin.",
+    submit: "Renvoyer mon dossier",
   },
 
   rejected: {
@@ -158,6 +175,22 @@ const en: typeof fr = {
     title: "Your identity is verified",
     body: "You can post a trip and send a parcel. Your badge is visible to everyone: it is what reassures people first.",
     action: "Back to my account",
+  },
+
+  corrections: {
+    title: "Something is missing from your file",
+    body: "Our team reviewed your documents and needs one more thing before concluding. Answer below and your file goes straight back for review.",
+    kinds: {
+      replace_document: "A document to replace",
+      add_document: "A document to add",
+      retake_selfie: "A new photo of you",
+      provide_information: "A detail to provide",
+      correct_information: "Something to correct",
+    },
+    newFile: "The new file",
+    answer: "Your answer",
+    answerPlaceholder: "Optional — add a note if useful.",
+    submit: "Send my file back",
   },
 
   rejected: {
