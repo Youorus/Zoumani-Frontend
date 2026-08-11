@@ -4,7 +4,9 @@ import { ArrowRight, BadgeCheck, Plane, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import { accountContent } from "@/features/account/content/account-content";
+import { useAccountCopy } from "@/features/account/components/account-copy-provider";
+import type { AccountCopy } from "@/features/account/content/account-content";
+import { accountLanguage } from "@/features/account/lib/account-language";
 import { homeContent } from "@/features/home/components/home-content";
 import { ShipmentSearch } from "@/features/home/components/shipment-search";
 import { SearchResultsView } from "@/features/shipment-search/components/search-results-view";
@@ -48,6 +50,8 @@ export function AccountHome({
 }) {
   // `null` tant qu'on n'a rien cherché : l'écran d'arrivée montre ce
   // qu'on peut faire, pas une liste vide qui ressemble à une panne.
+  const copy = useAccountCopy();
+  const language = accountLanguage(user.preferredLanguage);
   const [filters, setFilters] = useState<TripSearchFilters | null>(null);
 
   return (
@@ -55,11 +59,11 @@ export function AccountHome({
       <header className="mb-5 sm:mb-6">
         <h1 className="font-display text-2xl leading-tight text-foreground sm:text-3xl lg:text-4xl">
           {welcome
-            ? accountContent.welcome(user.firstName)
-            : accountContent.greeting(user.firstName)}
+            ? copy.welcome(user.firstName)
+            : copy.greeting(user.firstName)}
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
-          {accountContent.search.description}
+          {copy.search.description}
         </p>
       </header>
 
@@ -67,7 +71,7 @@ export function AccountHome({
           « Où va votre colis ? » dit quoi faire — et se comprend sans
           avoir jamais utilisé de site de réservation. */}
       <h2 className="mb-3 font-display text-lg text-foreground sm:text-xl">
-        {accountContent.search.title}
+        {copy.search.title}
       </h2>
 
       {/* La barre de la page d'accueil, telle quelle : mêmes champs, même
@@ -75,9 +79,9 @@ export function AccountHome({
           faite d'un côté vaut pour les deux. */}
       <ShipmentSearch
         className="px-0 sm:px-0 lg:px-0"
-        copy={homeContent.fr.search}
-        language="fr"
-        onSearch={({ from, to, weight }) => setFilters({ from, to, weight, lang: "fr" })}
+        copy={homeContent[language].search}
+        language={language}
+        onSearch={({ from, to, weight }) => setFilters({ from, to, weight, lang: language })}
       />
 
       {filters ? (
@@ -85,21 +89,19 @@ export function AccountHome({
           {/* Le même composant que la page de résultats : même attente,
               même carte de voyageur, même message quand il n'y a personne
               sur le trajet. */}
-          <SearchResultsView filters={filters} language="fr" />
+          <SearchResultsView filters={filters} language={language} />
         </section>
       ) : (
         <div className="mt-6 grid gap-4 sm:mt-8 lg:grid-cols-[1.4fr_1fr]">
-          <ProposeTripCard />
-          <IdentityCard verified={user.identityVerified} />
+          <ProposeTripCard copy={copy.actions.travel} />
+          <IdentityCard copy={copy.identity} verified={user.identityVerified} />
         </div>
       )}
     </div>
   );
 }
 
-function ProposeTripCard() {
-  const copy = accountContent.actions.travel;
-
+function ProposeTripCard({ copy }: { copy: AccountCopy["actions"]["travel"] }) {
   return (
     <section className="panel-surface flex flex-col justify-between gap-5 p-5 sm:p-6">
       <div>
@@ -132,9 +134,13 @@ function ProposeTripCard() {
  * premier trajet ou un premier envoi, et découvrir ce blocage au moment
  * de publier est la pire façon de l'apprendre.
  */
-function IdentityCard({ verified }: { verified: boolean }) {
-  const copy = accountContent.identity;
-
+function IdentityCard({
+  copy,
+  verified,
+}: {
+  copy: AccountCopy["identity"];
+  verified: boolean;
+}) {
   return (
     <section className="panel-surface flex flex-col justify-between gap-5 p-5 sm:p-6">
       <div>

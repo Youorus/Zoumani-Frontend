@@ -25,7 +25,6 @@ COPY . .
 # Les variables NEXT_PUBLIC_* sont figees dans le bundle JavaScript au build :
 # elles doivent donc etre presentes ici, et pas seulement a l'execution.
 ARG NEXT_PUBLIC_APP_URL
-ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_WHATSAPP_NUMBER
 ARG NEXT_PUBLIC_SEO_INDEXABLE
 ARG NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
@@ -34,7 +33,6 @@ ARG NEXT_PUBLIC_YANDEX_VERIFICATION
 ARG DEPLOYMENT_ID
 
 ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL} \
-    NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \
     NEXT_PUBLIC_WHATSAPP_NUMBER=${NEXT_PUBLIC_WHATSAPP_NUMBER} \
     NEXT_PUBLIC_SEO_INDEXABLE=${NEXT_PUBLIC_SEO_INDEXABLE} \
     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=${NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION} \
@@ -50,6 +48,17 @@ RUN npm run build
 FROM node:${NODE_VERSION} AS runner
 WORKDIR /app
 
+# ─────────────────────────────────────────────────────────────────────
+# API_URL n'est PAS un argument de construction.
+#
+# Elle est lue à chaque requête, côté serveur uniquement — jamais dans le
+# navigateur. La figer dans l'image obligerait à reconstruire pour changer
+# d'API ; il suffit de la poser comme variable d'environnement du
+# conteneur. Sans elle, le relais ne sait pas où appeler et **toutes** les
+# requêtes authentifiées échouent.
+#
+#     API_URL=https://api.zoumani.fr/api/v1
+# ─────────────────────────────────────────────────────────────────────
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000 \

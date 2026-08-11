@@ -34,9 +34,33 @@ import {
  * refusé, insister ne ferait que boucler.
  */
 
-/** URL de l'API, côté serveur uniquement. Jamais exposée au navigateur. */
+/**
+ * URL de l'API, côté serveur uniquement. Jamais exposée au navigateur.
+ *
+ * ═══ Pourquoi le défaut ne vaut qu'en développement ═══
+ *
+ * `http://localhost:8000` est commode sur un poste, et catastrophique en
+ * production : le conteneur appellerait **lui-même**, chaque requête
+ * échouerait sur un refus de connexion, et rien dans les journaux ne
+ * dirait que la variable manquait — on chercherait le réseau, le pare-feu,
+ * l'API, tout sauf une ligne oubliée dans la configuration du conteneur.
+ *
+ * On préfère donc échouer au premier appel, avec le nom de la variable.
+ */
 function apiBaseUrl(): string {
-  const url = process.env.API_URL ?? "http://localhost:8000/api/v1";
+  const url = process.env.API_URL;
+
+  if (!url) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "API_URL n'est pas définie. Le relais ne sait pas où appeler l'API : " +
+          "posez-la comme variable d'environnement du conteneur, par exemple " +
+          "API_URL=https://api.zoumani.fr/api/v1",
+      );
+    }
+    return "http://localhost:8000/api/v1";
+  }
+
   return url.replace(/\/$/, "");
 }
 

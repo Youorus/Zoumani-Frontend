@@ -8,7 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { accountContent } from "@/features/account/content/account-content";
+import { useAccountCopy } from "@/features/account/components/account-copy-provider";
 
 /**
  * La cloche des notifications.
@@ -33,7 +33,7 @@ import { accountContent } from "@/features/account/content/account-content";
  * qu'on en ait besoin.
  */
 export function NotificationBell() {
-  const copy = accountContent.notifications;
+  const copy = useAccountCopy().notifications;
 
   return (
     <DropdownMenu>

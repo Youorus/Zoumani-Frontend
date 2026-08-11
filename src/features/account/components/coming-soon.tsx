@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 
-import { accountContent } from "@/features/account/content/account-content";
+import { useAccountCopy } from "@/features/account/components/account-copy-provider";
+import type { AccountCopy } from "@/features/account/content/account-content";
 
 /**
  * Une section de l'espace qui n'existe pas encore.
@@ -16,7 +19,16 @@ import { accountContent } from "@/features/account/content/account-content";
  * Elle disparaîtra section par section, à mesure que les circuits
  * arrivent. C'est un échafaudage, et il est écrit pour être démonté.
  */
-export function ComingSoon({ title, icon: Icon }: { title: string; icon: LucideIcon }) {
+export function ComingSoon({
+  section,
+  icon: Icon,
+}: {
+  /** Quelle entrée du menu cette page prolonge. */
+  section: keyof AccountCopy["menu"];
+  icon: LucideIcon;
+}) {
+  const copy = useAccountCopy();
+
   return (
     <div className="mx-auto w-full max-w-[1492px] px-4 sm:px-8 lg:px-12">
       <div className="panel-surface flex flex-col items-start gap-5 p-8">
@@ -24,16 +36,16 @@ export function ComingSoon({ title, icon: Icon }: { title: string; icon: LucideI
           <Icon className="size-6" aria-hidden="true" />
         </span>
         <div>
-          <h1 className="font-display text-3xl text-foreground">{title}</h1>
+          <h1 className="font-display text-3xl text-foreground">{copy.menu[section]}</h1>
           <p className="mt-2 max-w-xl leading-6 text-muted-foreground">
-            {accountContent.soon.description}
+            {copy.soon.description}
           </p>
         </div>
         <Link
           href="/compte"
           className="focus-ring inline-flex items-center rounded-xl border border-border px-5 py-3 text-sm font-bold text-foreground transition-colors hover:bg-muted"
         >
-          {accountContent.soon.cta}
+          {copy.soon.cta}
         </Link>
       </div>
     </div>

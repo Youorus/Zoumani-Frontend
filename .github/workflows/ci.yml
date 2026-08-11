@@ -42,7 +42,6 @@ jobs:
         env:
           # Valeurs de substitution : le build doit reussir sans secret.
           NEXT_PUBLIC_APP_URL: https://zoumani.fr
-          NEXT_PUBLIC_API_URL: https://zoumani.fr/api/mock
 
   docker:
     name: Image Docker
@@ -63,6 +62,5 @@ jobs:
           push: false
           build-args: |
             NEXT_PUBLIC_APP_URL=https://zoumani.fr
-            NEXT_PUBLIC_API_URL=https://zoumani.fr/api/mock
           cache-from: type=gha
           cache-to: type=gha,mode=max

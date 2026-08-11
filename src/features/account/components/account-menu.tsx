@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { accountContent } from "@/features/account/content/account-content";
+import { useAccountCopy } from "@/features/account/components/account-copy-provider";
 import type { AuthenticatedUser } from "@/lib/auth/auth.types";
 import { useAuth } from "@/lib/auth/use-auth";
 
@@ -48,7 +48,7 @@ export function AccountMenu({ user }: { user: AuthenticatedUser }) {
   const router = useRouter();
   const { signOut } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
-  const menu = accountContent.menu;
+  const menu = useAccountCopy().menu;
 
   const entries = [
     { href: "/compte/envois", label: menu.shipments, icon: Package },
