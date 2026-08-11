@@ -130,6 +130,8 @@ export async function completeRegistration(
     lastName: string;
     phoneCountryCode: string;
     phoneNationalNumber: string;
+    acceptsTerms: boolean;
+    acceptsPrivacyPolicy: boolean;
   },
 ): Promise<LoginStep> {
   const payload = (await unwrap(
@@ -143,8 +145,13 @@ export async function completeRegistration(
       phone_national_number: input.phoneNationalNumber.replace(/\s/g, ""),
       terms_version: CONSENT_VERSIONS.terms,
       privacy_policy_version: CONSENT_VERSIONS.privacyPolicy,
-      accepts_terms: true,
-      accepts_privacy_policy: true,
+      // Ce que la personne a réellement coché, jamais `true` en dur. Le
+      // formulaire refuse déjà de partir sans les deux accords — mais un
+      // consentement consigné doit être celui qui a été donné, pas celui
+      // qu'on suppose. Une constante ici survivrait à un assouplissement
+      // de la validation, et le registre mentirait.
+      accepts_terms: input.acceptsTerms,
+      accepts_privacy_policy: input.acceptsPrivacyPolicy,
     }),
   )) as RawLoginStep;
   return toStep(payload);

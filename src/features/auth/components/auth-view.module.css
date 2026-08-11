@@ -256,3 +256,12 @@
     grid-template-columns: 1fr;
   }
 }
+
+/*
+ * Le texte du consentement bascule la case. Sans le curseur, rien ne le
+ * laisse deviner — et la cible cliquable d'une case seule est bien trop
+ * petite sur un écran tactile.
+ */
+.consentText {
+  cursor: pointer;
+}

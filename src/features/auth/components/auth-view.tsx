@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import type { HomeLanguage } from "@/features/home/components/home-content";
 
@@ -21,6 +20,7 @@ import {
   type EmailInput,
   type RegistrationInput,
 } from "../schemas/auth.schema";
+import { ConsentCheckbox } from "./consent-checkbox";
 import { PhoneField } from "./phone-field";
 import styles from "./auth-view.module.css";
 
@@ -325,14 +325,16 @@ function RegistrationStep({
         }
       />
 
-      <label className={styles.consent}>
-        <Checkbox {...form.register("acceptsTerms")} />
-        <span>{content.registration.terms}</span>
-      </label>
-      <label className={styles.consent}>
-        <Checkbox {...form.register("acceptsPrivacyPolicy")} />
-        <span>{content.registration.privacy}</span>
-      </label>
+      <ConsentCheckbox
+        control={form.control}
+        name="acceptsTerms"
+        label={content.registration.terms}
+      />
+      <ConsentCheckbox
+        control={form.control}
+        name="acceptsPrivacyPolicy"
+        label={content.registration.privacy}
+      />
       {form.formState.errors.acceptsTerms ?? form.formState.errors.acceptsPrivacyPolicy ? (
         <span className={styles.fieldError}>
           {form.formState.errors.acceptsTerms?.message ??
