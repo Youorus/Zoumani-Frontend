@@ -265,3 +265,71 @@
 .consentText {
   cursor: pointer;
 }
+
+/*
+ * Les étapes, nommées.
+ *
+ * Alignées horizontalement tant que la place le permet : c'est la lecture
+ * qui donne l'impression d'un chemin court. En dessous, elles s'empilent
+ * plutôt que de se tronquer — un libellé coupé n'annonce plus rien.
+ */
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+}
+
+/*
+ * L'état ne passe pas que par la couleur : le numéro devient une coche,
+ * et l'étape courante s'épaissit. Deux signaux valent mieux qu'un pour
+ * qui ne distingue pas les teintes.
+ */
+.step[data-state="todo"] {
+  opacity: 0.45;
+}
+
+.step[data-state="active"] .stepLabel {
+  font-weight: 600;
+}
+
+.stepMark {
+  display: grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  border: 1px solid currentColor;
+  border-radius: var(--shape-radius-full, 999px);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.step[data-state="active"] .stepMark,
+.step[data-state="done"] .stepMark {
+  border-color: transparent;
+  background: var(--marketing-accent, #111);
+  color: var(--marketing-accent-contrast, #fff);
+}
+
+/*
+ * L'explication du parcours : plus discrète qu'une description, plus
+ * lisible qu'une mention légale. Elle ne s'affiche qu'une fois, sur le
+ * premier écran.
+ */
+.explanation {
+  margin: 1rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  opacity: 0.75;
+}

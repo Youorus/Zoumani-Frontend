@@ -21,6 +21,7 @@ import {
   type RegistrationInput,
 } from "../schemas/auth.schema";
 import { registrationFieldError, type ServerFieldError } from "../lib/server-field-error";
+import { AuthSteps } from "./auth-steps";
 import { ConsentCheckbox } from "./consent-checkbox";
 import { PhoneField } from "./phone-field";
 import styles from "./auth-view.module.css";
@@ -78,21 +79,14 @@ export function AuthView({
     }
   }, [flow.screen, router, destination]);
 
-  const stepIndex = { email: 0, "email-code": 1, registration: 2, "phone-code": 3, done: 4 }[
-    flow.screen
-  ];
-
   return (
     <div className={styles.shell}>
       {flow.screen !== "done" ? (
-        <div className={styles.progress} aria-hidden="true">
-          {[0, 1, 2, 3].map((index) => (
-            <span
-              key={index}
-              className={`${styles.dot} ${index <= stepIndex ? styles.dotActive : ""}`}
-            />
-          ))}
-        </div>
+        <AuthSteps
+          screen={flow.screen}
+          labels={content.steps}
+          registering={flow.isRegistering}
+        />
       ) : null}
 
       <section className={flow.screen === "done" ? styles.success : styles.panel}>
@@ -203,6 +197,12 @@ function EmailStep({
       </label>
 
       <SubmitButton busy={busy} label={content.email.submit} />
+
+      {/* L'explication est ici et nulle part ailleurs : c'est le seul
+          écran où l'on ignore encore ce qui va se passer. La répéter aux
+          étapes suivantes reviendrait à expliquer ce que la personne est
+          déjà en train de faire. */}
+      <p className={styles.explanation}>{content.steps.explanation}</p>
       <p className={styles.reassurance}>{content.email.reassurance}</p>
     </form>
   );

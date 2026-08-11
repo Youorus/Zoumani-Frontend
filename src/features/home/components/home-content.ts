@@ -5,7 +5,7 @@ export type HomeNavigationHref =
   | "#fonctionnement"
   | "#trust"
   | "#help";
-export type HomeFooterHref = HomeNavigationHref | "#partners" | "/trips";
+export type HomeFooterHref = HomeNavigationHref | "#partners" | "/signup";
 
 export interface HomeContent {
   navigation: ReadonlyArray<{ href: HomeNavigationHref; label: string }>;
@@ -18,6 +18,8 @@ export interface HomeContent {
     description: string;
   };
   travelerCta: string;
+  /** Libellé du bouton d'action une fois la personne connectée. */
+  spaceCta: string;
   hero: {
     eyebrow: string;
     titleLineOne: string;
@@ -52,8 +54,6 @@ export interface HomeContent {
     weightOptions: ReadonlyArray<{ value: string; label: string; description: string }>;
     submitLabel: string;
     guarantees: readonly string[];
-    toastTitle: string;
-    toastDescription: string;
   };
   promos: {
     sectionLabel: string;
@@ -161,6 +161,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       description: "Retrouvez les services Zoumani.",
     },
     travelerCta: "Je suis voyageur",
+    spaceCta: "Mon espace",
     hero: {
       eyebrow: "La diaspora, notre force",
       titleLineOne: "Vos colis voyagent",
@@ -206,8 +207,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         "Protection du colis",
         "Suivi en temps réel",
       ],
-      toastTitle: "Recherche prête",
-      toastDescription: "Le branchement API sera ajouté avec le parcours métier.",
     },
     promos: {
       sectionLabel: "Services Zoumani",
@@ -367,7 +366,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Services",
           links: [
             { label: "Envoyer un colis", href: "#search" },
-            { label: "Devenir voyageur", href: "/trips" },
+            { label: "Devenir voyageur", href: "/signup" },
             { label: "Comment ça marche", href: "#fonctionnement" },
           ],
         },
@@ -408,6 +407,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       description: "Explore Zoumani services.",
     },
     travelerCta: "I’m a traveler",
+    spaceCta: "My account",
     hero: {
       eyebrow: "The diaspora, our strength",
       titleLineOne: "Your parcels travel",
@@ -453,8 +453,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         "Parcel protection",
         "Real-time tracking",
       ],
-      toastTitle: "Search ready",
-      toastDescription: "The API connection will be added with the business flow.",
     },
     promos: {
       sectionLabel: "Zoumani services",
@@ -611,7 +609,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Services",
           links: [
             { label: "Send a parcel", href: "#search" },
-            { label: "Become a traveler", href: "/trips" },
+            { label: "Become a traveler", href: "/signup" },
             { label: "How it works", href: "#fonctionnement" },
           ],
         },

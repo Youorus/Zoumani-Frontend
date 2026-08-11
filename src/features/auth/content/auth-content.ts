@@ -21,6 +21,14 @@ import type { HomeLanguage } from "@/features/home/components/home-content";
 
 interface AuthContent {
   contextLabel: string;
+  /** Étapes annoncées d'avance, pour qu'aucun code n'arrive par surprise. */
+  steps: {
+    email: string;
+    identity: string;
+    phone: string;
+    /** La phrase qui explique pourquoi il y a deux vérifications. */
+    explanation: string;
+  };
   email: {
     eyebrow: string;
     title: string;
@@ -76,6 +84,13 @@ interface AuthContent {
 export const authContent: Record<HomeLanguage, AuthContent> = {
   fr: {
     contextLabel: "Accéder à Zoumani",
+    steps: {
+      email: "Votre e-mail",
+      identity: "Vos informations",
+      phone: "Votre téléphone",
+      explanation:
+        "Deux vérifications : un code par e-mail, puis un code par SMS. C'est ce qui garantit qu'un colis et un paiement n'atterrissent jamais chez quelqu'un d'autre.",
+    },
     email: {
       eyebrow: "Votre espace",
       title: "Votre adresse e-mail",
@@ -131,6 +146,13 @@ export const authContent: Record<HomeLanguage, AuthContent> = {
   },
   en: {
     contextLabel: "Access Zoumani",
+    steps: {
+      email: "Your email",
+      identity: "Your details",
+      phone: "Your phone",
+      explanation:
+        "Two checks: a code by email, then a code by SMS. That is what makes sure a parcel and a payment never end up with someone else.",
+    },
     email: {
       eyebrow: "Your space",
       title: "Your email address",

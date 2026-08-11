@@ -1,9 +1,9 @@
 "use client";
 
-import { BaggageClaim, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { AccountCta } from "@/features/auth/components/account-cta";
 import {
   Drawer,
   DrawerContent,
@@ -14,6 +14,9 @@ import {
 
 import type { HomeContent } from "./home-content";
 
+// `language` n'est plus nécessaire : le bouton d'action prend ses deux
+// libellés du contenu déjà traduit, et choisit sa destination selon la
+// session plutôt que selon la langue.
 export function MobileNavigation({ copy }: { copy: HomeContent }) {
   return (
     <Drawer>
@@ -46,12 +49,11 @@ export function MobileNavigation({ copy }: { copy: HomeContent }) {
         </nav>
 
         <div className="mt-auto grid gap-3 pt-8">
-          <Button asChild size="lg">
-            <Link href="/trips">
-              <BaggageClaim className="size-5" />
-              {copy.travelerCta}
-            </Link>
-          </Button>
+          <AccountCta
+            className="w-full"
+            label={copy.travelerCta}
+            spaceLabel={copy.spaceCta}
+          />
         </div>
       </DrawerContent>
     </Drawer>

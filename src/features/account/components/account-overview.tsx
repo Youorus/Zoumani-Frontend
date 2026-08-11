@@ -2,6 +2,7 @@ import { BadgeCheck, Mail, Phone, ShieldCheck, ShieldAlert } from "lucide-react"
 
 import type { AuthenticatedUser } from "@/lib/auth/auth.types";
 
+import { SignOutButton } from "./sign-out-button";
 import styles from "./account-overview.module.css";
 
 /**
@@ -86,6 +87,18 @@ export function AccountOverview({
             </>
           )}
         </p>
+      </section>
+
+      <section className={styles.panel} aria-labelledby="session">
+        <h2 className={styles.panelTitle} id="session">
+          Votre session
+        </h2>
+        <p className={styles.sessionNote}>
+          Vous resterez connecté trois mois sur cet appareil, sans avoir à
+          ressaisir de code. Sur un ordinateur partagé, terminez la session en
+          partant.
+        </p>
+        <SignOutButton label="Se déconnecter" />
       </section>
     </div>
   );

@@ -1,11 +1,10 @@
 "use client";
 
-import { BaggageClaim } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { ZoumaniLogo } from "@/components/shared/zoumani-logo";
-import { Button } from "@/components/ui/button";
+import { AccountCta } from "@/features/auth/components/account-cta";
 
 import type { HomeContent, HomeLanguage } from "./home-content";
 import styles from "./hero-header.module.css";
@@ -61,12 +60,11 @@ export function HeroHeader({ copy, language, onLanguageChange }: HeroHeaderProps
             onLanguageChange={onLanguageChange}
           />
           <div className="hidden xl:block">
-            <Button asChild className="px-7">
-              <Link href="/trips">
-                <BaggageClaim className="size-5" />
-                {copy.travelerCta}
-              </Link>
-            </Button>
+            <AccountCta
+              className="px-7"
+              label={copy.travelerCta}
+              spaceLabel={copy.spaceCta}
+            />
           </div>
           <MobileNavigation copy={copy} />
         </div>
