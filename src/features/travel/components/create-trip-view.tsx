@@ -11,6 +11,7 @@ import {
   fetchCatalog,
   fetchLastPrices,
   offerCapacity,
+  publishCapacity,
   submitTrip,
 } from "../api/travel-client";
 import {
@@ -171,7 +172,7 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
         },
       ]);
 
-      await offerCapacity(trip.id, {
+      const capacite = await offerCapacity(trip.id, {
         totalWeightKg: Number.parseFloat(weight.replace(",", ".")),
         currency: DEVISE,
         offers: choisies.map((category) => ({
@@ -192,6 +193,14 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
           throw error;
         }
       }
+
+      // Publier rend l'offre visible des expéditeurs, et le serveur
+      // l'exige vérifiée. Tant que le voyage attend son examen, l'échec
+      // est **attendu** : l'offre reste en brouillon, prête, et sera
+      // publiée quand le dossier sera validé. Le signaler comme une
+      // erreur ferait croire à un échec sur un parcours qui a abouti.
+      await publishCapacity(capacite.id).catch(() => undefined);
+
       router.push(`/trips/${trip.id}`);
     } catch (error) {
       setErrors({
@@ -314,7 +323,9 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
       }}
       footnote={
         errors.global ? (
-          <p className="text-sm text-destructive">{errors.global}</p>
+          <p className="text-sm text-error" role="alert">
+            {errors.global}
+          </p>
         ) : undefined
       }
     >

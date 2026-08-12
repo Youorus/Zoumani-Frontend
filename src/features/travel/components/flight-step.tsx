@@ -5,7 +5,8 @@ import { useState } from "react";
 import { DateField } from "@/components/ui/date-field";
 
 import { lookupFlight } from "../api/travel-client";
-import type { Airport, FlightLookup } from "../types/travel.types";
+import type { Airline, Airport, FlightLookup } from "../types/travel.types";
+import { AirlineField } from "./airline-field";
 import { AirportField } from "./airport-field";
 import { WizardShell } from "./wizard-shell";
 
@@ -42,17 +43,22 @@ interface FlightStepProps {
 export function FlightStep({ onConfirmed }: FlightStepProps) {
   const [origin, setOrigin] = useState<Airport | null>(null);
   const [destination, setDestination] = useState<Airport | null>(null);
-  const [airlineCode, setAirlineCode] = useState("");
+  const [airline, setAirline] = useState<Airline | null>(null);
+  const [airlineFallback, setAirlineFallback] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
   const [departureDate, setDepartureDate] = useState("");
   const [lookup, setLookup] = useState<FlightLookup | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
 
+  // Le code retenu : celui de la compagnie choisie, ou la frappe brute
+  // quand le référentiel ne la connaît pas.
+  const codeCompagnie = (airline?.iata ?? airlineFallback).trim().toUpperCase();
+
   const complet =
     origin !== null &&
     destination !== null &&
-    airlineCode.trim().length >= 2 &&
+    codeCompagnie.length >= 2 &&
     flightNumber.trim().length >= 1 &&
     departureDate !== "";
 
@@ -74,7 +80,7 @@ export function FlightStep({ onConfirmed }: FlightStepProps) {
     setFailure(null);
     try {
       const resultat = await lookupFlight({
-        airlineCode: airlineCode.trim().toUpperCase(),
+        airlineCode: codeCompagnie,
         flightNumber: flightNumber.trim(),
         departureDate,
         origin: origin.iata,
@@ -100,7 +106,7 @@ export function FlightStep({ onConfirmed }: FlightStepProps) {
     onConfirmed({
       origin,
       destination,
-      airlineCode: airlineCode.trim().toUpperCase(),
+      airlineCode: codeCompagnie,
       flightNumber: flightNumber.trim(),
       departureDate,
       lookup,
@@ -145,22 +151,19 @@ export function FlightStep({ onConfirmed }: FlightStepProps) {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium" htmlFor="airline">
-              Compagnie
-            </label>
-            <input
-              id="airline"
-              value={airlineCode}
-              maxLength={3}
-              placeholder="AF"
-              onChange={(event) => {
-                setAirlineCode(event.target.value.toUpperCase());
-                setLookup(null);
-              }}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 font-mono uppercase"
-            />
-          </div>
+          <AirlineField
+            value={airline}
+            onChange={(choisie) => {
+              setAirline(choisie);
+              setLookup(null);
+            }}
+            fallbackCode={airlineFallback}
+            onFallbackChange={(code) => {
+              setAirlineFallback(code);
+              setAirline(null);
+              setLookup(null);
+            }}
+          />
           <div>
             <label className="mb-1.5 block text-sm font-medium" htmlFor="flight">
               Numéro de vol
@@ -223,7 +226,7 @@ export function FlightStep({ onConfirmed }: FlightStepProps) {
         )}
 
         {lookup?.outcome === "not_found" && (
-          <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm">
+          <div className="rounded-lg border border-error/40 bg-error/10 p-4 text-sm">
             <p className="font-medium">Ce vol n&apos;a pas été trouvé.</p>
             <p className="mt-1 text-muted-foreground">
               Vérifiez la compagnie, le numéro et le sens du trajet. Un vol aller et son

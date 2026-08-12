@@ -86,7 +86,11 @@ export function StepWeight({ value, onChange, error }: StepWeightProps) {
         <span className="shrink-0 text-muted-foreground">kg</span>
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && (
+        <p className="text-sm text-error" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

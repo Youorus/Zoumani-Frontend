@@ -81,7 +81,11 @@ export function StepCategories({
         })}
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && (
+        <p className="text-sm text-error" role="alert">
+          {error}
+        </p>
+      )}
 
       <details className="rounded-xl border border-border px-4 py-3">
         <summary className="cursor-pointer text-sm text-muted-foreground">

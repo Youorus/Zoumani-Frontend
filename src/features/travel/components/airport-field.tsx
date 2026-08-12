@@ -83,7 +83,7 @@ export function AirportField({
           onFocus={() => setIsOpen(true)}
           className={cn(
             "w-full rounded-lg border bg-background px-3 py-2.5",
-            error ? "border-destructive" : "border-border",
+            error ? "border-error" : "border-border",
           )}
         />
       )}
@@ -120,7 +120,11 @@ export function AirportField({
       {isSearching && !value && (
         <p className="mt-1 text-xs text-muted-foreground">Recherche…</p>
       )}
-      {error && <p className="mt-1 text-sm text-destructive">{error}</p>}
+      {error && (
+        <p className="mt-1 text-sm text-error" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

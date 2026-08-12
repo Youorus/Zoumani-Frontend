@@ -7,6 +7,7 @@ import {
   toCatalog,
   toFlightLookup,
   toOffer,
+  type Airline,
   type Airport,
   type Capacity,
   type CategoryOffer,
@@ -66,6 +67,28 @@ export async function searchAirports(
     signal,
   });
   return (await unwrap(response)) as RawAirport[] as Airport[];
+}
+
+/**
+ * Suggère des compagnies pour une frappe.
+ *
+ * Cherche par **nom** autant que par code : presque personne ne connaît
+ * « AF » de tête, mais tout le monde sait dire « Air France ».
+ */
+export async function searchAirlines(
+  query: string,
+  signal?: AbortSignal,
+): Promise<Airline[]> {
+  if (query.trim().length < 2) {
+    return [];
+  }
+  const response = await fetch(
+    `${PROXY}/airports/airlines?q=${encodeURIComponent(query)}`,
+    {
+      signal,
+    },
+  );
+  return (await unwrap(response)) as Airline[];
 }
 
 /**

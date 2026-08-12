@@ -21,6 +21,15 @@ export interface Airport {
   label: string;
 }
 
+/** Une compagnie aérienne, telle que le référentiel la rend. */
+export interface Airline {
+  iata: string;
+  name: string;
+  country: string;
+  /** Libellé prêt à afficher : `Air France (AF)`. */
+  label: string;
+}
+
 /**
  * Ce que la consultation du vol a établi.
  *

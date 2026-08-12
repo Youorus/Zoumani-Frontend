@@ -88,7 +88,7 @@ export function StepPricing({
               })}
               <div
                 className={`flex w-[5.5rem] shrink-0 items-center gap-1 rounded-lg border px-2.5 py-2 ${
-                  errors[category.code] ? "border-destructive" : "border-border"
+                  errors[category.code] ? "border-error" : "border-border"
                 }`}
               >
                 <input
@@ -109,7 +109,9 @@ export function StepPricing({
               </p>
             )}
             {errors[category.code] && (
-              <p className="mt-2 text-xs text-destructive">{errors[category.code]}</p>
+              <p className="mt-2 text-xs text-error" role="alert">
+                {errors[category.code]}
+              </p>
             )}
           </div>
         );

@@ -123,7 +123,11 @@ export function StepReview({
 
       <AttestationField accepted={attestation.accepted} onChange={onAttestationChange} />
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && (
+        <p className="text-sm text-error" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
