@@ -2,17 +2,32 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { VerificationStage } from "@/features/verification/types/verification.types";
 
-import { declareTrip, offerCapacity, submitTrip } from "../api/travel-client";
-import type { Airport, FlightLookup } from "../types/travel.types";
-import { CapacityStep, type CapacitySelection } from "./capacity-step";
+import {
+  declareTrip,
+  fetchCatalog,
+  fetchLastPrices,
+  offerCapacity,
+  submitTrip,
+} from "../api/travel-client";
+import {
+  fromMinorUnits,
+  toMinorUnits,
+  type Airport,
+  type Catalog,
+  type FlightLookup,
+} from "../types/travel.types";
 import { FlightStep } from "./flight-step";
+import { StepCategories } from "./step-categories";
+import { StepPricing } from "./step-pricing";
+import { StepReview } from "./step-review";
+import { StepWeight } from "./step-weight";
+import { WizardShell } from "./wizard-shell";
 
 interface CreateTripViewProps {
-  /** L'étape du dossier d'identité, lue côté serveur. */
   stage: VerificationStage;
 }
 
@@ -25,39 +40,115 @@ interface FlightChoice {
   lookup: FlightLookup;
 }
 
+const TOTAL_STEPS = 5;
+const DEVISE = "EUR";
+const POIDS_MIN = 0.5;
+const POIDS_MAX = 64;
+
 /**
  * Le parcours de publication d'un voyage.
  *
+ * ═══ Cinq écrans courts, pas deux longs ═══
+ *
+ * C'est le cœur du produit : l'endroit où un voyageur décide de rendre
+ * ses bagages disponibles. Chaque écran pose **une** question et tient
+ * sans défilement. Revenir en arrière ne perd jamais rien — l'état vit
+ * ici, pas dans les composants d'étape, et c'est ce qui rend la
+ * navigation libre.
+ *
  * ═══ Le garde-fou est côté serveur ═══
  *
- * L'écran d'invitation à vérifier son identité n'est **pas** une
- * protection : c'est une courtoisie, qui évite de remplir un formulaire
- * pour se le voir refuser à l'envoi. L'autorisation réelle est
- * l'exigence d'un voyage vérifié, appliquée par l'API. Traiter cet écran
- * comme une sécurité reviendrait à protéger une porte en cachant sa
- * poignée.
- *
- * ═══ Deux étapes, une intention ═══
- *
- * Le vol d'abord, parce qu'il conditionne tout : un vol introuvable ne
- * mérite pas qu'on saisisse dix tarifs. La capacité ensuite.
+ * L'invitation à vérifier son identité évite de remplir un formulaire
+ * pour se le voir refuser à l'envoi. Ce n'est pas une protection :
+ * l'autorisation réelle est l'exigence d'un voyage vérifié, appliquée
+ * par l'API.
  */
 export function CreateTripView({ stage }: CreateTripViewProps) {
   const router = useRouter();
+  const [step, setStep] = useState(1);
   const [flight, setFlight] = useState<FlightChoice | null>(null);
+  const [catalog, setCatalog] = useState<Catalog | null>(null);
+  const [weight, setWeight] = useState("");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [prices, setPrices] = useState<Record<string, string>>({});
+  const [remembered, setRemembered] = useState<string[]>([]);
+  const [attestation, setAttestation] = useState({ accepted: false, version: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [failure, setFailure] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (stage !== "verifie") {
+      return;
+    }
+    let vivant = true;
+
+    void Promise.all([fetchCatalog(), fetchLastPrices().catch(() => [])]).then(
+      ([catalogue, derniers]) => {
+        if (!vivant) {
+          return;
+        }
+        setCatalog(catalogue);
+
+        // On ne reporte que les catégories encore au catalogue : une
+        // catégorie retirée depuis le dernier voyage ne doit pas
+        // réapparaître par la porte de la mémoire.
+        const connues = new Set(catalogue.categories.map((c) => c.code));
+        const repris: Record<string, string> = {};
+        for (const offre of derniers) {
+          if (connues.has(offre.categoryCode)) {
+            repris[offre.categoryCode] = fromMinorUnits(offre.priceMinor);
+          }
+        }
+        setPrices(repris);
+        setRemembered(Object.keys(repris));
+        setSelected(Object.keys(repris));
+      },
+    );
+
+    return () => {
+      vivant = false;
+    };
+  }, [stage]);
 
   if (stage !== "verifie") {
     return <InvitationAVerifier stage={stage} />;
   }
 
-  async function publier(selection: CapacitySelection) {
-    if (!flight) {
+  const choisies = (catalog?.categories ?? []).filter((c) => selected.includes(c.code));
+
+  function toggle(code: string) {
+    setSelected((courant) =>
+      courant.includes(code) ? courant.filter((c) => c !== code) : [...courant, code],
+    );
+  }
+
+  function poidsValide(): boolean {
+    const kg = Number.parseFloat(weight.replace(",", "."));
+    return Number.isFinite(kg) && kg >= POIDS_MIN && kg <= POIDS_MAX;
+  }
+
+  function tarifsValides(): Record<string, string> {
+    const trouves: Record<string, string> = {};
+    for (const category of choisies) {
+      const minor = toMinorUnits(prices[category.code] ?? "");
+      if (minor === null || minor < 1) {
+        trouves[category.code] = "Indiquez un tarif.";
+      }
+    }
+    return trouves;
+  }
+
+  async function publier() {
+    if (!flight || !catalog) {
       return;
     }
+    if (!attestation.accepted || !attestation.version) {
+      setErrors({ attestation: "Confirmez votre engagement pour continuer." });
+      return;
+    }
+
     setIsSubmitting(true);
-    setFailure(null);
+    setErrors({});
     try {
       // L'heure vient de la compagnie quand elle est connue. À défaut —
       // vérification indisponible — on retient midi UTC : une heure
@@ -80,19 +171,22 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
         },
       ]);
 
-      await offerCapacity(trip.id, selection);
+      await offerCapacity(trip.id, {
+        totalWeightKg: Number.parseFloat(weight.replace(",", ".")),
+        currency: DEVISE,
+        offers: choisies.map((category) => ({
+          categoryCode: category.code,
+          priceMinor: toMinorUnits(prices[category.code] ?? "") ?? 0,
+        })),
+        notes: null,
+      });
 
-      // La transmission vient en dernier : à partir d'ici le voyage est
-      // figé, et une offre incomplète y resterait enfermée.
-      //
-      // Elle exige une preuve de billet, que ce parcours ne demande pas
-      // encore. L'échec correspondant n'est donc **pas** une erreur : le
-      // voyage et l'offre sont enregistrés, il ne manque que le
-      // justificatif. On le dit, et l'on emmène la personne là où elle
-      // le dépose — plutôt que d'afficher un message d'échec sur un
-      // travail qui a abouti.
+      // La transmission exige une preuve de billet, que ce parcours ne
+      // demande pas encore. Cet échec précis n'est donc pas une erreur :
+      // le voyage et l'offre sont enregistrés, il ne manque que le
+      // justificatif, et l'on emmène la personne là où elle le dépose.
       try {
-        await submitTrip(trip.id, selection.attestationVersion);
+        await submitTrip(trip.id, attestation.version);
       } catch (error) {
         if (!estPreuveManquante(error)) {
           throw error;
@@ -100,79 +194,159 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
       }
       router.push(`/trips/${trip.id}`);
     } catch (error) {
-      setFailure(
-        error instanceof Error
-          ? error.message
-          : "L'enregistrement n'a pas abouti. Réessayez.",
-      );
+      setErrors({
+        global:
+          error instanceof Error
+            ? error.message
+            : "L'enregistrement n'a pas abouti. Réessayez.",
+      });
       setIsSubmitting(false);
     }
   }
 
+  const retour = step > 1 ? () => setStep(step - 1) : undefined;
+
+  if (step === 1 || !flight) {
+    return (
+      <FlightStep
+        onConfirmed={(choix) => {
+          setFlight(choix);
+          setStep(2);
+        }}
+      />
+    );
+  }
+
+  if (step === 2) {
+    return (
+      <WizardShell
+        step={2}
+        total={TOTAL_STEPS}
+        title="Combien de place libérez-vous ?"
+        hint="Le poids que vous acceptez de transporter pour d'autres."
+        onBack={retour}
+        cta={{
+          label: "Continuer",
+          disabled: !poidsValide(),
+          onClick: () => setStep(3),
+        }}
+      >
+        <StepWeight value={weight} onChange={setWeight} error={errors.weight} />
+      </WizardShell>
+    );
+  }
+
+  if (step === 3) {
+    return (
+      <WizardShell
+        step={3}
+        total={TOTAL_STEPS}
+        title="Que transportez-vous ?"
+        hint="Choisissez ce que vous acceptez. Vous fixerez les tarifs juste après."
+        onBack={retour}
+        cta={{
+          label:
+            selected.length === 0
+              ? "Choisissez au moins une catégorie"
+              : `Continuer avec ${selected.length} catégorie${selected.length > 1 ? "s" : ""}`,
+          disabled: selected.length === 0,
+          onClick: () => setStep(4),
+        }}
+      >
+        {catalog ? (
+          <StepCategories
+            categories={catalog.categories}
+            prohibited={catalog.prohibited}
+            selected={selected}
+            onToggle={toggle}
+          />
+        ) : (
+          <p className="text-sm text-muted-foreground">Chargement…</p>
+        )}
+      </WizardShell>
+    );
+  }
+
+  if (step === 4) {
+    return (
+      <WizardShell
+        step={4}
+        total={TOTAL_STEPS}
+        title="Vos tarifs"
+        hint="Ce que vous demandez pour chaque catégorie."
+        onBack={retour}
+        cta={{
+          label: "Continuer",
+          onClick: () => {
+            const trouves = tarifsValides();
+            setErrors(trouves);
+            if (Object.keys(trouves).length === 0) {
+              setStep(5);
+            }
+          },
+        }}
+      >
+        <StepPricing
+          categories={choisies}
+          prices={prices}
+          remembered={remembered}
+          errors={errors}
+          onChange={(code, valeur) =>
+            setPrices((courant) => ({ ...courant, [code]: valeur }))
+          }
+        />
+      </WizardShell>
+    );
+  }
+
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-6 p-4 sm:p-6">
-      <header>
-        <h1 className="text-2xl font-semibold">Proposer un voyage</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {flight
-            ? "Indiquez ce que vous acceptez de transporter, et à quel tarif."
-            : "Commençons par votre vol."}
-        </p>
-      </header>
-
-      <ol className="flex gap-2 text-sm" aria-label="Étapes">
-        <Etape numero={1} libelle="Votre vol" actif={!flight} fait={flight !== null} />
-        <Etape numero={2} libelle="Votre capacité" actif={flight !== null} fait={false} />
-      </ol>
-
-      {flight === null ? (
-        <FlightStep onConfirmed={setFlight} />
-      ) : (
-        <>
-          <button
-            type="button"
-            onClick={() => setFlight(null)}
-            className="text-sm text-muted-foreground underline"
-          >
-            ← Modifier mon vol
-          </button>
-          <CapacityStep onSubmit={publier} isSubmitting={isSubmitting} />
-        </>
-      )}
-
-      {failure && (
-        <p className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
-          {failure}
-        </p>
-      )}
-    </div>
+    <WizardShell
+      step={5}
+      total={TOTAL_STEPS}
+      title="Vérifiez et publiez"
+      hint="Voici ce que verront les expéditeurs."
+      onBack={retour}
+      cta={{
+        label: "Publier mon voyage",
+        disabled: !attestation.accepted,
+        busy: isSubmitting,
+        onClick: publier,
+      }}
+      footnote={
+        errors.global ? (
+          <p className="text-sm text-destructive">{errors.global}</p>
+        ) : undefined
+      }
+    >
+      <StepReview
+        origin={flight.origin}
+        destination={flight.destination}
+        airlineCode={flight.airlineCode}
+        flightNumber={flight.flightNumber}
+        lookup={flight.lookup}
+        weightKg={weight}
+        categories={choisies}
+        prices={prices}
+        attestation={attestation}
+        onAttestationChange={(accepted, version) => setAttestation({ accepted, version })}
+        error={errors.attestation}
+      />
+    </WizardShell>
   );
 }
 
-function Etape({
-  numero,
-  libelle,
-  actif,
-  fait,
-}: {
-  numero: number;
-  libelle: string;
-  actif: boolean;
-  fait: boolean;
-}) {
+/**
+ * L'API dit-elle qu'il manque seulement le billet ?
+ *
+ * On teste la **raison** stable et non le message : celui-ci est rédigé
+ * pour un humain et changera, quand la raison fait partie du contrat.
+ */
+function estPreuveManquante(error: unknown): boolean {
   return (
-    <li
-      className={
-        actif || fait
-          ? "flex items-center gap-2 font-medium"
-          : "flex items-center gap-2 text-muted-foreground"
-      }
-    >
-      <span className="flex size-6 items-center justify-center rounded-full border border-current text-xs">
-        {fait ? "✓" : numero}
-      </span>
-      {libelle}
-    </li>
+    typeof error === "object" &&
+    error !== null &&
+    "reason" in error &&
+    (error as { reason?: string }).reason === "trip_proof_required"
   );
 }
 
@@ -215,26 +389,11 @@ function InvitationAVerifier({ stage }: { stage: VerificationStage }) {
       {!agir && (
         <Link
           href="/compte/identite"
-          className="inline-block rounded-lg bg-primary px-4 py-2.5 font-medium text-primary-foreground"
+          className="inline-block rounded-xl bg-primary px-4 py-3 font-medium text-primary-foreground"
         >
           {stage === "absent" ? "Vérifier mon identité" : "Reprendre ma vérification"}
         </Link>
       )}
     </div>
-  );
-}
-
-/**
- * L'API dit-elle qu'il manque seulement le billet ?
- *
- * On teste la **raison** stable et non le message : celui-ci est rédigé
- * pour un humain et changera, quand la raison fait partie du contrat.
- */
-function estPreuveManquante(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "reason" in error &&
-    (error as { reason?: string }).reason === "trip_proof_required"
   );
 }
