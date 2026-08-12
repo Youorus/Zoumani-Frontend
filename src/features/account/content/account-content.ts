@@ -90,6 +90,7 @@ const accountFr = {
     messages: "Messages",
     profile: "Mon profil",
     payments: "Paiements et remboursements",
+    admin: "Administration",
     signOut: "Me déconnecter",
   },
 
@@ -170,7 +171,8 @@ export const accountContent = {
       messages: "Messages",
       profile: "My profile",
       payments: "Payments and refunds",
-      signOut: "Sign out",
+      admin: "Administration",
+    signOut: "Sign out",
     },
 
     footer: {

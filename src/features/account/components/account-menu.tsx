@@ -6,6 +6,7 @@ import {
   MessageCircle,
   Package,
   Plane,
+  ShieldCheck,
   UserRound,
 } from "lucide-react";
 import Link from "next/link";
@@ -120,6 +121,22 @@ export function AccountMenu({
             </Link>
           </DropdownMenuItem>
         ))}
+
+        {/* Visible seulement pour un opérateur. Afficher une entrée
+            qui mène à une redirection serait une fausse promesse. */}
+        {user.permissions.some((permission) =>
+          permission.startsWith("identity_verifications:"),
+        ) ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/admin" className="flex items-center gap-3">
+                <ShieldCheck className="size-4 text-primary" aria-hidden="true" />
+                {menu.admin}
+              </Link>
+            </DropdownMenuItem>
+          </>
+        ) : null}
 
         <DropdownMenuSeparator />
         <DropdownMenuItem
