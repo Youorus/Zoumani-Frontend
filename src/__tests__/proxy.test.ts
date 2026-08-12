@@ -116,3 +116,25 @@ describe("la porte d'entrée pour qui est déjà entré", () => {
     expect(response.headers.get("location")).toBeNull();
   });
 });
+
+describe("l'accueil public, pour qui est déjà connecté", () => {
+  it("mène directement à son espace", () => {
+    // L'accueil vend la plateforme à qui ne la connaît pas. Quelqu'un
+    // qui a un compte n'a rien à y lire, et devrait ensuite chercher son
+    // espace.
+    const response = proxy(requestFor("/", true));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toContain("/compte");
+  });
+
+  it("laisse l'accueil aux visiteurs", () => {
+    expect(proxy(requestFor("/", false)).headers.get("location")).toBeNull();
+  });
+
+  it("n'intercepte que la racine exacte", () => {
+    // Les ancres de l'accueil — aide, conditions — restent atteignables :
+    // c'est vers elles que pointe le pied de page de l'espace.
+    expect(proxy(requestFor("/search", true)).headers.get("location")).toBeNull();
+  });
+});

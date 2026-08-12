@@ -70,6 +70,22 @@ export function proxy(request: NextRequest): NextResponse {
    * la page renvoie vers la connexion — un détour d'une seconde, contre
    * un appel systématique pour tout le monde.
    */
+  /*
+   * L'accueil public n'a rien à dire à quelqu'un de connecté.
+   *
+   * Il vend la plateforme à qui ne la connaît pas : promesse, garanties,
+   * « comment ça marche ». Quelqu'un qui a déjà un compte y arrive par
+   * son signet ou par le logo, et doit ensuite chercher son espace. On
+   * l'y emmène directement.
+   *
+   * Le renvoi ne vaut que pour la racine exacte : les ancres de la page
+   * — aide, conditions — restent atteignables, et c'est vers elles que
+   * pointe le pied de page de l'espace.
+   */
+  if (aUneSession && pathname === "/") {
+    return NextResponse.redirect(new URL(HOME_AFTER_LOGIN, request.url));
+  }
+
   if (aUneSession && pathname === LOGIN_PATH) {
     const voulue = request.nextUrl.searchParams.get("suite");
     const destination = new URL(
