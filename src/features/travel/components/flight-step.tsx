@@ -58,6 +58,14 @@ export function FlightStep({ onConfirmed }: FlightStepProps) {
 
   const memeAeroport = origin !== null && origin.iata === destination?.iata;
 
+  // Une date passée est refusée **avant** d'interroger la source. Elle
+  // reviendrait « non vérifiable », ce qui est vrai mais inutile : la
+  // personne verrait un avertissement sur le vol alors que le problème
+  // est sa date, et continuerait vers un voyage que le serveur refusera
+  // à la transmission.
+  const dansLePasse =
+    departureDate !== "" && departureDate < new Date().toISOString().slice(0, 10);
+
   async function verifier() {
     if (!complet || !origin || !destination) {
       return;
@@ -178,6 +186,11 @@ export function FlightStep({ onConfirmed }: FlightStepProps) {
               ariaLabel="Date de départ"
               value={departureDate}
               minYear={new Date().getFullYear()}
+              // Sans borne haute, le champ retombait sur l'année
+              // courante et interdisait de déclarer un vol de janvier
+              // prochain. Deux ans couvrent tout ce qu'une compagnie
+              // publie.
+              maxYear={new Date().getFullYear() + 2}
               onChange={(valeur) => {
                 setDepartureDate(valeur);
                 setLookup(null);

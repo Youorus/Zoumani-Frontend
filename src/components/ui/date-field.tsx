@@ -34,6 +34,11 @@ import { cn } from "@/lib/utils/cn";
 const JOURS = ["L", "M", "M", "J", "V", "S", "D"] as const;
 
 /** Rend `AAAA-MM-JJ`, le seul format que l'API accepte. */
+/** Ramène une valeur dans un intervalle. */
+function borner(valeur: number, minimum: number, maximum: number): number {
+  return Math.min(Math.max(valeur, minimum), maximum);
+}
+
 function versIso(annee: number, mois: number, jour: number): string {
   return `${annee}-${String(mois + 1).padStart(2, "0")}-${String(jour).padStart(2, "0")}`;
 }
@@ -74,19 +79,34 @@ export function DateField({
   const [ouvert, setOuvert] = useState(false);
   const choisie = value ? new Date(`${value}T00:00:00`) : null;
 
-  const aujourdhui = new Date();
+  // Figé une fois : recréer la date à chaque rendu changerait l'identité
+  // des dépendances des `useMemo` qui la lisent, et les recalculerait
+  // sans raison.
+  const [aujourdhui] = useState(() => new Date());
+
+  const { debut, fin } = useMemo(() => {
+    const borneHaute = maxYear ?? aujourdhui.getFullYear();
+    return { debut: minYear ?? borneHaute - 100, fin: borneHaute };
+  }, [minYear, maxYear, aujourdhui]);
+
   const [curseur, setCurseur] = useState(() => ({
-    annee: choisie?.getFullYear() ?? aujourdhui.getFullYear() - 30,
-    mois: choisie?.getMonth() ?? 0,
+    // **Borné à la plage autorisée.** Sans ce garde-fou, l'ouverture par
+    // défaut — trente ans en arrière, ce que veut une date de naissance —
+    // sortait des bornes d'un champ qui n'accepte que le futur : le
+    // sélecteur affichait une année absente de ses propres options, et
+    // la date composée partait avec elle. Un vol se retrouvait daté de
+    // 1996, et la vérification échouait sans que rien n'explique
+    // pourquoi.
+    annee: borner(choisie?.getFullYear() ?? aujourdhui.getFullYear() - 30, debut, fin),
+    mois: choisie?.getMonth() ?? aujourdhui.getMonth(),
   }));
 
-  const annees = useMemo(() => {
-    const fin = maxYear ?? aujourdhui.getFullYear();
-    const debut = minYear ?? fin - 100;
+  const annees = useMemo(
     // Décroissantes : une date de naissance est plus près de la fin de
     // la liste que du début, et un titre de séjour expire bientôt.
-    return Array.from({ length: fin - debut + 1 }, (_, index) => fin - index);
-  }, [minYear, maxYear, aujourdhui]);
+    () => Array.from({ length: fin - debut + 1 }, (_, index) => fin - index),
+    [debut, fin],
+  );
 
   const nomsDeMois = useMemo(
     () =>
