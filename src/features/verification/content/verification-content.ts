@@ -30,6 +30,14 @@ const fr = {
     ],
   },
 
+  steps: {
+    identity: "Qui êtes-vous",
+    document: "Votre pièce",
+    of: "sur",
+    next: "Continuer",
+    back: "Retour",
+  },
+
   identity: {
     title: "Votre identité",
     hint: "Exactement comme sur votre pièce d'identité, accents compris.",
@@ -38,6 +46,8 @@ const fr = {
     birthDate: "Date de naissance",
     nationality: "Nationalité",
     country: "Pays de résidence",
+    countrySearch: "Chercher un pays",
+    countryEmpty: "Aucun pays ne correspond.",
     address: "Adresse",
     addressHint:
       "Où vous vivez aujourd'hui. Un quartier et un point de repère suffisent s'il n'y a ni numéro ni code postal.",
@@ -127,6 +137,14 @@ const en: typeof fr = {
     ],
   },
 
+  steps: {
+    identity: "Who you are",
+    document: "Your document",
+    of: "of",
+    next: "Continue",
+    back: "Back",
+  },
+
   identity: {
     title: "Your identity",
     hint: "Exactly as it appears on your document, accents included.",
@@ -135,6 +153,8 @@ const en: typeof fr = {
     birthDate: "Date of birth",
     nationality: "Nationality",
     country: "Country of residence",
+    countrySearch: "Search a country",
+    countryEmpty: "No matching country.",
     address: "Address",
     addressHint:
       "Where you live today. A neighbourhood and a landmark are enough if there is no street number or postcode.",

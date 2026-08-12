@@ -76,6 +76,11 @@ const accountFr = {
     badgeRejected: "Vérification refusée",
   },
 
+  theme: {
+    toDark: "Passer en thème sombre",
+    toLight: "Passer en thème clair",
+  },
+
   notifications: {
     label: "Mes notifications",
     title: "Notifications",
@@ -155,6 +160,11 @@ export const accountContent = {
       rejectedAction: "Reopen my file",
       badgeVerified: "Verified account",
       badgeRejected: "Verification declined",
+    },
+
+    theme: {
+      toDark: "Switch to dark theme",
+      toLight: "Switch to light theme",
     },
 
     notifications: {

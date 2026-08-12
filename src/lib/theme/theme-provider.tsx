@@ -27,9 +27,23 @@ function getInitialBrand(): BrandTheme {
   return storedBrand === "zoumani-v2" ? storedBrand : "zoumani";
 }
 
+/**
+ * Le thème au tout premier chargement.
+ *
+ * **Clair par défaut, et non « comme le système ».** Zoumani est une
+ * marque claire : le blanc chaud, l'orange, le sable. Quelqu'un dont le
+ * téléphone est en mode sombre — c'est le réglage d'usine sur beaucoup
+ * d'appareils Android — découvrirait la plateforme dans des couleurs qui
+ * ne sont pas les siennes, sans jamais savoir qu'une autre version
+ * existe.
+ *
+ * Le choix reste entier : la bascule est dans l'en-tête, et une
+ * préférence exprimée est mémorisée pour toujours. On décide seulement
+ * de ce que voit quelqu'un qui n'a rien demandé.
+ */
 function getInitialColorScheme(): ColorScheme {
   if (typeof window === "undefined") {
-    return "system";
+    return "light";
   }
 
   const storedColorScheme = window.localStorage.getItem(COLOR_SCHEME_STORAGE_KEY);
@@ -38,7 +52,7 @@ function getInitialColorScheme(): ColorScheme {
     return storedColorScheme;
   }
 
-  return "system";
+  return "light";
 }
 
 function resolveSystemColorScheme() {

@@ -11,6 +11,7 @@ import type { VerificationStage } from "@/features/verification/types/verificati
 import { AccountCopyProvider } from "./account-copy-provider";
 import { AccountMenu } from "./account-menu";
 import { NotificationBell } from "./notification-bell";
+import { ThemeToggle } from "./theme-toggle";
 
 /**
  * Le cadre de l'espace personnel : un en-tête, la page, un pied discret.
@@ -68,18 +69,25 @@ export function AccountShell({
                 une cible d'au moins quarante pixels : c'est le minimum pour
                 être atteint du pouce, en marchant, à bout de bras. */}
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Masquée sur les très petits écrans : trois cibles de
+                  quarante pixels et un logo ne tiennent pas côte à côte
+                  sur un téléphone étroit, et c'est le compte qui doit
+                  rester atteignable. */}
+              <span className="hidden sm:inline-flex">
+                <ThemeToggle label={copy.theme} />
+              </span>
               <NotificationBell />
               <AccountMenu user={user} stage={stage} />
             </div>
           </div>
         </header>
 
-        <main className="flex-1 py-8 sm:py-10">{children}</main>
+        <main className="flex-1 py-5 sm:py-10">{children}</main>
 
-        <footer className="border-t border-border/70 py-6">
-          <div className="mx-auto flex w-full max-w-[1492px] flex-col gap-3 px-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
+        <footer className="border-t border-border/70 py-4 sm:py-6">
+          <div className="mx-auto flex w-full max-w-[1492px] flex-col-reverse gap-2 px-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-8 sm:text-sm lg:px-12">
             <p className="m-0">{copy.footer.rights}</p>
-            <nav className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <nav className="flex flex-wrap items-center gap-x-4 gap-y-1">
               <Link href="/#help" className="focus-ring rounded hover:text-foreground">
                 {copy.footer.help}
               </Link>

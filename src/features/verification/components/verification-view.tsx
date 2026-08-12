@@ -2,6 +2,7 @@
 
 import {
   AlertCircle,
+  ArrowRight,
   BadgeCheck,
   Clock,
   LoaderCircle,
@@ -13,6 +14,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { DateField } from "@/components/ui/date-field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,6 +27,8 @@ import {
   type VerificationFiles,
 } from "../hooks/use-verification-form";
 import type { Verification, VerificationRequest } from "../types/verification.types";
+import { CountrySelect } from "@/features/auth/components/country-select";
+
 import { CorrectionsView } from "./corrections-view";
 import { FileField } from "./file-field";
 
@@ -90,7 +94,12 @@ export function VerificationView({
   }
 
   return (
-    <Formulaire copy={copy} verification={verification} refuse={stage === "refuse"} />
+    <Formulaire
+      copy={copy}
+      verification={verification}
+      refuse={stage === "refuse"}
+      language={language}
+    />
   );
 }
 
@@ -98,17 +107,30 @@ function Formulaire({
   copy,
   verification,
   refuse,
+  language,
 }: {
   copy: (typeof verificationContent)["fr"];
   verification: Verification | null;
   refuse: boolean;
+  language: HomeLanguage;
 }) {
   const router = useRouter();
   const { busy, error, send } = useVerificationForm();
 
-  // Prérempli avec ce qui a déjà été déclaré : après un refus, ressaisir
-  // six champs pour n'en corriger qu'un décourage plus que le refus
-  // lui-même.
+  /*
+   * Deux temps, un écran chacun.
+   *
+   * Tout demander d'un coup produisait une page de deux mètres : six
+   * champs, trois fichiers, une note de confidentialité. Sur un
+   * téléphone, on ne voit jamais le bouton d'envoi, on ne sait pas
+   * combien il reste, et l'on referme.
+   *
+   * Le découpage suit la logique de la personne, pas celle du serveur :
+   * « qui je suis », puis « ce que je montre ». Deux questions qu'on se
+   * pose l'une après l'autre, et chacune tient sans défilement.
+   */
+  const [temps, setTemps] = useState<1 | 2>(1);
+
   const [draft, setDraft] = useState({
     legalFirstName: verification?.legalFirstName ?? "",
     legalLastName: verification?.legalLastName ?? "",
@@ -121,9 +143,6 @@ function Formulaire({
     documentType: "passport",
     front: null,
     back: null,
-    // Prérempli avec la nationalité : dans l'immense majorité des cas,
-    // c'est le pays qui a délivré la pièce. Reste modifiable pour un
-    // titre de séjour, où les deux diffèrent par définition.
     issuingCountry: verification?.nationality ?? "",
     expiresOn: "",
     selfie: null,
@@ -131,13 +150,18 @@ function Formulaire({
   const [localError, setLocalError] = useState<string | null>(null);
 
   const besoinDuVerso = files.documentType !== "passport";
+  const identiteComplete =
+    draft.legalFirstName.trim() !== "" &&
+    draft.legalLastName.trim() !== "" &&
+    draft.dateOfBirth !== "" &&
+    draft.nationality.length === 2 &&
+    draft.countryOfResidence.length === 2 &&
+    draft.residentialAddress.trim() !== "";
 
   async function envoyer(event: React.FormEvent) {
     event.preventDefault();
     setLocalError(null);
 
-    // Contrôlés ici parce que le navigateur ne sait pas exprimer « le
-    // verso n'est requis que pour certaines pièces ».
     if (!files.front) {
       setLocalError(copy.errors.missingDocument);
       return;
@@ -156,111 +180,95 @@ function Formulaire({
     }
 
     if (await send(draft, files)) {
-      // `refresh` et non `push` : la page se recharge côté serveur avec
-      // le nouvel état, et le badge de l'en-tête suit dans le même
-      // mouvement. Sans cela, l'avatar afficherait encore l'ancien état.
       router.refresh();
     }
   }
 
   return (
-    <form onSubmit={envoyer} noValidate className="mx-auto w-full max-w-2xl">
-      <header className="mb-6">
-        <h1 className="font-display text-2xl text-foreground sm:text-3xl">
+    <form onSubmit={envoyer} noValidate className="mx-auto w-full max-w-xl">
+      <header className="mb-3 sm:mb-4">
+        <p className="text-xs font-semibold tracking-wide text-primary uppercase">
+          {temps} {copy.steps.of} 2 ·{" "}
+          {temps === 1 ? copy.steps.identity : copy.steps.document}
+        </p>
+        <h1 className="mt-0.5 font-display text-lg text-foreground sm:text-2xl">
           {refuse ? copy.rejected.title : copy.title}
         </h1>
-        <p className="mt-2 leading-6 text-muted-foreground">
-          {refuse ? copy.rejected.body : copy.intro}
-        </p>
+        {refuse && verification?.rejectionReason ? (
+          <p
+            className="mt-3 flex items-start gap-2 rounded-xl bg-error/10 p-3 text-sm leading-5"
+            role="alert"
+          >
+            <ShieldAlert
+              className="mt-0.5 size-4 shrink-0 text-error"
+              aria-hidden="true"
+            />
+            <span>
+              <strong>{copy.rejected.reasonLabel} : </strong>
+              {verification.rejectionReason}
+            </span>
+          </p>
+        ) : (
+          // L'indication disparaît sous 400 px : sur un écran de 667 px
+          // de haut, deux lignes de conseil coûtent le bouton d'envoi.
+          <p className="mt-1 hidden text-sm text-muted-foreground min-[400px]:block">
+            {temps === 1 ? copy.identity.hint : copy.document.hint}
+          </p>
+        )}
       </header>
 
-      {refuse && verification?.rejectionReason ? (
-        <p
-          className="mb-6 flex items-start gap-3 rounded-xl bg-error/10 p-4 text-sm leading-6"
-          role="alert"
-        >
-          <ShieldAlert className="mt-0.5 size-5 shrink-0 text-error" aria-hidden="true" />
-          <span>
-            <strong className="block">{copy.rejected.reasonLabel}</strong>
-            {verification.rejectionReason}
-          </span>
-        </p>
-      ) : null}
+      {temps === 1 ? (
+        <section className="panel-surface space-y-2.5 p-3 sm:p-5">
+          <div className="grid grid-cols-2 gap-3">
+            <Champ label={copy.identity.firstName}>
+              <Input
+                autoComplete="given-name"
+                value={draft.legalFirstName}
+                onChange={(e) => setDraft({ ...draft, legalFirstName: e.target.value })}
+              />
+            </Champ>
+            <Champ label={copy.identity.lastName}>
+              <Input
+                autoComplete="family-name"
+                value={draft.legalLastName}
+                onChange={(e) => setDraft({ ...draft, legalLastName: e.target.value })}
+              />
+            </Champ>
+          </div>
 
-      <section className="panel-surface mb-6 p-5">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold">
-          <Lock className="size-4 text-primary" aria-hidden="true" />
-          {copy.privacy.title}
-        </h2>
-        <ul className="space-y-1.5 text-sm leading-6 text-muted-foreground">
-          {copy.privacy.points.map((point) => (
-            <li key={point}>{point}</li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="panel-surface mb-6 p-5">
-        <h2 className="mb-1 font-display text-xl">{copy.identity.title}</h2>
-        <p className="mb-4 text-sm text-muted-foreground">{copy.identity.hint}</p>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Champ label={copy.identity.firstName}>
-            <Input
-              autoComplete="given-name"
-              value={draft.legalFirstName}
-              onChange={(e) => setDraft({ ...draft, legalFirstName: e.target.value })}
-              required
-            />
-          </Champ>
-          <Champ label={copy.identity.lastName}>
-            <Input
-              autoComplete="family-name"
-              value={draft.legalLastName}
-              onChange={(e) => setDraft({ ...draft, legalLastName: e.target.value })}
-              required
-            />
-          </Champ>
           <Champ label={copy.identity.birthDate}>
-            <Input
-              type="date"
-              autoComplete="bday"
+            <DateField
+              ariaLabel={copy.identity.birthDate}
+              locale={language}
               value={draft.dateOfBirth}
-              onChange={(e) => setDraft({ ...draft, dateOfBirth: e.target.value })}
-              required
+              onChange={(iso) => setDraft({ ...draft, dateOfBirth: iso })}
+              maxYear={new Date().getFullYear()}
             />
           </Champ>
-          <Champ label={copy.identity.nationality}>
-            <Input
-              maxLength={2}
-              placeholder="CM"
-              value={draft.nationality}
-              onChange={(e) =>
-                setDraft({
-                  ...draft,
-                  nationality: e.target.value.toUpperCase(),
-                })
-              }
-              required
-            />
-          </Champ>
-          <Champ label={copy.identity.country}>
-            <Input
-              maxLength={2}
-              placeholder="FR"
-              autoComplete="country"
-              value={draft.countryOfResidence}
-              onChange={(e) =>
-                setDraft({
-                  ...draft,
-                  countryOfResidence: e.target.value.toUpperCase(),
-                })
-              }
-              required
-            />
-          </Champ>
-        </div>
 
-        <div className="mt-4">
+          <div className="grid grid-cols-2 gap-3">
+            <Champ label={copy.identity.nationality}>
+              <CountrySelect
+                language={language}
+                value={draft.nationality}
+                onChange={(code) => setDraft({ ...draft, nationality: code })}
+                ariaLabel={copy.identity.nationality}
+                placeholder={copy.identity.countrySearch}
+                emptyText={copy.identity.countryEmpty}
+              />
+            </Champ>
+            <Champ label={copy.identity.country}>
+              <CountrySelect
+                language={language}
+                value={draft.countryOfResidence}
+                onChange={(code) => setDraft({ ...draft, countryOfResidence: code })}
+                ariaLabel={copy.identity.country}
+                placeholder={copy.identity.countrySearch}
+                emptyText={copy.identity.countryEmpty}
+              />
+            </Champ>
+          </div>
+
           <Champ label={copy.identity.address} hint={copy.identity.addressHint}>
             <Textarea
               rows={2}
@@ -268,104 +276,133 @@ function Formulaire({
               placeholder={copy.identity.addressPlaceholder}
               value={draft.residentialAddress}
               onChange={(e) => setDraft({ ...draft, residentialAddress: e.target.value })}
-              required
             />
           </Champ>
-        </div>
-      </section>
 
-      <section className="panel-surface mb-6 p-5">
-        <h2 className="mb-1 font-display text-xl">{copy.document.title}</h2>
-        <p className="mb-4 text-sm text-muted-foreground">{copy.document.hint}</p>
-
-        <Champ label={copy.document.type}>
-          <Select
-            value={files.documentType}
-            onValueChange={(value) =>
-              setFiles({
-                ...files,
-                documentType: value as DocumentType,
-                back: null,
-              })
-            }
+          <button
+            type="button"
+            disabled={!identiteComplete}
+            onClick={() => setTemps(2)}
+            className="focus-ring inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-primary-foreground shadow-soft disabled:opacity-50"
           >
-            <SelectTrigger aria-label={copy.document.type}>
-              <span>{copy.document.types[files.documentType]}</span>
-            </SelectTrigger>
-            <SelectContent>
-              {(Object.keys(copy.document.types) as DocumentType[]).map((type) => (
-                <SelectItem key={type} value={type}>
-                  {copy.document.types[type]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Champ>
-
-        <div className="mt-4">
-          <FileField
-            label={copy.document.front}
-            chooseLabel={copy.document.choose}
-            onChange={(file) => setFiles({ ...files, front: file })}
-          />
-          {besoinDuVerso ? (
-            <FileField
-              label={copy.document.back}
-              hint={copy.document.backHint}
-              chooseLabel={copy.document.choose}
-              onChange={(file) => setFiles({ ...files, back: file })}
-            />
-          ) : null}
-          <Champ label={copy.document.issuingCountry}>
-            <Input
-              maxLength={2}
-              placeholder="CM"
-              value={files.issuingCountry}
-              onChange={(e) =>
-                setFiles({
-                  ...files,
-                  issuingCountry: e.target.value.toUpperCase(),
-                })
-              }
-              required
-            />
-          </Champ>
-          <Champ label={copy.document.expiry}>
-            <Input
-              type="date"
-              value={files.expiresOn}
-              onChange={(e) => setFiles({ ...files, expiresOn: e.target.value })}
-            />
-          </Champ>
-          <div className="mt-4">
-            <FileField
-              label={copy.document.selfie}
-              hint={copy.document.selfieHint}
-              chooseLabel={copy.document.choose}
-              accept="image/*"
-              onChange={(file) => setFiles({ ...files, selfie: file })}
-            />
+            {copy.steps.next}
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </button>
+        </section>
+      ) : (
+        <section className="panel-surface space-y-2.5 p-3 sm:p-5">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Champ label={copy.document.type}>
+              <Select
+                value={files.documentType}
+                onValueChange={(value) =>
+                  setFiles({ ...files, documentType: value as DocumentType, back: null })
+                }
+              >
+                <SelectTrigger aria-label={copy.document.type}>
+                  <span>{copy.document.types[files.documentType]}</span>
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(copy.document.types) as DocumentType[]).map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {copy.document.types[type]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Champ>
+            <Champ label={copy.document.issuingCountry}>
+              <CountrySelect
+                language={language}
+                value={files.issuingCountry}
+                onChange={(code) => setFiles({ ...files, issuingCountry: code })}
+                ariaLabel={copy.document.issuingCountry}
+                placeholder={copy.identity.countrySearch}
+                emptyText={copy.identity.countryEmpty}
+              />
+            </Champ>
           </div>
-        </div>
-      </section>
 
-      {(localError ?? error) ? (
-        <p className="mb-4 flex items-center gap-2 text-sm text-error" role="alert">
-          <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
-          {localError ?? error?.message ?? copy.errors.generic}
-        </p>
-      ) : null}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FileField
+              label={copy.document.front}
+              chooseLabel={copy.document.choose}
+              onChange={(file) => setFiles({ ...files, front: file })}
+            />
+            {besoinDuVerso ? (
+              <FileField
+                label={copy.document.back}
+                chooseLabel={copy.document.choose}
+                onChange={(file) => setFiles({ ...files, back: file })}
+              />
+            ) : (
+              <Champ label={copy.document.expiry}>
+                <DateField
+                  ariaLabel={copy.document.expiry}
+                  locale={language}
+                  value={files.expiresOn}
+                  onChange={(iso) => setFiles({ ...files, expiresOn: iso })}
+                  minYear={new Date().getFullYear()}
+                  maxYear={new Date().getFullYear() + 20}
+                />
+              </Champ>
+            )}
+          </div>
 
-      <button
-        type="submit"
-        disabled={busy}
-        className="focus-ring inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 font-bold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-60 sm:w-auto"
-      >
-        {busy ? (
-          <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
-        ) : null}
-        {busy ? copy.submitting : refuse ? copy.rejected.action : copy.submit}
-      </button>
+          {besoinDuVerso ? (
+            <Champ label={copy.document.expiry}>
+              <DateField
+                ariaLabel={copy.document.expiry}
+                locale={language}
+                value={files.expiresOn}
+                onChange={(iso) => setFiles({ ...files, expiresOn: iso })}
+                minYear={new Date().getFullYear()}
+                maxYear={new Date().getFullYear() + 20}
+              />
+            </Champ>
+          ) : null}
+
+          <FileField
+            label={copy.document.selfie}
+            hint={copy.document.selfieHint}
+            chooseLabel={copy.document.choose}
+            accept="image/*"
+            onChange={(file) => setFiles({ ...files, selfie: file })}
+          />
+
+          <p className="flex items-start gap-2 text-xs leading-5 text-muted-foreground">
+            <Lock className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden="true" />
+            {copy.privacy.points[0]}
+          </p>
+
+          {(localError ?? error) ? (
+            <p className="flex items-center gap-2 text-sm text-error" role="alert">
+              <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
+              {localError ?? error?.message ?? copy.errors.generic}
+            </p>
+          ) : null}
+
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setTemps(1)}
+              className="focus-ring rounded-xl border border-border px-5 py-3 text-sm font-semibold"
+            >
+              {copy.steps.back}
+            </button>
+            <button
+              type="submit"
+              disabled={busy}
+              className="focus-ring inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-primary-foreground shadow-soft disabled:opacity-60"
+            >
+              {busy ? (
+                <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
+              ) : null}
+              {busy ? copy.submitting : refuse ? copy.rejected.action : copy.submit}
+            </button>
+          </div>
+        </section>
+      )}
     </form>
   );
 }

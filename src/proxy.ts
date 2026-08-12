@@ -48,8 +48,36 @@ const PROTECTED_PREFIXES = ["/compte", "/trips", "/admin"] as const;
 /** Où l'on envoie quelqu'un qui n'est pas connecté. */
 const LOGIN_PATH = "/connexion";
 
+/** Où atterrit quelqu'un de déjà connecté qui rouvre la porte d'entrée. */
+const HOME_AFTER_LOGIN = "/compte";
+
 export function proxy(request: NextRequest): NextResponse {
   const { pathname, search } = request.nextUrl;
+  const aUneSession = request.cookies.has(SESSION_COOKIES.refresh);
+
+  /*
+   * Une personne déjà connectée n'a rien à faire sur l'écran de
+   * connexion. Elle y arrive par un signet, par le bouton du navigateur,
+   * ou en tapant l'adresse — et se retrouve devant un formulaire qui lui
+   * redemande ce qu'elle a déjà donné.
+   *
+   * On la renvoie donc à sa destination : celle qu'elle visait si elle
+   * en avait une, son espace sinon. Elle ne voit jamais le formulaire.
+   *
+   * Ici encore, c'est la **présence** du cookie qui décide, pas sa
+   * validité : le vérifier coûterait un aller-retour réseau sur chaque
+   * navigation. Un cookie périmé mène à l'espace, l'API répond 401, et
+   * la page renvoie vers la connexion — un détour d'une seconde, contre
+   * un appel systématique pour tout le monde.
+   */
+  if (aUneSession && pathname === LOGIN_PATH) {
+    const voulue = request.nextUrl.searchParams.get("suite");
+    const destination = new URL(
+      voulue?.startsWith("/") && !voulue.startsWith("//") ? voulue : HOME_AFTER_LOGIN,
+      request.url,
+    );
+    return NextResponse.redirect(destination);
+  }
 
   const needsSession = PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
@@ -58,7 +86,7 @@ export function proxy(request: NextRequest): NextResponse {
     return NextResponse.next();
   }
 
-  if (request.cookies.has(SESSION_COOKIES.refresh)) {
+  if (aUneSession) {
     return NextResponse.next();
   }
 

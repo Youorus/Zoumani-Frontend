@@ -190,9 +190,7 @@ function EmailStep({
           {...form.register("email")}
         />
         {form.formState.errors.email ? (
-          <span className={styles.fieldError}>
-            {form.formState.errors.email.message}
-          </span>
+          <span className={styles.fieldError}>{form.formState.errors.email.message}</span>
         ) : null}
       </label>
 
@@ -361,7 +359,8 @@ function RegistrationStep({
         name="acceptsPrivacyPolicy"
         label={content.registration.privacy}
       />
-      {form.formState.errors.acceptsTerms ?? form.formState.errors.acceptsPrivacyPolicy ? (
+      {(form.formState.errors.acceptsTerms ??
+      form.formState.errors.acceptsPrivacyPolicy) ? (
         <span className={styles.fieldError}>
           {form.formState.errors.acceptsTerms?.message ??
             form.formState.errors.acceptsPrivacyPolicy?.message}

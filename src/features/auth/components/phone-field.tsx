@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 
-import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 
 import { usePhoneCountries } from "../hooks/use-phone-countries";
+import { CountrySelect } from "./country-select";
 import styles from "./auth-view.module.css";
 
 /**
@@ -52,7 +52,11 @@ export function PhoneField({
   /** Enregistrement du champ numérique auprès du formulaire. */
   register: React.ComponentProps<typeof Input>;
 }) {
-  const { countries, loading, failed, suggested } = usePhoneCountries(language, "CM");
+  // Le même référentiel que `CountrySelect`, servi depuis le cache du
+  // navigateur : il porte un `Cache-Control` de vingt-quatre heures.
+  // On en a besoin ici pour deux choses que le sélecteur ne rend pas —
+  // l'indicatif affiché à côté du numéro, et l'exemple de saisie.
+  const { countries, suggested } = usePhoneCountries(language, "CM");
 
   // La devinette ne s'applique qu'une fois, et seulement si la personne
   // n'a rien choisi : écraser une sélection manuelle parce que la liste
@@ -65,65 +69,21 @@ export function PhoneField({
 
   const selected = countries.find((country) => country.code === countryCode);
 
-  const options = useMemo<ComboboxOption[]>(
-    () =>
-      countries.map((country) => ({
-        value: country.code,
-        label: country.name,
-        description: country.callingCode,
-        // Le drapeau seul dans la pastille : c'est un repère visuel, pas
-        // une information à lire. Il est donc masqué aux lecteurs
-        // d'écran, qui annoncent déjà le nom du pays juste à côté.
-        icon: (
-          <span className={styles.flag} aria-hidden="true">
-            {country.flag}
-          </span>
-        ),
-        triggerIcon: (
-          <span className={styles.flag} aria-hidden="true">
-            {country.flag}
-          </span>
-        ),
-        // Ce sur quoi la recherche mord : le nom, le code, l'indicatif
-        // avec et sans le « + ». Quelqu'un qui tape « 237 » doit trouver
-        // le Cameroun aussi sûrement que s'il tapait « cam ».
-        keywords: [
-          country.code,
-          country.callingCode,
-          country.callingCode.replace("+", ""),
-        ],
-      })),
-    [countries],
-  );
-
   return (
     <div className={styles.field}>
       <span className={styles.fieldLabel}>{label}</span>
 
       <div className={styles.phoneRow}>
         <div className={styles.phoneCountry}>
-          {failed ? (
-            // Le référentiel n'a pas répondu. Plutôt qu'un sélecteur vide
-            // — un formulaire impossible à soumettre — on laisse saisir
-            // le code du pays à la main. Le serveur validera.
-            <Input
-              aria-label={searchLabel}
-              maxLength={2}
-              placeholder="CM"
-              value={countryCode}
-              onChange={(event) => onCountryChange(event.target.value.toUpperCase())}
-            />
-          ) : (
-            <Combobox
-              ariaLabel={searchLabel}
-              emptyText={emptyText}
-              options={options}
-              placeholder={loading ? "…" : searchPlaceholder}
-              searchPlaceholder={searchPlaceholder}
-              value={countryCode}
-              onValueChange={onCountryChange}
-            />
-          )}
+          <CountrySelect
+            language={language}
+            value={countryCode}
+            onChange={onCountryChange}
+            ariaLabel={searchLabel}
+            placeholder={searchPlaceholder}
+            emptyText={emptyText}
+            showCallingCode
+          />
         </div>
 
         <div className={styles.phoneNumber}>

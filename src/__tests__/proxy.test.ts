@@ -79,3 +79,40 @@ describe("champ d'application", () => {
     expect(pattern.test("/compte")).toBe(true);
   });
 });
+
+describe("la porte d'entrée pour qui est déjà entré", () => {
+  it("renvoie vers son espace au lieu du formulaire", () => {
+    // Quelqu'un arrive par un signet ou le bouton retour. Lui
+    // redemander ce qu'il a déjà donné n'a aucun sens.
+    const response = proxy(requestFor("/connexion", true));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toContain("/compte");
+  });
+
+  it("respecte la destination voulue plutôt que l'espace par défaut", () => {
+    // Le cas du lien profond : on cliquait sur un voyage, la connexion
+    // s'est intercalée, on veut retrouver ce voyage — pas un accueil.
+    const response = proxy(requestFor("/connexion?suite=%2Ftrips%2Fabc", true));
+
+    expect(decodeURIComponent(response.headers.get("location") ?? "")).toContain(
+      "/trips/abc",
+    );
+  });
+
+  it("refuse une destination qui sort du site", () => {
+    // Une redirection ouverte transformerait la page de connexion en
+    // tremplin d'hameçonnage : le lien serait légitime jusqu'au dernier
+    // saut.
+    const response = proxy(requestFor("/connexion?suite=https%3A%2F%2Failleurs.fr", true));
+
+    expect(response.headers.get("location")).toContain("/compte");
+    expect(response.headers.get("location")).not.toContain("ailleurs.fr");
+  });
+
+  it("laisse le formulaire à qui n'a pas de session", () => {
+    const response = proxy(requestFor("/connexion", false));
+
+    expect(response.headers.get("location")).toBeNull();
+  });
+});
