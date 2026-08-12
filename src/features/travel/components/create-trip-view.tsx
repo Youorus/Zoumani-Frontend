@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import type { VerificationStage } from "@/features/verification/types/verification.types";
 
-import { declareTrip, offerCapacity } from "../api/travel-client";
+import { declareTrip, offerCapacity, submitTrip } from "../api/travel-client";
 import type { Airport, FlightLookup } from "../types/travel.types";
 import { CapacityStep, type CapacitySelection } from "./capacity-step";
 import { FlightStep } from "./flight-step";
@@ -81,6 +81,23 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
       ]);
 
       await offerCapacity(trip.id, selection);
+
+      // La transmission vient en dernier : à partir d'ici le voyage est
+      // figé, et une offre incomplète y resterait enfermée.
+      //
+      // Elle exige une preuve de billet, que ce parcours ne demande pas
+      // encore. L'échec correspondant n'est donc **pas** une erreur : le
+      // voyage et l'offre sont enregistrés, il ne manque que le
+      // justificatif. On le dit, et l'on emmène la personne là où elle
+      // le dépose — plutôt que d'afficher un message d'échec sur un
+      // travail qui a abouti.
+      try {
+        await submitTrip(trip.id, selection.attestationVersion);
+      } catch (error) {
+        if (!estPreuveManquante(error)) {
+          throw error;
+        }
+      }
       router.push(`/trips/${trip.id}`);
     } catch (error) {
       setFailure(
@@ -204,5 +221,20 @@ function InvitationAVerifier({ stage }: { stage: VerificationStage }) {
         </Link>
       )}
     </div>
+  );
+}
+
+/**
+ * L'API dit-elle qu'il manque seulement le billet ?
+ *
+ * On teste la **raison** stable et non le message : celui-ci est rédigé
+ * pour un humain et changera, quand la raison fait partie du contrat.
+ */
+function estPreuveManquante(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "reason" in error &&
+    (error as { reason?: string }).reason === "trip_proof_required"
   );
 }

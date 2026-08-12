@@ -186,3 +186,38 @@ export async function declareTrip(segments: SegmentDraft[]): Promise<{ id: strin
   });
   return (await unwrap(response)) as { id: string };
 }
+
+export interface Attestation {
+  version: string;
+  text: string;
+}
+
+/**
+ * Le texte d'engagement en vigueur, et sa version.
+ *
+ * Demandé au serveur plutôt que recopié ici : deux copies divergeraient,
+ * et l'on ne saurait plus laquelle a été acceptée le jour d'un litige.
+ */
+export async function fetchAttestation(): Promise<Attestation> {
+  const response = await fetch(`${PROXY}/trips/attestation`);
+  return (await unwrap(response)) as Attestation;
+}
+
+/**
+ * Transmet le voyage à la vérification, avec l'engagement du voyageur.
+ *
+ * La version est celle **affichée** à la personne : c'est ce qui permet
+ * d'établir plus tard ce qu'elle a accepté. La renvoyer en dur ici
+ * casserait la preuve au premier changement de texte.
+ */
+export async function submitTrip(
+  tripId: string,
+  attestationVersion: string,
+): Promise<void> {
+  const response = await fetch(`${PROXY}/trips/${tripId}/submission`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ accepted: true, version: attestationVersion }),
+  });
+  await unwrap(response);
+}

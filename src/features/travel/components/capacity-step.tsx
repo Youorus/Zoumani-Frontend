@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { fetchCatalog, fetchLastPrices } from "../api/travel-client";
+import { AttestationField } from "./attestation-field";
 import {
   fromMinorUnits,
   toMinorUnits,
@@ -11,6 +12,8 @@ import {
 } from "../types/travel.types";
 
 export interface CapacitySelection {
+  /** Version du texte d'engagement affiché au voyageur. */
+  attestationVersion: string;
   totalWeightKg: number;
   currency: string;
   offers: { categoryCode: string; priceMinor: number }[];
@@ -49,6 +52,10 @@ export function CapacityStep({ onSubmit, isSubmitting = false }: CapacityStepPro
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [remembered, setRemembered] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [attestation, setAttestation] = useState<{ accepted: boolean; version: string }>({
+    accepted: false,
+    version: "",
+  });
 
   useEffect(() => {
     let vivant = true;
@@ -104,6 +111,10 @@ export function CapacityStep({ onSubmit, isSubmitting = false }: CapacityStepPro
       trouves.categories = "Choisissez au moins une catégorie.";
     }
 
+    if (!attestation.accepted || !attestation.version) {
+      trouves.attestation = "Confirmez votre engagement pour continuer.";
+    }
+
     const offers: { categoryCode: string; priceMinor: number }[] = [];
     for (const code of codes) {
       const minor = toMinorUnits(selected[code] ?? "");
@@ -123,6 +134,7 @@ export function CapacityStep({ onSubmit, isSubmitting = false }: CapacityStepPro
       currency: DEVISE,
       offers,
       notes: notes.trim() || null,
+      attestationVersion: attestation.version,
     });
   }
 
@@ -247,6 +259,14 @@ export function CapacityStep({ onSubmit, isSubmitting = false }: CapacityStepPro
           className="w-full rounded-lg border border-border bg-background px-3 py-2.5"
         />
       </div>
+
+      <AttestationField
+        accepted={attestation.accepted}
+        onChange={(accepted, version) => setAttestation({ accepted, version })}
+      />
+      {errors.attestation && (
+        <p className="text-sm text-destructive">{errors.attestation}</p>
+      )}
 
       <button
         type="button"
