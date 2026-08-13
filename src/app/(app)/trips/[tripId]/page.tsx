@@ -18,11 +18,7 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ tripId: string }>;
-}) {
+export default async function Page({ params }: { params: Promise<{ tripId: string }> }) {
   const { tripId } = await params;
 
   // Les trois appels partent ensemble : ils ne dépendent pas les uns des

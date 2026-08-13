@@ -392,3 +392,30 @@ export async function uploadProof(
   });
   await unwrap(response);
 }
+
+/**
+ * Remplace les tarifs et le poids d'une offre.
+ *
+ * Comme l'itinéraire, c'est un **remplacement** : la grille tarifaire se
+ * valide comme un tout, et un état intermédiaire à deux prix
+ * contradictoires n'a aucune raison d'exister.
+ */
+export async function updateCapacity(
+  capacityId: string,
+  draft: CapacityDraft,
+): Promise<Capacity> {
+  const response = await fetch(`${PROXY}/capacities/${capacityId}`, {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      total_weight_kg: draft.totalWeightKg,
+      currency: draft.currency,
+      offers: draft.offers.map((offer) => ({
+        category_code: offer.categoryCode,
+        price_minor: offer.priceMinor,
+      })),
+      notes: draft.notes ?? null,
+    }),
+  });
+  return toCapacity((await unwrap(response)) as RawCapacity);
+}

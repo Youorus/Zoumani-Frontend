@@ -140,12 +140,28 @@ export function TripDetailView({ trip, capacity, proofs }: TripDetailViewProps) 
         onUploaded={() => router.refresh()}
       />
 
-      {capacity && (
+      {capacity ? (
         <CapacitySection
+          tripId={trip.id}
           capacity={capacity}
           busy={busy}
           onWithdraw={() => faire(() => withdrawCapacity(capacity.id))}
         />
+      ) : (
+        trip.stage !== "clos" && (
+          <section className="rounded-2xl border border-border p-4">
+            <h2 className="text-sm font-medium">Votre offre</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Ce voyage ne propose pas encore de place aux expéditeurs.
+            </p>
+            <Link
+              href={`/trips/${trip.id}/offre`}
+              className="mt-3 inline-block rounded-lg border border-border px-3 py-2 text-sm"
+            >
+              Proposer de la place
+            </Link>
+          </section>
+        )
       )}
 
       {trip.stage !== "clos" && (
@@ -464,10 +480,12 @@ function StatutPreuve({ status }: { status: Proof["status"] }) {
 }
 
 function CapacitySection({
+  tripId,
   capacity,
   busy,
   onWithdraw,
 }: {
+  tripId: string;
   capacity: Capacity;
   busy: boolean;
   onWithdraw: () => void;
@@ -504,16 +522,27 @@ function CapacitySection({
         ))}
       </ul>
 
-      {capacity.status === "published" && (
-        <button
-          type="button"
-          onClick={onWithdraw}
-          disabled={busy}
-          className="mt-3 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground disabled:opacity-50"
+      <div className="mt-3 flex flex-wrap gap-2">
+        {/* Toujours proposé : l'écran d'édition explique lui-même ce
+            qu'il faut faire d'abord quand l'offre est en ligne, plutôt
+            que de cacher le lien et de laisser deviner. */}
+        <Link
+          href={`/trips/${tripId}/offre`}
+          className="rounded-lg border border-border px-3 py-2 text-sm"
         >
-          Retirer du marché
-        </button>
-      )}
+          Modifier mon offre
+        </Link>
+        {capacity.status === "published" && (
+          <button
+            type="button"
+            onClick={onWithdraw}
+            disabled={busy}
+            className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground disabled:opacity-50"
+          >
+            Retirer du marché
+          </button>
+        )}
+      </div>
       {capacity.status === "published" &&
         capacity.availableWeightKg < capacity.totalWeightKg && (
           <p className="mt-2 text-xs text-muted-foreground">
