@@ -57,15 +57,31 @@
   overflow: hidden;
   padding: clamp(2rem, 5vw, 4.4rem);
   background:
-    radial-gradient(circle at 75% 15%, color-mix(in srgb, var(--secondary) 33%, transparent), transparent 15rem),
-    linear-gradient(145deg, color-mix(in srgb, var(--primary) 20%, var(--inverse-surface)), var(--inverse-surface));
+    radial-gradient(
+      circle at 75% 15%,
+      color-mix(in srgb, var(--secondary) 33%, transparent),
+      transparent 15rem
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--primary) 20%, var(--inverse-surface)),
+      var(--inverse-surface)
+    );
   color: var(--inverse-foreground);
 }
 
 .story[data-role="traveler"] {
   background:
-    radial-gradient(circle at 18% 82%, color-mix(in srgb, var(--primary) 36%, transparent), transparent 18rem),
-    linear-gradient(150deg, color-mix(in srgb, var(--secondary) 30%, var(--inverse-surface)), var(--inverse-surface));
+    radial-gradient(
+      circle at 18% 82%,
+      color-mix(in srgb, var(--primary) 36%, transparent),
+      transparent 18rem
+    ),
+    linear-gradient(
+      150deg,
+      color-mix(in srgb, var(--secondary) 30%, var(--inverse-surface)),
+      var(--inverse-surface)
+    );
 }
 
 .story::before,

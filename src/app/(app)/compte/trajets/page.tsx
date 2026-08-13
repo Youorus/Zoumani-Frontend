@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+
+import { MyTripsView } from "@/features/travel/components/my-trips-view";
+import { toTrip, type RawPage, type RawTrip } from "@/features/travel/types/trip.types";
+import { callApi } from "@/lib/api/upstream.server";
 
 /*
  * Aucun titre traduit ici : `metadata` est calculée côté serveur, sans
@@ -9,22 +12,17 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function Page() {
-  return (
-    <div className="mx-auto w-full max-w-2xl space-y-6 p-4 sm:p-6">
-      <header>
-        <h1 className="text-2xl font-semibold">Mes trajets</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Proposez la place libre de vos bagages sur un vol que vous prenez déjà.
-        </p>
-      </header>
+export const dynamic = "force-dynamic";
 
-      <Link
-        href="/trips/nouveau"
-        className="inline-block rounded-lg bg-primary px-4 py-2.5 font-medium text-primary-foreground"
-      >
-        Proposer un voyage
-      </Link>
-    </div>
-  );
+export default async function Page() {
+  const reponse = await callApi({ method: "GET", path: "/trips" });
+
+  // Une liste vide et une erreur ne se confondent pas : l'écran « aucun
+  // trajet » invite à en créer un, ce qui serait absurde après une panne.
+  if (reponse.status !== 200) {
+    throw new Error(`L'API a répondu ${reponse.status} sur /trips.`);
+  }
+
+  const page = reponse.body as RawPage<RawTrip>;
+  return <MyTripsView trips={page.items.map(toTrip)} />;
 }

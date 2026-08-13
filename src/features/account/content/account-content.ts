@@ -92,6 +92,7 @@ const accountFr = {
     label: "Mon compte",
     shipments: "Mes envois",
     trips: "Mes trajets",
+    rewards: "Mes points",
     messages: "Messages",
     profile: "Mon profil",
     payments: "Paiements et remboursements",
@@ -178,11 +179,12 @@ export const accountContent = {
       label: "My account",
       shipments: "My parcels",
       trips: "My trips",
+      rewards: "My points",
       messages: "Messages",
       profile: "My profile",
       payments: "Payments and refunds",
       admin: "Administration",
-    signOut: "Sign out",
+      signOut: "Sign out",
     },
 
     footer: {

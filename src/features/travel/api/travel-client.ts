@@ -19,6 +19,15 @@ import {
   type RawCategoryOffer,
   type RawFlightLookup,
 } from "../types/travel.types";
+import {
+  toRewards,
+  toTrip,
+  type RawPage,
+  type RawRewards,
+  type RawTrip,
+  type Rewards,
+  type Trip,
+} from "../types/trip.types";
 
 /**
  * Les appels du parcours de voyage, depuis le navigateur.
@@ -243,4 +252,64 @@ export async function submitTrip(
     body: JSON.stringify({ accepted: true, version: attestationVersion }),
   });
   await unwrap(response);
+}
+
+// ─── Gestion des voyages ───────────────────────────────────────────────
+
+/** Les voyages du voyageur connecté, du départ le plus proche au plus lointain. */
+export async function listMyTrips(): Promise<Trip[]> {
+  const response = await fetch(`${PROXY}/trips`, { cache: "no-store" });
+  const page = (await unwrap(response)) as RawPage<RawTrip>;
+  return page.items.map(toTrip);
+}
+
+/** Un voyage et son itinéraire complet. */
+export async function getTrip(tripId: string): Promise<Trip> {
+  const response = await fetch(`${PROXY}/trips/${tripId}`, { cache: "no-store" });
+  return toTrip((await unwrap(response)) as RawTrip);
+}
+
+/**
+ * L'offre portée par un voyage, ou `null`.
+ *
+ * L'API répond 404 quand aucune n'existe. On le traduit en `null` :
+ * ne pas avoir encore publié d'offre n'est pas une erreur.
+ */
+export async function getTripCapacity(tripId: string): Promise<Capacity | null> {
+  const response = await fetch(`${PROXY}/trips/${tripId}/capacity`, {
+    cache: "no-store",
+  });
+  if (response.status === 404) {
+    return null;
+  }
+  return toCapacity((await unwrap(response)) as RawCapacity);
+}
+
+/**
+ * Supprime un brouillon.
+ *
+ * Réservé aux voyages que rien n'engage. Dès qu'un dossier est transmis,
+ * c'est l'annulation qui s'applique — elle laisse une trace, quand une
+ * suppression n'en laisse aucune.
+ */
+export async function deleteTrip(tripId: string): Promise<void> {
+  const response = await fetch(`${PROXY}/trips/${tripId}`, { method: "DELETE" });
+  if (response.status === 204) {
+    return;
+  }
+  await unwrap(response);
+}
+
+/** Annule un voyage transmis ou vérifié. */
+export async function cancelTrip(tripId: string): Promise<void> {
+  const response = await fetch(`${PROXY}/trips/${tripId}/cancellation`, {
+    method: "POST",
+  });
+  await unwrap(response);
+}
+
+/** L'état du programme de fidélité du voyageur connecté. */
+export async function fetchRewards(): Promise<Rewards> {
+  const response = await fetch(`${PROXY}/rewards/me`, { cache: "no-store" });
+  return toRewards((await unwrap(response)) as RawRewards);
 }

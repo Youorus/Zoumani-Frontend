@@ -6,6 +6,7 @@ import {
   MessageCircle,
   Package,
   Plane,
+  Sparkles,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
@@ -64,6 +65,9 @@ export function AccountMenu({
   const entries = [
     { href: "/compte/envois", label: menu.shipments, icon: Package },
     { href: "/compte/trajets", label: menu.trips, icon: Plane },
+    // Placé juste après les trajets : c'est en les publiant qu'on gagne
+    // des points, et l'entrée n'a de sens que dans ce voisinage.
+    { href: "/compte/points", label: menu.rewards, icon: Sparkles },
     { href: "/compte/messages", label: menu.messages, icon: MessageCircle },
     { href: "/compte/profil", label: menu.profile, icon: UserRound },
     { href: "/compte/paiements", label: menu.payments, icon: CreditCard },
