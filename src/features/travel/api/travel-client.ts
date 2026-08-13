@@ -161,6 +161,8 @@ export interface CapacityDraft {
   totalWeightKg: number;
   currency: string;
   offers: { categoryCode: string; priceMinor: number }[];
+  /** Le voyageur accepte-t-il d'aller chercher un colis au relais ? */
+  acceptsPickup?: boolean;
   notes?: string | null;
 }
 
@@ -179,6 +181,7 @@ export async function offerCapacity(
         category_code: offer.categoryCode,
         price_minor: offer.priceMinor,
       })),
+      accepts_pickup: draft.acceptsPickup ?? false,
       notes: draft.notes ?? null,
     }),
   });
@@ -537,6 +540,8 @@ export async function fetchHandoverOptions(input: {
   countryCode: string;
   weightGrams: number;
   distanceMeters?: number | null;
+  /** Le voyageur accepte-t-il le retrait ? Le montant vient du serveur. */
+  withPickup?: boolean;
 }): Promise<HandoverOptions> {
   const params = new URLSearchParams({
     latitude: String(input.latitude),
@@ -546,6 +551,9 @@ export async function fetchHandoverOptions(input: {
   });
   if (input.distanceMeters != null) {
     params.set("distance_meters", String(input.distanceMeters));
+  }
+  if (input.withPickup) {
+    params.set("with_pickup", "true");
   }
 
   const response = await fetch(`${PROXY}/handover/options?${params}`, {

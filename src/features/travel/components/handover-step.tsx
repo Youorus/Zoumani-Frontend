@@ -18,6 +18,8 @@ interface HandoverStepProps {
   distanceMeters: number | null;
   /** Ce que le colis coûte au voyageur, en unités mineures. */
   parcelTotalMinor: number;
+  /** Ce voyageur accepte-t-il d'aller chercher le colis au relais ? */
+  acceptsPickup: boolean;
   onChange: (choice: {
     method: "in_person" | "carrier";
     pointCode: string | null;
@@ -52,6 +54,7 @@ export function HandoverStep({
   weightGrams,
   distanceMeters,
   parcelTotalMinor,
+  acceptsPickup,
   onChange,
 }: HandoverStepProps) {
   const [options, setOptions] = useState<HandoverOptions | null>(null);
@@ -99,7 +102,7 @@ export function HandoverStep({
       vivant = false;
       controller.annule = true;
     };
-  }, [sender, weightGrams, distanceMeters]);
+  }, [sender, weightGrams, distanceMeters, acceptsPickup]);
 
   const quote =
     options?.quotes.find((q) => q.carrier === point?.carrier) ?? options?.quotes[0];
@@ -144,14 +147,16 @@ export function HandoverStep({
         <ModeCard
           titre="Dépôt en point relais"
           detail={
-            options?.pointsOutcome === "unavailable"
-              ? "Momentanément indisponible."
-              : "Nous nous chargeons de l'acheminer au voyageur."
+            !acceptsPickup
+              ? "Ce voyageur ne se déplace pas en point relais."
+              : options?.pointsOutcome === "unavailable"
+                ? "Momentanément indisponible."
+                : "Vous déposez, le voyageur récupère."
           }
           prix={quote ? `dès ${quote.priceMajor} €` : "—"}
           actif={method === "carrier"}
           recommande={options?.advice === "carrier_recommended"}
-          disabled={!options || options.servicePoints.length === 0}
+          disabled={!acceptsPickup || !options || options.servicePoints.length === 0}
           onClick={() => setMethod("carrier")}
         />
       </div>
@@ -227,11 +232,27 @@ export function HandoverStep({
             <dt className="text-muted-foreground">Montant pour le voyageur</dt>
             <dd className="tabular-nums">{(parcelTotalMinor / 100).toFixed(2)} €</dd>
           </div>
-          {extraMinor > 0 && (
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Acheminement {quote?.label}</dt>
-              <dd className="tabular-nums">{(extraMinor / 100).toFixed(2)} €</dd>
-            </div>
+          {/* Les deux montants sont distingués : le transport paie
+              l'acheminement, le retrait dédommage le voyageur qui va
+              l'y chercher. Les additionner en silence ferait passer une
+              commission pour un frais postal. */}
+          {method === "carrier" && quote && (
+            <>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">Acheminement {quote.label}</dt>
+                <dd className="tabular-nums">
+                  {(quote.shippingMinor / 100).toFixed(2)} €
+                </dd>
+              </div>
+              {quote.pickupMinor > 0 && (
+                <div className="flex justify-between gap-4">
+                  <dt className="text-muted-foreground">Retrait par le voyageur</dt>
+                  <dd className="tabular-nums">
+                    {(quote.pickupMinor / 100).toFixed(2)} €
+                  </dd>
+                </div>
+              )}
+            </>
           )}
           <div className="flex justify-between gap-4 border-t border-border pt-1.5 font-medium">
             <dt>Total</dt>

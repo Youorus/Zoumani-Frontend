@@ -60,6 +60,7 @@ export function EditCapacityView({ tripId, capacity }: EditCapacityViewProps) {
       ]),
     ),
   );
+  const [acceptsPickup, setAcceptsPickup] = useState(capacity?.acceptsPickup ?? false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
 
@@ -122,6 +123,7 @@ export function EditCapacityView({ tripId, capacity }: EditCapacityViewProps) {
         totalWeightKg: poids,
         currency: DEVISE,
         offers,
+        acceptsPickup,
         notes: null,
       };
       if (capacity) {
@@ -235,6 +237,34 @@ export function EditCapacityView({ tripId, capacity }: EditCapacityViewProps) {
           />
         </section>
       )}
+
+      <section>
+        <h2 className="mb-3 text-sm font-medium">Les expéditeurs éloignés</h2>
+        {/* Un interrupteur, pas un montant : le dédommagement est fixé
+            par Zoumani. Un voyageur n'a aucun repère pour le décider, et
+            un expéditeur doit pouvoir comparer deux offres — un prix qui
+            varie sans raison visible fait douter de toute l'annonce. */}
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border p-3.5">
+          <input
+            type="checkbox"
+            checked={acceptsPickup}
+            onChange={(event) => setAcceptsPickup(event.target.checked)}
+            className="mt-0.5 size-4"
+          />
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-medium">
+              J&apos;accepte d&apos;aller chercher un colis en point relais
+            </span>
+            <span className="mt-0.5 block text-xs text-muted-foreground">
+              Ceux qui habitent loin de vous ne peuvent pas vous rencontrer. Ils déposent
+              leur colis dans un relais près de chez eux, vous le récupérez dans un relais
+              près de chez vous. Zoumani vous verse{" "}
+              <span className="font-medium text-foreground">5 €</span> pour ce
+              déplacement.
+            </span>
+          </span>
+        </label>
+      </section>
 
       {errors.global && (
         <p className="text-sm text-error" role="alert">

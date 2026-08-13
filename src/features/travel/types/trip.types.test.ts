@@ -155,6 +155,7 @@ describe("la recherche d'un expéditeur", () => {
     departure_at: "2026-09-01T10:25:00Z",
     available_weight_kg: 23,
     currency: "EUR",
+    accepts_pickup: true,
     offers: [{ category_code: "clothing", price_major: "8.00", per_piece: false }],
     distance_meters: 6200,
   };
@@ -204,10 +205,19 @@ describe("les options de remise", () => {
       {
         carrier: "mondial_relay",
         label: "Mondial Relay",
-        price_minor: 450,
-        price_major: "4.50",
+        shipping_minor: 450,
+        pickup_minor: 500,
+        price_minor: 950,
+        price_major: "9.50",
       },
-      { carrier: "colissimo", label: "Colissimo", price_minor: 590, price_major: "5.90" },
+      {
+        carrier: "colissimo",
+        label: "Colissimo",
+        shipping_minor: 590,
+        pickup_minor: 500,
+        price_minor: 1090,
+        price_major: "10.90",
+      },
     ],
     points_outcome: "found",
     service_points: [
@@ -244,8 +254,16 @@ describe("les options de remise", () => {
     ).toBe("none_nearby");
   });
 
-  it("garde les prix affichables calculés par le serveur", () => {
-    expect(toHandoverOptions(brut).quotes[0].priceMajor).toBe("4.50");
+  it("distingue l'acheminement du dédommagement du voyageur", () => {
+    // Les additionner en silence ferait passer une commission pour un
+    // frais postal — et c'est ainsi qu'on perd la confiance sur une
+    // facture.
+    const quote = toHandoverOptions(brut).quotes[0];
+
+    expect(quote.shippingMinor).toBe(450);
+    expect(quote.pickupMinor).toBe(500);
+    expect(quote.priceMinor).toBe(950);
+    expect(quote.priceMajor).toBe("9.50");
   });
 
   it("traduit un point de dépôt avec ses horaires", () => {

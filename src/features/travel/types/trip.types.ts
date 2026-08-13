@@ -263,6 +263,8 @@ export interface CapacityMatch {
   departureAt: string;
   availableWeightKg: number;
   currency: string;
+  /** Ce voyageur va-t-il chercher un colis en point relais ? */
+  acceptsPickup: boolean;
   offers: { categoryCode: string; priceMajor: string; perPiece: boolean }[];
   /** `null` quand l'une des deux adresses n'a pas pu être située. */
   distanceMeters: number | null;
@@ -281,6 +283,7 @@ export interface RawCapacityMatch {
   departure_at: string;
   available_weight_kg: number;
   currency: string;
+  accepts_pickup: boolean;
   offers: { category_code: string; price_major: string; per_piece: boolean }[];
   distance_meters: number | null;
 }
@@ -302,6 +305,7 @@ export function toCapacityMatch(raw: RawCapacityMatch): CapacityMatch {
     departureAt: raw.departure_at,
     availableWeightKg: raw.available_weight_kg,
     currency: raw.currency,
+    acceptsPickup: raw.accepts_pickup,
     offers: raw.offers.map((offer) => ({
       categoryCode: offer.category_code,
       priceMajor: offer.price_major,
@@ -443,6 +447,11 @@ export interface ServicePoint {
 export interface CarrierQuote {
   carrier: string;
   label: string;
+  /** L'acheminement jusqu'au relais. */
+  shippingMinor: number;
+  /** Le dédommagement du voyageur qui va l'y chercher. */
+  pickupMinor: number;
+  /** La somme des deux. */
   priceMinor: number;
   priceMajor: string;
 }
@@ -459,7 +468,14 @@ export interface HandoverOptions {
 export interface RawHandoverOptions {
   advice: HandoverAdvice;
   distance_meters: number | null;
-  quotes: { carrier: string; label: string; price_minor: number; price_major: string }[];
+  quotes: {
+    carrier: string;
+    label: string;
+    shipping_minor: number;
+    pickup_minor: number;
+    price_minor: number;
+    price_major: string;
+  }[];
   points_outcome: ServicePointOutcome;
   service_points: {
     code: string;
@@ -483,6 +499,8 @@ export function toHandoverOptions(raw: RawHandoverOptions): HandoverOptions {
     quotes: raw.quotes.map((quote) => ({
       carrier: quote.carrier,
       label: quote.label,
+      shippingMinor: quote.shipping_minor,
+      pickupMinor: quote.pickup_minor,
       priceMinor: quote.price_minor,
       priceMajor: quote.price_major,
     })),
@@ -542,6 +560,7 @@ export function toCapacityFromMatch(raw: RawCapacityMatch): Capacity {
     totalWeightKg: match.availableWeightKg,
     availableWeightKg: match.availableWeightKg,
     currency: match.currency,
+    acceptsPickup: match.acceptsPickup,
     offers: match.offers.map((offer) => ({
       categoryCode: offer.categoryCode,
       // Le prix affichable suffit à l'écran ; l'entier reste la vérité

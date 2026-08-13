@@ -93,6 +93,8 @@ export interface Capacity {
   availableWeightKg: number;
   currency: string;
   offers: CategoryOffer[];
+  /** Le voyageur va-t-il chercher un colis déposé en point relais ? */
+  acceptsPickup: boolean;
   notes: string | null;
   /** Faux dès qu'un kilo est engagé : un expéditeur a réservé sur ce prix. */
   isEditable: boolean;
@@ -147,6 +149,7 @@ export interface RawCapacity {
   available_weight_kg: number;
   currency: string;
   offers: RawCategoryOffer[];
+  accepts_pickup: boolean;
   notes: string | null;
   is_editable: boolean;
 }
@@ -198,6 +201,7 @@ export function toCapacity(raw: RawCapacity): Capacity {
     availableWeightKg: raw.available_weight_kg,
     currency: raw.currency,
     offers: raw.offers.map(toOffer),
+    acceptsPickup: raw.accepts_pickup,
     notes: raw.notes,
     isEditable: raw.is_editable,
   };
