@@ -14,7 +14,7 @@ import styles from "./home-hero.module.css";
 import { KentePattern } from "./kente-pattern";
 import { AboutSection } from "./about/about-section";
 import { PromoCards } from "./promo-cards";
-import { SearchBar } from "@/features/travel/components/search-bar";
+import { ShipmentSearch } from "./shipment-search";
 import { SocialProof } from "./social-proof";
 import { TrustCard } from "./trust-card";
 import { TrustedPartners } from "./trusted-partners";
@@ -74,16 +74,11 @@ export function HeroSection({ backgroundImageUrl }: HeroSectionProps) {
           </div>
         </div>
 
-        {/* La barre interroge le référentiel d'aéroports et le catalogue
-            réels. L'ancienne portait une liste de villes figée dans le
-            code — une ville absente rendait la recherche impossible sans
-            que rien ne l'explique — et demandait un poids que personne
-            ne connaît avant de savoir ce qu'il envoie. */}
-        <div
-          className={`${styles.searchReveal} mx-auto mt-9 w-full max-w-3xl px-4 lg:absolute lg:inset-x-0 lg:bottom-11 lg:mt-0`}
-        >
-          <SearchBar tone="marketing" />
-        </div>
+        <ShipmentSearch
+          className={`${styles.searchReveal} mt-9 lg:absolute lg:inset-x-0 lg:bottom-11 lg:mt-0`}
+          copy={copy.search}
+          language={language}
+        />
       </section>
 
       <div className="bg-marketing-page">

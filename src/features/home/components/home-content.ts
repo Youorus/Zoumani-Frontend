@@ -46,8 +46,9 @@ export interface HomeContent {
     citySearchPlaceholder: string;
     cityEmptyText: string;
     citySuggestionsLabel: string;
-    weightLabel: string;
-    weightOptions: ReadonlyArray<{ value: string; label: string; description: string }>;
+    contentLabel: string;
+    contentPlaceholder: string;
+    contentAllLabel: string;
     submitLabel: string;
     guarantees: readonly string[];
   };
@@ -189,13 +190,9 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       citySearchPlaceholder: "Rechercher une ville ou un aéroport...",
       cityEmptyText: "Aucune destination trouvée.",
       citySuggestionsLabel: "Destinations populaires",
-      weightLabel: "Poids du colis",
-      weightOptions: [
-        { value: "1", label: "1 kg", description: "Petit colis" },
-        { value: "2", label: "2 kg", description: "Colis léger" },
-        { value: "5", label: "5 kg", description: "Colis standard" },
-        { value: "10", label: "10 kg", description: "Grand colis" },
-      ],
+      contentLabel: "Ce que j'envoie",
+      contentPlaceholder: "Choisir",
+      contentAllLabel: "Tout type de colis",
       submitLabel: "Rechercher un voyage",
       guarantees: [
         "Paiement sécurisé",
@@ -435,13 +432,9 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       citySearchPlaceholder: "Search for a city or airport...",
       cityEmptyText: "No destination found.",
       citySuggestionsLabel: "Popular destinations",
-      weightLabel: "Parcel weight",
-      weightOptions: [
-        { value: "1", label: "1 kg", description: "Small parcel" },
-        { value: "2", label: "2 kg", description: "Light parcel" },
-        { value: "5", label: "5 kg", description: "Standard parcel" },
-        { value: "10", label: "10 kg", description: "Large parcel" },
-      ],
+      contentLabel: "What I'm sending",
+      contentPlaceholder: "Choose",
+      contentAllLabel: "Any parcel type",
       submitLabel: "Search for a trip",
       guarantees: [
         "Secure payment",

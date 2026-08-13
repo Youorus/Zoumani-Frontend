@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useAccountCopy } from "@/features/account/components/account-copy-provider";
 import type { AccountCopy } from "@/features/account/content/account-content";
 import { accountLanguage } from "@/features/account/lib/account-language";
-import { SearchBar } from "@/features/travel/components/search-bar";
+import { homeContent } from "@/features/home/components/home-content";
+import { ShipmentSearch } from "@/features/home/components/shipment-search";
 import type { AuthenticatedUser } from "@/lib/auth/auth.types";
 
 /**
@@ -65,12 +66,14 @@ export function AccountHome({
         {copy.search.title}
       </h2>
 
-      {/* La même barre que la page d'accueil, importée et non recopiée :
-          une correction faite d'un côté vaut pour les deux. Elle mène à
-          la page de résultats plutôt que d'afficher en place — un
-          expéditeur qui affine sa recherche veut pouvoir revenir en
-          arrière, et une URL le permet. */}
-      <SearchBar />
+      {/* La barre de la page d'accueil, telle quelle : mêmes champs, même
+          attente, même apparence. Importée et non recopiée — une
+          correction faite d'un côté vaut pour les deux. */}
+      <ShipmentSearch
+        className="px-0 sm:px-0 lg:px-0"
+        copy={homeContent[language].search}
+        language={language}
+      />
 
       <div className="mt-6 grid gap-4 sm:mt-8 lg:grid-cols-[1.4fr_1fr]">
         <ProposeTripCard copy={copy.actions.travel} />

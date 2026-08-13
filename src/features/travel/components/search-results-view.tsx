@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 
-import { SearchBar } from "./search-bar";
 import { formatDistance, type CapacityMatch } from "../types/trip.types";
 
 interface SearchResultsViewProps {
@@ -36,14 +35,6 @@ interface SearchResultsViewProps {
 export function SearchResultsView({ matches, criteria, labels }: SearchResultsViewProps) {
   return (
     <div className="mx-auto w-full max-w-3xl space-y-5 p-4 sm:p-6">
-      <SearchBar
-        initial={{
-          origin: criteria.origin,
-          destination: criteria.destination,
-          categories: criteria.categories,
-        }}
-      />
-
       <p className="text-sm text-muted-foreground">
         {matches.length === 0
           ? "Aucun voyageur sur ce trajet pour le moment."

@@ -2,6 +2,7 @@
 
 import {
   ArrowLeftRight,
+  Check,
   CircleCheck,
   MapPin,
   Package,
@@ -12,16 +13,31 @@ import {
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import type { FormEvent, ReactNode } from "react";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { searchCities } from "@/features/shipment-search/data/search-cities";
+import { fetchCatalog } from "@/features/travel/api/travel-client";
+import type { ParcelCategory } from "@/features/travel/types/travel.types";
 import { cn } from "@/lib/utils/cn";
 
 import type { HomeContent, HomeLanguage } from "./home-content";
 
 const guaranteeIcons = [CircleCheck, ShieldCheck, ShieldCheck, CircleCheck] as const;
+
+/**
+ * Le code IATA d'une ville du sélecteur.
+ *
+ * Les entrées portent leur aéroport sous la forme « Nom · CODE » : on en
+ * extrait le code, qui est ce que l'API attend. Le résoudre ici évite un
+ * aller-retour de plus avant d'afficher les résultats.
+ */
+function airportOf(cityValue: string): string {
+  const ville = searchCities.find((candidate) => candidate.value === cityValue);
+  const fragment = ville?.airport.split("·").pop()?.trim();
+  return fragment ?? "";
+}
 
 const cityOptions: readonly ComboboxOption[] = searchCities.map((city) => ({
   value: city.value,
@@ -82,9 +98,29 @@ export function ShipmentSearch({
   const router = useRouter();
   const [departure, setDeparture] = useState("paris");
   const [destination, setDestination] = useState("abidjan");
-  const [weight, setWeight] = useState("1");
+  const [contents, setContents] = useState<string[]>([]);
+  const [categories, setCategories] = useState<ParcelCategory[]>([]);
   const [isNavigating, startNavigation] = useTransition();
-  const selectedWeight = copy.weightOptions.find((option) => option.value === weight);
+
+  // Le catalogue vient du serveur : une liste figée dans le code
+  // divergerait de ce que les voyageurs peuvent réellement accepter.
+  useEffect(() => {
+    let vivant = true;
+    void fetchCatalog()
+      .then((catalogue) => vivant && setCategories(catalogue.categories))
+      .catch(() => undefined);
+    return () => {
+      vivant = false;
+    };
+  }, []);
+
+  function toggleContent(code: string) {
+    setContents((courant) =>
+      courant.includes(code)
+        ? courant.filter((autre) => autre !== code)
+        : [...courant, code],
+    );
+  }
 
   function swapLocations() {
     setDeparture(destination);
@@ -94,17 +130,16 @@ export function ShipmentSearch({
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (onSearch) {
-      onSearch({ from: departure, to: destination, weight: Number(weight) });
-      return;
+    // Les villes portent leur code IATA : c'est lui que l'API attend, et
+    // le résoudre ici évite un aller-retour de plus avant les résultats.
+    const params = new URLSearchParams({
+      origin: airportOf(departure),
+      destination: airportOf(destination),
+    });
+    for (const code of contents) {
+      params.append("categories", code);
     }
 
-    const params = new URLSearchParams({
-      from: departure,
-      to: destination,
-      weight,
-      lang: language,
-    });
     startNavigation(() => {
       router.push(`/search?${params.toString()}` as Route);
     });
@@ -167,35 +202,20 @@ export function ShipmentSearch({
               </SearchField>
             </div>
 
-            <SearchField icon={Package} label={copy.weightLabel}>
-              <Select value={weight} onValueChange={setWeight}>
-                <SelectTrigger
-                  aria-label={copy.weightLabel}
-                  className="mt-1 h-auto rounded-none border-0 bg-transparent p-0 font-bold text-marketing-panel-foreground shadow-none focus-visible:ring-0"
-                >
-                  <span>{selectedWeight?.label ?? copy.weightOptions[0]?.label}</span>
-                </SelectTrigger>
-                <SelectContent
-                  align="start"
-                  sideOffset={12}
-                  className="min-w-[14rem] border-marketing-panel-border bg-marketing-panel text-marketing-panel-foreground shadow-[0_24px_60px_-24px_rgb(52_24_7_/_0.45)]"
-                >
-                  {copy.weightOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value}
-                      className="py-3 text-marketing-panel-foreground data-[highlighted]:bg-primary/10 data-[state=checked]:text-primary"
-                    >
-                      <span className="flex min-w-36 items-baseline justify-between gap-5">
-                        <span className="font-bold">{option.label}</span>
-                        <span className="text-xs font-normal text-marketing-panel-muted-foreground">
-                          {option.description}
-                        </span>
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <SearchField icon={Package} label={copy.contentLabel}>
+              {/* Le poids ne décidait de rien à ce stade : quelqu'un qui
+                  veut envoyer « des vêtements et un téléphone » ne sait
+                  pas encore ce que ça pèse. Ce qui filtre vraiment, c'est
+                  la nature de l'envoi — un voyageur qui refuse
+                  l'électronique n'a aucun intérêt à apparaître. Le poids
+                  revient à la réservation, quand le tarif s'y applique. */}
+              <ContentPicker
+                categories={categories}
+                selected={contents}
+                onToggle={toggleContent}
+                allLabel={copy.contentAllLabel}
+                placeholder={copy.contentPlaceholder}
+              />
             </SearchField>
 
             <button
@@ -234,6 +254,107 @@ export function ShipmentSearch({
           </div>
         </div>
       </form>
+    </div>
+  );
+}
+
+interface ContentPickerProps {
+  categories: ParcelCategory[];
+  selected: string[];
+  onToggle: (code: string) => void;
+  allLabel: string;
+  placeholder: string;
+}
+
+/**
+ * Le choix de ce qu'on envoie, à la place du poids.
+ *
+ * Un sélecteur **multiple** : quelqu'un envoie rarement une seule chose.
+ * Ne rien cocher reste un choix valide — on cherche alors tous les
+ * voyageurs du trajet — et le libellé le dit, pour qu'on ne croie pas
+ * une sélection obligatoire.
+ *
+ * Il reprend l'apparence du champ qu'il remplace : même typographie,
+ * même panneau, mêmes couleurs. Ce qui change est ce qu'on demande, pas
+ * la façon de le demander.
+ */
+function ContentPicker({
+  categories,
+  selected,
+  onToggle,
+  allLabel,
+  placeholder,
+}: ContentPickerProps) {
+  const [ouvert, setOuvert] = useState(false);
+  const choisies = categories.filter((category) => selected.includes(category.code));
+
+  const resume =
+    choisies.length === 0
+      ? allLabel
+      : choisies.length === 1
+        ? choisies[0].label
+        : `${choisies.length} types`;
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOuvert(!ouvert)}
+        aria-expanded={ouvert}
+        aria-haspopup="listbox"
+        className="focus-ring mt-1 flex w-full items-center justify-between gap-2 text-left font-bold text-marketing-panel-foreground"
+      >
+        <span className="truncate">{categories.length === 0 ? placeholder : resume}</span>
+      </button>
+
+      {ouvert && categories.length > 0 && (
+        <>
+          {/* Ferme au clic extérieur, sans piéger le focus : le champ
+              voisin doit rester accessible d'une seule action. */}
+          <button
+            type="button"
+            aria-hidden
+            tabIndex={-1}
+            onClick={() => setOuvert(false)}
+            className="fixed inset-0 z-40 cursor-default"
+          />
+          <ul
+            role="listbox"
+            aria-multiselectable
+            className="absolute left-0 top-full z-50 mt-3 max-h-72 w-[16rem] overflow-y-auto rounded-md border border-marketing-panel-border bg-marketing-panel p-1 shadow-[0_24px_60px_-24px_rgb(52_24_7_/_0.45)]"
+          >
+            {categories.map((category) => {
+              const choisie = selected.includes(category.code);
+              return (
+                <li key={category.code}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={choisie}
+                    onClick={() => onToggle(category.code)}
+                    className="flex w-full items-center gap-2.5 rounded-sm px-2 py-2.5 text-left text-sm text-marketing-panel-foreground hover:bg-primary/10"
+                  >
+                    <span
+                      aria-hidden
+                      className={`grid size-4 shrink-0 place-items-center rounded-sm border ${
+                        choisie
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-marketing-panel-border"
+                      }`}
+                    >
+                      {choisie && <Check className="size-3" />}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate">{category.label}</span>
+                    <span className="shrink-0 text-xs text-marketing-panel-muted-foreground">
+                      {category.unit === "piece" ? "pièce" : "kg"}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
     </div>
   );
 }
