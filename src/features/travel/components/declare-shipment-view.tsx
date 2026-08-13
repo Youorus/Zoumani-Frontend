@@ -11,6 +11,11 @@ import {
 } from "../api/travel-client";
 import type { Capacity } from "../types/travel.types";
 import { estimateLineMinor, type CapacityMatch } from "../types/trip.types";
+import {
+  CategoryPhotosStep,
+  MIN_PHOTOS,
+  type CategoryPhotos,
+} from "./category-photos-step";
 import { HandoverStep } from "./handover-step";
 import { TripSummaryBanner } from "./trip-summary-banner";
 
@@ -28,8 +33,6 @@ interface DeclareShipmentViewProps {
 
 interface LigneSaisie {
   quantity: string;
-  photo: File | null;
-  photoKey: string | null;
 }
 
 /**
@@ -65,6 +68,10 @@ export function DeclareShipmentView({
   const [lignes, setLignes] = useState<Record<string, LigneSaisie>>({});
   const [busy, setBusy] = useState(false);
   const [etape, setEtape] = useState<"saisie" | "photos" | "remise">("saisie");
+  // Une catégorie à la fois : tout demander d'un coup produisait une
+  // page où l'on ne savait plus quelle photo documentait quoi.
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const [photos, setPhotos] = useState<Record<string, CategoryPhotos>>({});
   const [remise, setRemise] = useState<{
     method: "in_person" | "carrier";
     pointCode: string | null;
@@ -113,7 +120,7 @@ export function DeclareShipmentView({
       if (code in suivant) {
         delete suivant[code];
       } else {
-        suivant[code] = { quantity: "", photo: null, photoKey: null };
+        suivant[code] = { quantity: "" };
       }
       return suivant;
     });
@@ -153,13 +160,14 @@ export function DeclareShipmentView({
       // Les photos partent d'abord, puis la demande est mise à jour avec
       // leurs clés : le serveur exige une photo par contenu, et il ne
       // peut la rattacher qu'une fois l'objet déposé.
-      const cles: Record<string, string> = {};
+      // Séquentiel plutôt que parallèle : douze photos envoyées en même
+      // temps saturent une connexion mobile, et l'on ne sait plus
+      // laquelle a échoué.
+      const cles: Record<string, string[]> = {};
       for (const offer of choisies) {
-        const saisie = lignes[offer.categoryCode];
-        if (saisie?.photo) {
-          cles[offer.categoryCode] = await uploadParcelPhoto(shipmentId, saisie.photo);
-        } else if (saisie?.photoKey) {
-          cles[offer.categoryCode] = saisie.photoKey;
+        cles[offer.categoryCode] = [];
+        for (const prise of photos[offer.categoryCode]?.files ?? []) {
+          cles[offer.categoryCode].push(await uploadParcelPhoto(shipmentId, prise));
         }
       }
 
@@ -169,7 +177,10 @@ export function DeclareShipmentView({
           const valeur = Number.parseFloat(
             (lignes[offer.categoryCode]?.quantity ?? "").replace(",", "."),
           );
-          const base = { photoKey: cles[offer.categoryCode] ?? null };
+          const base = {
+            photoKeys: cles[offer.categoryCode] ?? [],
+            note: photos[offer.categoryCode]?.note?.trim() || null,
+          };
           return offer.perPiece
             ? { ...base, categoryCode: offer.categoryCode, pieces: Math.floor(valeur) }
             : { ...base, categoryCode: offer.categoryCode, quantityKg: valeur };
@@ -184,10 +195,6 @@ export function DeclareShipmentView({
       setBusy(false);
     }
   }
-
-  const photosCompletes = choisies.every(
-    (offer) => lignes[offer.categoryCode]?.photo || lignes[offer.categoryCode]?.photoKey,
-  );
 
   return (
     <div className="mx-auto w-full max-w-lg space-y-5 p-4 sm:p-6">
@@ -305,62 +312,44 @@ export function DeclareShipmentView({
         </>
       ) : etape === "photos" ? (
         <>
-          <ul className="space-y-2.5">
-            {choisies.map((offer) => (
-              <li
-                key={offer.categoryCode}
-                className="rounded-xl border border-border p-3.5"
-              >
-                <p className="text-sm font-medium">
-                  {labels[offer.categoryCode] ?? offer.categoryCode}
-                </p>
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  aria-label={`Photo pour ${labels[offer.categoryCode] ?? offer.categoryCode}`}
-                  onChange={(event) => {
-                    const file = event.target.files?.[0] ?? null;
-                    setLignes((courant) => ({
-                      ...courant,
-                      [offer.categoryCode]: {
-                        ...courant[offer.categoryCode],
-                        photo: file,
-                      },
-                    }));
-                  }}
-                  className="mt-2 block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm"
-                />
-                {lignes[offer.categoryCode]?.photo && (
-                  <p className="mt-1.5 text-xs text-muted-foreground">
-                    {lignes[offer.categoryCode]?.photo?.name}
-                  </p>
-                )}
-              </li>
-            ))}
-          </ul>
-
-          <Recapitulatif
-            totalMinor={totalMinor}
-            restant={restant}
-            trop={false}
-            currency={capacity.currency}
+          <CategoryPhotosStep
+            categoryLabel={
+              labels[choisies[photoIndex].categoryCode] ??
+              choisies[photoIndex].categoryCode
+            }
+            index={photoIndex}
+            total={choisies.length}
+            value={photos[choisies[photoIndex].categoryCode] ?? { files: [], note: "" }}
+            onChange={(valeur) =>
+              setPhotos((courant) => ({
+                ...courant,
+                [choisies[photoIndex].categoryCode]: valeur,
+              }))
+            }
           />
 
           <button
             type="button"
-            onClick={() => setEtape("remise")}
-            disabled={!photosCompletes}
+            onClick={() =>
+              photoIndex < choisies.length - 1
+                ? setPhotoIndex(photoIndex + 1)
+                : setEtape("remise")
+            }
+            disabled={
+              (photos[choisies[photoIndex].categoryCode]?.files.length ?? 0) < MIN_PHOTOS
+            }
             className="w-full rounded-xl bg-primary px-4 py-3 font-medium text-primary-foreground disabled:opacity-40"
           >
-            Continuer
+            {photoIndex < choisies.length - 1 ? "Contenu suivant" : "Continuer"}
           </button>
           <button
             type="button"
-            onClick={() => setEtape("saisie")}
+            onClick={() =>
+              photoIndex > 0 ? setPhotoIndex(photoIndex - 1) : setEtape("saisie")
+            }
             className="w-full text-sm text-muted-foreground underline"
           >
-            Revenir aux quantités
+            {photoIndex > 0 ? "Contenu précédent" : "Revenir aux quantités"}
           </button>
         </>
       ) : null}

@@ -1,5 +1,6 @@
 "use client";
 
+import { compressImage } from "@/lib/images/compress";
 import { AuthError } from "@/lib/auth/auth-client";
 
 import {
@@ -433,7 +434,8 @@ export interface DeclaredLineInput {
   categoryCode: string;
   quantityKg?: number;
   pieces?: number;
-  photoKey?: string | null;
+  photoKeys?: string[];
+  note?: string | null;
   declaredValueMinor?: number | null;
 }
 
@@ -466,8 +468,15 @@ export async function declareShipment(
  * encoderait le fournisseur de stockage (AGENTS.md §6.12).
  */
 export async function uploadParcelPhoto(shipmentId: string, file: File): Promise<string> {
+  // Réduite avant l'envoi : une photo de téléphone pèse plusieurs
+  // mégaoctets, et douze d'entre elles sur une connexion mobile
+  // prendraient plusieurs minutes. Le coût est dans le téléversement,
+  // pas dans le stockage — compresser après réception ne servirait à
+  // rien.
+  const { file: reduite } = await compressImage(file);
+
   const form = new FormData();
-  form.append("file", file);
+  form.append("file", reduite);
 
   const response = await fetch(`${PROXY}/shipments/${shipmentId}/photos`, {
     method: "POST",
@@ -510,7 +519,8 @@ function toRawLine(line: DeclaredLineInput) {
     category_code: line.categoryCode,
     quantity_kg: line.quantityKg ?? null,
     pieces: line.pieces ?? null,
-    photo_key: line.photoKey ?? null,
+    photo_keys: line.photoKeys ?? [],
+    note: line.note ?? null,
     declared_value_minor: line.declaredValueMinor ?? null,
   };
 }
