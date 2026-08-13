@@ -2,7 +2,7 @@
 
 import {
   ArrowLeftRight,
-  Check,
+  ChevronDown,
   CircleCheck,
   MapPin,
   Package,
@@ -16,7 +16,12 @@ import type { FormEvent, ReactNode } from "react";
 import { useEffect, useState, useTransition } from "react";
 
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { searchCities } from "@/features/shipment-search/data/search-cities";
 import { fetchCatalog } from "@/features/travel/api/travel-client";
 import type { ParcelCategory } from "@/features/travel/types/travel.types";
@@ -269,14 +274,19 @@ interface ContentPickerProps {
 /**
  * Le choix de ce qu'on envoie, à la place du poids.
  *
- * Un sélecteur **multiple** : quelqu'un envoie rarement une seule chose.
- * Ne rien cocher reste un choix valide — on cherche alors tous les
- * voyageurs du trajet — et le libellé le dit, pour qu'on ne croie pas
- * une sélection obligatoire.
+ * ═══ Pourquoi un menu Radix et non un panneau maison ═══
  *
- * Il reprend l'apparence du champ qu'il remplace : même typographie,
- * même panneau, mêmes couleurs. Ce qui change est ce qu'on demande, pas
- * la façon de le demander.
+ * Le formulaire porte `overflow-hidden` pour ses coins arrondis : tout
+ * panneau positionné en absolu s'y trouve **coupé**, et le sélecteur ne
+ * s'ouvrait sur rien. Les autres champs n'avaient pas le problème parce
+ * qu'ils passent par un portail, qui les rend hors de ce cadre.
+ * Celui-ci fait pareil désormais.
+ *
+ * ═══ Choix multiple ═══
+ *
+ * On envoie rarement une seule chose. Ne rien cocher reste valide — on
+ * cherche alors tous les voyageurs du trajet — et le libellé le dit,
+ * pour qu'on ne croie pas une sélection obligatoire.
  */
 function ContentPicker({
   categories,
@@ -285,7 +295,6 @@ function ContentPicker({
   allLabel,
   placeholder,
 }: ContentPickerProps) {
-  const [ouvert, setOuvert] = useState(false);
   const choisies = categories.filter((category) => selected.includes(category.code));
 
   const resume =
@@ -296,65 +305,39 @@ function ContentPicker({
         : `${choisies.length} types`;
 
   return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOuvert(!ouvert)}
-        aria-expanded={ouvert}
-        aria-haspopup="listbox"
-        className="focus-ring mt-1 flex w-full items-center justify-between gap-2 text-left font-bold text-marketing-panel-foreground"
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        disabled={categories.length === 0}
+        className="focus-ring mt-1 flex w-full items-center justify-between gap-2 text-left font-bold text-marketing-panel-foreground disabled:opacity-60"
       >
         <span className="truncate">{categories.length === 0 ? placeholder : resume}</span>
-      </button>
+        <ChevronDown className="size-4 shrink-0 opacity-60" aria-hidden />
+      </DropdownMenuTrigger>
 
-      {ouvert && categories.length > 0 && (
-        <>
-          {/* Ferme au clic extérieur, sans piéger le focus : le champ
-              voisin doit rester accessible d'une seule action. */}
-          <button
-            type="button"
-            aria-hidden
-            tabIndex={-1}
-            onClick={() => setOuvert(false)}
-            className="fixed inset-0 z-40 cursor-default"
-          />
-          <ul
-            role="listbox"
-            aria-multiselectable
-            className="absolute left-0 top-full z-50 mt-3 max-h-72 w-[16rem] overflow-y-auto rounded-md border border-marketing-panel-border bg-marketing-panel p-1 shadow-[0_24px_60px_-24px_rgb(52_24_7_/_0.45)]"
+      <DropdownMenuContent
+        align="start"
+        sideOffset={12}
+        className="max-h-72 min-w-[16rem] overflow-y-auto border-marketing-panel-border bg-marketing-panel text-marketing-panel-foreground shadow-[0_24px_60px_-24px_rgb(52_24_7_/_0.45)]"
+      >
+        {categories.map((category) => (
+          <DropdownMenuCheckboxItem
+            key={category.code}
+            checked={selected.includes(category.code)}
+            // Le menu reste ouvert : cocher trois catégories ne doit pas
+            // demander de le rouvrir trois fois.
+            onSelect={(event) => event.preventDefault()}
+            onCheckedChange={() => onToggle(category.code)}
+            className="py-2.5 text-marketing-panel-foreground data-[highlighted]:bg-primary/10"
           >
-            {categories.map((category) => {
-              const choisie = selected.includes(category.code);
-              return (
-                <li key={category.code}>
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={choisie}
-                    onClick={() => onToggle(category.code)}
-                    className="flex w-full items-center gap-2.5 rounded-sm px-2 py-2.5 text-left text-sm text-marketing-panel-foreground hover:bg-primary/10"
-                  >
-                    <span
-                      aria-hidden
-                      className={`grid size-4 shrink-0 place-items-center rounded-sm border ${
-                        choisie
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-marketing-panel-border"
-                      }`}
-                    >
-                      {choisie && <Check className="size-3" />}
-                    </span>
-                    <span className="min-w-0 flex-1 truncate">{category.label}</span>
-                    <span className="shrink-0 text-xs text-marketing-panel-muted-foreground">
-                      {category.unit === "piece" ? "pièce" : "kg"}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </>
-      )}
-    </div>
+            <span className="flex min-w-40 items-baseline justify-between gap-4">
+              <span>{category.label}</span>
+              <span className="text-xs text-marketing-panel-muted-foreground">
+                {category.unit === "piece" ? "pièce" : "kg"}
+              </span>
+            </span>
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
