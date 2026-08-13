@@ -240,3 +240,76 @@ export function toRewards(raw: RawRewards): Rewards {
     allTiers: raw.all_tiers,
   };
 }
+
+// ─── La recherche d'un expéditeur ──────────────────────────────────────
+
+export interface TravelerCard {
+  /** Prénom et initiale. **Jamais** l'identité complète. */
+  displayName: string;
+  photoUrl: string | null;
+}
+
+export interface CapacityMatch {
+  capacityId: string;
+  tripId: string;
+  traveler: TravelerCard;
+  origin: string;
+  destination: string;
+  departureAt: string;
+  availableWeightKg: number;
+  currency: string;
+  offers: { categoryCode: string; priceMajor: string; perPiece: boolean }[];
+  /** `null` quand l'une des deux adresses n'a pas pu être située. */
+  distanceMeters: number | null;
+}
+
+export interface RawCapacityMatch {
+  capacity_id: string;
+  trip_id: string;
+  traveler: { display_name: string; photo_url: string | null };
+  origin: string;
+  destination: string;
+  departure_at: string;
+  available_weight_kg: number;
+  currency: string;
+  offers: { category_code: string; price_major: string; per_piece: boolean }[];
+  distance_meters: number | null;
+}
+
+export function toCapacityMatch(raw: RawCapacityMatch): CapacityMatch {
+  return {
+    capacityId: raw.capacity_id,
+    tripId: raw.trip_id,
+    traveler: {
+      displayName: raw.traveler.display_name,
+      photoUrl: raw.traveler.photo_url,
+    },
+    origin: raw.origin,
+    destination: raw.destination,
+    departureAt: raw.departure_at,
+    availableWeightKg: raw.available_weight_kg,
+    currency: raw.currency,
+    offers: raw.offers.map((offer) => ({
+      categoryCode: offer.category_code,
+      priceMajor: offer.price_major,
+      perPiece: offer.per_piece,
+    })),
+    distanceMeters: raw.distance_meters,
+  };
+}
+
+/**
+ * Met une distance en mots utiles.
+ *
+ * Sous le kilomètre, on arrondit à la centaine de mètres : « 800 m »
+ * veut dire quelque chose, « 843 m » donne une précision que le
+ * géocodage ne porte pas. Au-delà de dix kilomètres, l'unité entière
+ * suffit — personne ne décide sur 300 mètres à cette échelle.
+ */
+export function formatDistance(meters: number): string {
+  if (meters < 1000) {
+    return `${Math.round(meters / 100) * 100} m`;
+  }
+  const km = meters / 1000;
+  return km < 10 ? `${km.toFixed(1)} km` : `${Math.round(km)} km`;
+}

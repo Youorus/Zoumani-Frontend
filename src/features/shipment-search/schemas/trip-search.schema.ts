@@ -5,8 +5,14 @@ import { searchCities } from "../data/search-cities";
 const cityValues = new Set(searchCities.map(({ value }) => value));
 
 export const tripSearchFiltersSchema = z.object({
-  from: z.string().refine((value) => cityValues.has(value)).default("paris"),
-  to: z.string().refine((value) => cityValues.has(value)).default("abidjan"),
+  from: z
+    .string()
+    .refine((value) => cityValues.has(value))
+    .default("paris"),
+  to: z
+    .string()
+    .refine((value) => cityValues.has(value))
+    .default("abidjan"),
   weight: z.coerce.number().int().min(1).max(30).default(1),
   lang: z.enum(["fr", "en"]).default("fr"),
 });

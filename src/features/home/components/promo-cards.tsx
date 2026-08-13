@@ -33,7 +33,9 @@ export function PromoCards({
         <div className={`absolute inset-0 ${styles.travelerOverlay}`} />
         <div className="relative z-10 flex min-h-[13.25rem] flex-col justify-center px-6 py-6 text-inverse-foreground sm:pl-[29%] sm:pr-7">
           <h2 className="max-w-[25rem] font-sans text-[1.35rem] leading-[1.2] font-extrabold tracking-[-0.025em] sm:text-2xl">
-            {copy.travelerTitleOne}<br />{copy.travelerTitleTwo}
+            {copy.travelerTitleOne}
+            <br />
+            {copy.travelerTitleTwo}
           </h2>
           <p className="mt-2 max-w-[20rem] text-sm leading-5 text-inverse-muted-foreground">
             {copy.travelerDescription}
@@ -61,7 +63,9 @@ export function PromoCards({
         <AfricaRouteIllustration />
         <div className="relative z-10 flex min-h-[13.25rem] flex-col justify-center px-6 py-6 text-inverse-foreground sm:pl-[29%] sm:pr-[25%]">
           <h2 className="max-w-[22rem] font-sans text-[1.35rem] leading-[1.2] font-extrabold tracking-[-0.025em] sm:text-2xl">
-            {copy.parcelTitleOne}<br />{copy.parcelTitleTwo}
+            {copy.parcelTitleOne}
+            <br />
+            {copy.parcelTitleTwo}
           </h2>
           <p className="mt-2 max-w-[18rem] text-sm leading-5 text-inverse-muted-foreground">
             {copy.parcelDescription}

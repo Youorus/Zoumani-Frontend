@@ -35,7 +35,11 @@ export function AboutConnectionIllustration() {
 
       {nodes.map((node, index) => (
         <g key={`${node.x}-${node.y}`} transform={`translate(${node.x} ${node.y})`}>
-          <circle className={styles.connectionPulse} r="28" style={{ animationDelay: `${index * 0.55}s` }} />
+          <circle
+            className={styles.connectionPulse}
+            r="28"
+            style={{ animationDelay: `${index * 0.55}s` }}
+          />
           <circle className={styles.connectionNode} r="11" />
           <circle className={styles.connectionCore} r="4" />
         </g>

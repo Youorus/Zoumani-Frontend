@@ -3,7 +3,11 @@
   overflow: hidden;
   border-top: 1px solid var(--marketing-panel-border);
   background:
-    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--secondary) 12%, transparent), transparent 42%),
+    radial-gradient(
+      circle at 50% 0%,
+      color-mix(in srgb, var(--secondary) 12%, transparent),
+      transparent 42%
+    ),
     var(--marketing-page);
 }
 
@@ -24,7 +28,11 @@
   border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--marketing-panel-border));
   border-radius: 1.25rem;
   background:
-    radial-gradient(circle at 95% 0%, color-mix(in srgb, var(--primary) 13%, transparent), transparent 40%),
+    radial-gradient(
+      circle at 95% 0%,
+      color-mix(in srgb, var(--primary) 13%, transparent),
+      transparent 40%
+    ),
     color-mix(in srgb, var(--marketing-panel) 97%, var(--primary));
   box-shadow: 0 22px 60px -46px color-mix(in srgb, var(--primary) 60%, transparent);
   text-align: left;
@@ -135,14 +143,19 @@
   border: 1px solid var(--marketing-panel-border);
   border-radius: 1rem;
   background: color-mix(in srgb, var(--marketing-panel) 94%, transparent);
-  box-shadow: 0 14px 34px -28px color-mix(in srgb, var(--marketing-panel-foreground) 44%, transparent);
+  box-shadow: 0 14px 34px -28px
+    color-mix(in srgb, var(--marketing-panel-foreground) 44%, transparent);
 }
 
 .insurancePartner {
   width: clamp(13rem, 19vw, 16rem);
   border-color: color-mix(in srgb, var(--primary) 18%, var(--marketing-panel-border));
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--primary) 5%, transparent), transparent 54%),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--primary) 5%, transparent),
+      transparent 54%
+    ),
     color-mix(in srgb, var(--marketing-panel) 96%, transparent);
 }
 

@@ -75,7 +75,9 @@ export function VisitorFlowPage({
       </header>
       <main className={styles.main}>{children}</main>
       <footer className={styles.footer}>
-        <p><strong>Zoumani.</strong> {copy.footer}</p>
+        <p>
+          <strong>Zoumani.</strong> {copy.footer}
+        </p>
         <p>{copy.security}</p>
       </footer>
     </div>

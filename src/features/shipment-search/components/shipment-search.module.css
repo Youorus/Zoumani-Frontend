@@ -160,7 +160,8 @@
   border: 1px solid var(--marketing-panel-border);
   border-radius: var(--shape-radius-lg);
   background: var(--marketing-panel);
-  box-shadow: 0 1.5rem 4rem -3rem color-mix(in srgb, var(--marketing-panel-foreground) 48%, transparent);
+  box-shadow: 0 1.5rem 4rem -3rem
+    color-mix(in srgb, var(--marketing-panel-foreground) 48%, transparent);
   transition:
     border-color 180ms ease,
     transform 180ms ease,
@@ -254,7 +255,11 @@
   padding: 1.1rem;
   border-radius: var(--shape-radius-md);
   background:
-    linear-gradient(115deg, color-mix(in srgb, var(--secondary) 14%, transparent), transparent 55%),
+    linear-gradient(
+      115deg,
+      color-mix(in srgb, var(--secondary) 14%, transparent),
+      transparent 55%
+    ),
     var(--marketing-page);
 }
 
@@ -373,7 +378,11 @@
   padding: 1.5rem;
   border-radius: var(--shape-radius-lg);
   background:
-    radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--secondary) 22%, transparent), transparent 12rem),
+    radial-gradient(
+      circle at 90% 10%,
+      color-mix(in srgb, var(--secondary) 22%, transparent),
+      transparent 12rem
+    ),
     var(--inverse-surface);
   box-shadow: var(--elevation-lifted);
   color: var(--inverse-foreground);
@@ -662,7 +671,11 @@
 
 .accountCard {
   background:
-    radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--secondary) 25%, transparent), transparent 17rem),
+    radial-gradient(
+      circle at 90% 10%,
+      color-mix(in srgb, var(--secondary) 25%, transparent),
+      transparent 17rem
+    ),
     var(--inverse-surface);
   color: var(--inverse-foreground);
 }

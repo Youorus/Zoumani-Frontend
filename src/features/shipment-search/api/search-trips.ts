@@ -57,7 +57,10 @@ const searchTripsMock: readonly SearchTrip[] = [
     availableCapacityKg: 20,
     pricePerKgCents: 900,
     currency: "EUR",
-    handoverLabel: { fr: "Remise flexible en Île-de-France", en: "Flexible handover near Paris" },
+    handoverLabel: {
+      fr: "Remise flexible en Île-de-France",
+      en: "Flexible handover near Paris",
+    },
     protectionAvailable: true,
     statusLabel: { fr: "Meilleur tarif", en: "Best price" },
     traveler: {
@@ -80,7 +83,10 @@ const searchTripsMock: readonly SearchTrip[] = [
     availableCapacityKg: 15,
     pricePerKgCents: 1100,
     currency: "EUR",
-    handoverLabel: { fr: "Remise à Bruxelles-Centre", en: "Handover in central Brussels" },
+    handoverLabel: {
+      fr: "Remise à Bruxelles-Centre",
+      en: "Handover in central Brussels",
+    },
     protectionAvailable: true,
     statusLabel: { fr: "Départ confirmé", en: "Departure confirmed" },
     traveler: {

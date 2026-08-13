@@ -1,6 +1,9 @@
 export function HeroScenePlaceholder() {
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+    <div
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      aria-hidden="true"
+    >
       <div className="absolute top-[19%] right-[12%] size-[23rem] rounded-full bg-secondary/18 blur-3xl" />
       <svg
         className="absolute right-[9%] bottom-[21%] w-[56rem] max-w-[68vw] text-inverse-foreground/10"

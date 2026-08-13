@@ -16,7 +16,11 @@ import type { HomeContent, HomeLanguage } from "./home-content";
 
 function FrenchFlag() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 16" className="h-4 w-6 overflow-hidden rounded-[3px] shadow-sm">
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 16"
+      className="h-4 w-6 overflow-hidden rounded-[3px] shadow-sm"
+    >
       <path fill="#1B3B8F" d="M0 0h8v16H0z" />
       <path fill="#FFF" d="M8 0h8v16H8z" />
       <path fill="#ED2939" d="M16 0h8v16h-8z" />
@@ -26,7 +30,11 @@ function FrenchFlag() {
 
 function BritishFlag() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 16" className="h-4 w-6 overflow-hidden rounded-[3px] shadow-sm">
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 16"
+      className="h-4 w-6 overflow-hidden rounded-[3px] shadow-sm"
+    >
       <path fill="#173B7A" d="M0 0h24v16H0z" />
       <path stroke="#FFF" strokeWidth="4" d="m0 0 24 16M24 0 0 16" />
       <path stroke="#C8102E" strokeWidth="2" d="m0 0 24 16M24 0 0 16" />
@@ -54,7 +62,8 @@ export function LanguageSwitcher({
   language,
   onLanguageChange,
 }: LanguageSwitcherProps) {
-  const selectedLanguage = languages.find((item) => item.code === language) ?? languages[0];
+  const selectedLanguage =
+    languages.find((item) => item.code === language) ?? languages[0];
   const SelectedFlag = selectedLanguage.Flag;
 
   useEffect(() => {

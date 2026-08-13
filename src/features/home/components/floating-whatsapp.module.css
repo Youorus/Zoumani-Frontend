@@ -14,7 +14,8 @@
   border: 1px solid color-mix(in srgb, var(--contact-action-foreground) 12%, transparent);
   border-radius: var(--shape-radius-full);
   background: var(--contact-action);
-  box-shadow: 0 1.25rem 3rem -1.25rem color-mix(in srgb, var(--contact-action-foreground) 48%, transparent);
+  box-shadow: 0 1.25rem 3rem -1.25rem
+    color-mix(in srgb, var(--contact-action-foreground) 48%, transparent);
   color: var(--contact-action-foreground);
   font-size: 0.82rem;
   font-weight: 800;
@@ -40,7 +41,8 @@
 .link:focus-visible {
   max-width: 13rem;
   padding-right: 1.05rem;
-  box-shadow: 0 1.4rem 3.25rem -1.1rem color-mix(in srgb, var(--contact-action-foreground) 56%, transparent);
+  box-shadow: 0 1.4rem 3.25rem -1.1rem
+    color-mix(in srgb, var(--contact-action-foreground) 56%, transparent);
   transform: translateY(-0.2rem);
 }
 

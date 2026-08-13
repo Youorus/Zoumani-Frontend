@@ -25,7 +25,11 @@ export function SearchLoading({
       data-search-loading=""
     >
       <div className={styles.loaderCanvas} aria-hidden="true">
-        <svg className={styles.loaderRoute} viewBox="0 0 680 190" preserveAspectRatio="none">
+        <svg
+          className={styles.loaderRoute}
+          viewBox="0 0 680 190"
+          preserveAspectRatio="none"
+        >
           <path d="M35 95C154 18 248 168 340 95S526 20 645 95" />
           <path pathLength="1" d="M35 95C154 18 248 168 340 95S526 20 645 95" />
         </svg>

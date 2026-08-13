@@ -37,7 +37,11 @@ export function SearchResultsView({
           </span>
           <h2>{copy.error.title}</h2>
           <p className={styles.cardDescription}>{copy.error.description}</p>
-          <button className={`${styles.retryButton} focus-ring`} type="button" onClick={() => search.refetch()}>
+          <button
+            className={`${styles.retryButton} focus-ring`}
+            type="button"
+            onClick={() => search.refetch()}
+          >
             {copy.error.retryLabel}
           </button>
         </section>

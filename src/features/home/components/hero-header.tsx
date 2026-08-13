@@ -40,7 +40,10 @@ export function HeroHeader({ copy, language, onLanguageChange }: HeroHeaderProps
           <ZoumaniLogo inverse />
         </Link>
 
-        <nav aria-label="Navigation principale" className="hidden items-center gap-8 xl:flex">
+        <nav
+          aria-label="Navigation principale"
+          className="hidden items-center gap-8 xl:flex"
+        >
           {copy.navigation.map((item) => (
             <Link
               key={item.href}

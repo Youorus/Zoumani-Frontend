@@ -106,7 +106,9 @@ export function HomeFooter({
         </div>
 
         <div className={styles.bottom}>
-          <p>© {new Date().getFullYear()} Zoumani. {copy.legal}</p>
+          <p>
+            © {new Date().getFullYear()} Zoumani. {copy.legal}
+          </p>
           <p className={styles.signature}>{copy.signature}</p>
         </div>
       </Container>

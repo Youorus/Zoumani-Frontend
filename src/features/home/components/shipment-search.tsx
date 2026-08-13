@@ -21,12 +21,7 @@ import { cn } from "@/lib/utils/cn";
 
 import type { HomeContent, HomeLanguage } from "./home-content";
 
-const guaranteeIcons = [
-  CircleCheck,
-  ShieldCheck,
-  ShieldCheck,
-  CircleCheck,
-] as const;
+const guaranteeIcons = [CircleCheck, ShieldCheck, ShieldCheck, CircleCheck] as const;
 
 const cityOptions: readonly ComboboxOption[] = searchCities.map((city) => ({
   value: city.value,
@@ -51,7 +46,9 @@ function SearchField({ icon: Icon, label, children, className }: SearchFieldProp
     >
       <Icon className="size-6 shrink-0 text-primary" aria-hidden="true" />
       <span className="min-w-0 flex-1">
-        <span className="block text-xs font-medium text-marketing-panel-muted-foreground">{label}</span>
+        <span className="block text-xs font-medium text-marketing-panel-muted-foreground">
+          {label}
+        </span>
         {children}
       </span>
     </div>
@@ -76,7 +73,12 @@ interface ShipmentSearchProps {
   onSearch?: (filters: { from: string; to: string; weight: number }) => void;
 }
 
-export function ShipmentSearch({ className, copy, language, onSearch }: ShipmentSearchProps) {
+export function ShipmentSearch({
+  className,
+  copy,
+  language,
+  onSearch,
+}: ShipmentSearchProps) {
   const router = useRouter();
   const [departure, setDeparture] = useState("paris");
   const [destination, setDestination] = useState("abidjan");
@@ -97,7 +99,12 @@ export function ShipmentSearch({ className, copy, language, onSearch }: Shipment
       return;
     }
 
-    const params = new URLSearchParams({ from: departure, to: destination, weight, lang: language });
+    const params = new URLSearchParams({
+      from: departure,
+      to: destination,
+      weight,
+      lang: language,
+    });
     startNavigation(() => {
       router.push(`/search?${params.toString()}` as Route);
     });
@@ -106,7 +113,10 @@ export function ShipmentSearch({ className, copy, language, onSearch }: Shipment
   return (
     <div
       id="search"
-      className={cn("relative z-30 mx-auto w-full max-w-[1492px] px-4 sm:px-8 lg:px-12", className)}
+      className={cn(
+        "relative z-30 mx-auto w-full max-w-[1492px] px-4 sm:px-8 lg:px-12",
+        className,
+      )}
     >
       <form
         onSubmit={submitSearch}
@@ -193,7 +203,11 @@ export function ShipmentSearch({ className, copy, language, onSearch }: Shipment
               disabled={isNavigating}
               className="focus-ring inline-flex min-h-16 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 hover:bg-primary/92 lg:min-h-16"
             >
-              {isNavigating ? <LoaderCircle className="size-5 animate-spin" /> : <Search className="size-5" />}
+              {isNavigating ? (
+                <LoaderCircle className="size-5 animate-spin" />
+              ) : (
+                <Search className="size-5" />
+              )}
               {copy.submitLabel}
             </button>
           </div>
@@ -207,7 +221,12 @@ export function ShipmentSearch({ className, copy, language, onSearch }: Shipment
                   <Icon className="size-4 text-warning" />
                   <span>{label}</span>
                   {index < copy.guarantees.length - 1 ? (
-                    <span className="ml-3 hidden text-warning lg:inline" aria-hidden="true">•</span>
+                    <span
+                      className="ml-3 hidden text-warning lg:inline"
+                      aria-hidden="true"
+                    >
+                      •
+                    </span>
                   ) : null}
                 </div>
               );

@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  formatDistance,
   stageOfTrip,
+  toCapacityMatch,
   toRewards,
   toTrip,
+  type RawCapacityMatch,
   type RawRewards,
   type RawTrip,
   type TripStatus,
@@ -133,5 +136,56 @@ describe("le programme de fidélité", () => {
 
     expect(sommet.nextTier).toBeNull();
     expect(sommet.pointsToNext).toBeNull();
+  });
+});
+
+describe("la recherche d'un expéditeur", () => {
+  const brut: RawCapacityMatch = {
+    capacity_id: "c1",
+    trip_id: "t1",
+    traveler: { display_name: "Aïcha D.", photo_url: null },
+    origin: "CDG",
+    destination: "DLA",
+    departure_at: "2026-09-01T10:25:00Z",
+    available_weight_kg: 23,
+    currency: "EUR",
+    offers: [{ category_code: "clothing", price_major: "8.00", per_piece: false }],
+    distance_meters: 6200,
+  };
+
+  it("ne reçoit jamais l'identité du voyageur", () => {
+    // La troncature est faite par le serveur : le client n'a pas de nom
+    // complet à tronquer, et n'aurait pas pu le protéger s'il en avait un.
+    const match = toCapacityMatch(brut);
+
+    expect(match.traveler.displayName).toBe("Aïcha D.");
+    expect(Object.keys(match.traveler)).toEqual(["displayName", "photoUrl"]);
+  });
+
+  it("accepte une distance absente sans se casser", () => {
+    // Le cas courant : géocodage en échec, ou visiteur non connecté.
+    expect(toCapacityMatch({ ...brut, distance_meters: null }).distanceMeters).toBeNull();
+  });
+
+  it("garde le prix affichable calculé par le serveur", () => {
+    expect(toCapacityMatch(brut).offers[0].priceMajor).toBe("8.00");
+  });
+});
+
+describe("l'affichage d'une distance", () => {
+  it("arrondit à la centaine sous le kilomètre", () => {
+    // « 843 m » donnerait une précision que le géocodage ne porte pas.
+    expect(formatDistance(843)).toBe("800 m");
+    expect(formatDistance(120)).toBe("100 m");
+  });
+
+  it("garde une décimale jusqu'à dix kilomètres", () => {
+    expect(formatDistance(6200)).toBe("6.2 km");
+  });
+
+  it("passe à l'unité entière au-delà", () => {
+    // Personne ne décide sur 300 mètres à cette échelle.
+    expect(formatDistance(42_300)).toBe("42 km");
+    expect(formatDistance(5_000_000)).toBe("5000 km");
   });
 });

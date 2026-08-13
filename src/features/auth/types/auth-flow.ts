@@ -23,10 +23,7 @@
  */
 
 /** Où en est le parcours, selon le serveur. */
-export type LoginStepName =
-  | "email_pending"
-  | "registration_pending"
-  | "phone_pending";
+export type LoginStepName = "email_pending" | "registration_pending" | "phone_pending";
 
 /** Réponse du serveur à chaque étape. */
 export interface LoginStep {
@@ -40,12 +37,7 @@ export interface LoginStep {
 }
 
 /** Écran affiché à un instant donné. */
-export type AuthScreen =
-  | "email"
-  | "email-code"
-  | "registration"
-  | "phone-code"
-  | "done";
+export type AuthScreen = "email" | "email-code" | "registration" | "phone-code" | "done";
 
 /**
  * Traduit l'étape du serveur en écran.

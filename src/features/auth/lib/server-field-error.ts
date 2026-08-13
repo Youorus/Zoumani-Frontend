@@ -52,9 +52,7 @@ export interface ServerFieldError {
  * bandeau, plutôt que d'avaler un message qui n'aurait nulle part où
  * s'afficher.
  */
-export function registrationFieldError(
-  error: AuthError | null,
-): ServerFieldError | null {
+export function registrationFieldError(error: AuthError | null): ServerFieldError | null {
   if (!error?.field) {
     return null;
   }

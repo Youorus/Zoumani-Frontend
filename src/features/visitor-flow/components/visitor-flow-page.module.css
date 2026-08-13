@@ -3,8 +3,16 @@
   min-height: 100vh;
   overflow: hidden;
   background:
-    radial-gradient(circle at 8% 18%, color-mix(in srgb, var(--secondary) 18%, transparent), transparent 24rem),
-    radial-gradient(circle at 92% 72%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 30rem),
+    radial-gradient(
+      circle at 8% 18%,
+      color-mix(in srgb, var(--secondary) 18%, transparent),
+      transparent 24rem
+    ),
+    radial-gradient(
+      circle at 92% 72%,
+      color-mix(in srgb, var(--primary) 9%, transparent),
+      transparent 30rem
+    ),
     var(--marketing-page);
   color: var(--marketing-panel-foreground);
 }
@@ -20,7 +28,11 @@
   );
   background-size: 1.35rem 1.35rem;
   content: "";
-  mask-image: linear-gradient(to bottom, var(--marketing-panel-foreground), transparent 82%);
+  mask-image: linear-gradient(
+    to bottom,
+    var(--marketing-panel-foreground),
+    transparent 82%
+  );
   opacity: 0.25;
 }
 

@@ -4,8 +4,16 @@
   padding-block: 5.5rem 2rem;
   scroll-margin-top: 5.5rem;
   background:
-    radial-gradient(circle at 88% 18%, color-mix(in srgb, var(--secondary) 20%, transparent), transparent 28rem),
-    linear-gradient(145deg, color-mix(in srgb, var(--footer-highlight) 18%, transparent), transparent 48%),
+    radial-gradient(
+      circle at 88% 18%,
+      color-mix(in srgb, var(--secondary) 20%, transparent),
+      transparent 28rem
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--footer-highlight) 18%, transparent),
+      transparent 48%
+    ),
     var(--footer-canvas);
   color: var(--footer-foreground);
 }
@@ -59,9 +67,14 @@
   border: 1px solid color-mix(in srgb, var(--footer-foreground) 18%, transparent);
   border-radius: var(--shape-radius-lg);
   background:
-    radial-gradient(circle at 85% 20%, color-mix(in srgb, var(--secondary) 30%, transparent), transparent 19rem),
+    radial-gradient(
+      circle at 85% 20%,
+      color-mix(in srgb, var(--secondary) 30%, transparent),
+      transparent 19rem
+    ),
     var(--footer-highlight);
-  box-shadow: 0 2.5rem 6rem -4rem color-mix(in srgb, var(--inverse-surface) 72%, transparent);
+  box-shadow: 0 2.5rem 6rem -4rem
+    color-mix(in srgb, var(--inverse-surface) 72%, transparent);
 }
 
 .eyebrow {
@@ -125,7 +138,10 @@
 
 .mainGrid {
   display: grid;
-  grid-template-columns: minmax(16rem, 1.2fr) repeat(2, minmax(9rem, 0.55fr)) minmax(15rem, 0.85fr);
+  grid-template-columns: minmax(16rem, 1.2fr) repeat(2, minmax(9rem, 0.55fr)) minmax(
+      15rem,
+      0.85fr
+    );
   gap: clamp(2rem, 5vw, 5rem);
   padding-block: 5rem 4rem;
 }

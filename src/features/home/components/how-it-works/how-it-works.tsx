@@ -20,7 +20,11 @@ export function HowItWorks({
   language: HomeLanguage;
 }) {
   return (
-    <section id="fonctionnement" className={styles.section} aria-labelledby="how-it-works-title">
+    <section
+      id="fonctionnement"
+      className={styles.section}
+      aria-labelledby="how-it-works-title"
+    >
       <Container className={styles.container}>
         <header className={styles.intro}>
           <Badge variant="primary">{copy.eyebrow}</Badge>
@@ -36,7 +40,9 @@ export function HowItWorks({
           <StoryRoute />
           {storyMedia.map((medium, index) => {
             const stepCopy = copy.steps[index];
-            return stepCopy ? <StoryStep key={medium.id} medium={medium} copy={stepCopy} /> : null;
+            return stepCopy ? (
+              <StoryStep key={medium.id} medium={medium} copy={stepCopy} />
+            ) : null;
           })}
         </div>
 

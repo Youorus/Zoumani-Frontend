@@ -1,10 +1,6 @@
 export type HomeLanguage = "fr" | "en";
 export type HomeNavigationHref =
-  | "#search"
-  | "#services"
-  | "#fonctionnement"
-  | "#trust"
-  | "#help";
+  "#search" | "#services" | "#fonctionnement" | "#trust" | "#help";
 export type HomeFooterHref = HomeNavigationHref | "#partners" | "/signup";
 
 export interface HomeContent {
@@ -216,7 +212,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       travelerCta: "Je suis voyageur",
       parcelTitleOne: "Vous voulez envoyer",
       parcelTitleTwo: "un colis en Afrique ?",
-      parcelDescription: "Trouvez un voyageur de confiance et expédiez en toute sérénité.",
+      parcelDescription:
+        "Trouvez un voyageur de confiance et expédiez en toute sérénité.",
       parcelCta: "J’ai un colis à envoyer",
     },
     partners: {
@@ -245,7 +242,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Vous préparez votre envoi",
           description:
             "Déclarez d’où il part, où il va et ce qu’il contient. Une première vérification sécurise la suite.",
-          imageAlt: "Une femme prépare avec soin un petit colis dans son appartement à Paris.",
+          imageAlt:
+            "Une femme prépare avec soin un petit colis dans son appartement à Paris.",
           note: "Pour maman, avec tout mon cœur.",
           proof: {
             label: "Contenu déclaré",
@@ -258,15 +256,14 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Le bon voyageur est déjà en route",
           description:
             "Choisissez un voyageur vérifié, bien noté, qui va déjà dans la bonne direction.",
-          imageAlt: "Un voyageur vérifie son téléphone près de son bagage et du colis à l’aéroport.",
+          imageAlt:
+            "Un voyageur vérifie son téléphone près de son bagage et du colis à l’aéroport.",
           proof: {
             label: "Voyageur vérifié",
             meta: "4,9/5 • 48 avis • 1 240 points",
             origin: "Paris",
             destination: "Douala",
-            benefits: [
-              { icon: "wallet", label: "Rémunération prévue après la remise" },
-            ],
+            benefits: [{ icon: "wallet", label: "Rémunération prévue après la remise" }],
           },
         },
         {
@@ -291,7 +288,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Et quelqu’un le retrouve.",
           description:
             "Votre proche confirme la remise. Le voyageur est payé, gagne des points et peut recevoir un nouvel avis.",
-          imageAlt: "À Douala, le voyageur remet chaleureusement le colis à sa destinataire.",
+          imageAlt:
+            "À Douala, le voyageur remet chaleureusement le colis à sa destinataire.",
           note: "Bien reçu. Merci.",
           proof: {
             label: "Arrivé à destination",
@@ -315,10 +313,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     about: {
       eyebrow: "À propos de Zoumani",
       titleLines: ["Ce qui nous relie", "mérite mieux", "qu’un simple envoi."],
-      lead:
-        "Zoumani transforme des trajets qui existent déjà en liens utiles entre celles et ceux qui envoient, voyagent et attendent.",
-      body:
-        "Notre ambition est simple : rendre les échanges entre l’Afrique, sa diaspora et le reste du monde plus humains, plus fiables et plus accessibles, sans perdre ce qui fait leur valeur — la confiance entre les personnes.",
+      lead: "Zoumani transforme des trajets qui existent déjà en liens utiles entre celles et ceux qui envoient, voyagent et attendent.",
+      body: "Notre ambition est simple : rendre les échanges entre l’Afrique, sa diaspora et le reste du monde plus humains, plus fiables et plus accessibles, sans perdre ce qui fait leur valeur — la confiance entre les personnes.",
       quote:
         "Nous ne faisons pas seulement voyager des colis. Nous rapprochons des personnes.",
       imageAlt:
@@ -504,7 +500,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "The right traveler is already on the way",
           description:
             "Choose a verified, well-rated traveler already heading in the right direction.",
-          imageAlt: "A traveler checks his phone beside his luggage and the parcel at the airport.",
+          imageAlt:
+            "A traveler checks his phone beside his luggage and the parcel at the airport.",
           proof: {
             label: "Verified traveler",
             meta: "4.9/5 • 48 reviews • 1,240 points",
@@ -518,7 +515,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Your parcel takes off",
           description:
             "You check the parcel together. Its selected insurance and partner transit are confirmed before departure.",
-          imageAlt: "The traveler walks through the terminal with the parcel and his luggage.",
+          imageAlt:
+            "The traveler walks through the terminal with the parcel and his luggage.",
           proof: {
             label: "Final verification complete",
             meta: "Parcel collected",
@@ -559,10 +557,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     about: {
       eyebrow: "About Zoumani",
       titleLines: ["What connects us", "deserves more", "than a simple delivery."],
-      lead:
-        "Zoumani turns journeys that already exist into useful connections between those who send, travel and wait.",
-      body:
-        "Our ambition is simple: make exchanges between Africa, its diaspora and the rest of the world more human, reliable and accessible, without losing what gives them value — trust between people.",
+      lead: "Zoumani turns journeys that already exist into useful connections between those who send, travel and wait.",
+      body: "Our ambition is simple: make exchanges between Africa, its diaspora and the rest of the world more human, reliable and accessible, without losing what gives them value — trust between people.",
       quote: "We do not simply move parcels. We bring people closer together.",
       imageAlt:
         "A multigenerational Cameroonian family discovers together the contents of a parcel sent by a loved one.",

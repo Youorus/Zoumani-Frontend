@@ -14,7 +14,7 @@ import styles from "./home-hero.module.css";
 import { KentePattern } from "./kente-pattern";
 import { AboutSection } from "./about/about-section";
 import { PromoCards } from "./promo-cards";
-import { ShipmentSearch } from "./shipment-search";
+import { SearchBar } from "@/features/travel/components/search-bar";
 import { SocialProof } from "./social-proof";
 import { TrustCard } from "./trust-card";
 import { TrustedPartners } from "./trusted-partners";
@@ -46,17 +46,22 @@ export function HeroSection({ backgroundImageUrl }: HeroSectionProps) {
         <KentePattern />
         <TrustCard copy={copy.trustCard} />
 
-        <div className={`${styles.heroContent} relative z-20 mx-auto w-full max-w-[1536px]`}>
+        <div
+          className={`${styles.heroContent} relative z-20 mx-auto w-full max-w-[1536px]`}
+        >
           <div className={`${styles.contentReveal} ${styles.heroCopy} max-w-[560px]`}>
             <p className="flex items-center gap-2 text-sm font-semibold tracking-wide text-rating uppercase sm:text-base">
               <span className="h-1 w-6 rounded-full bg-rating" aria-hidden="true" />
               {copy.hero.eyebrow}
             </p>
             <h1 className="mt-5 font-sans text-[2.75rem] leading-[1.02] font-black tracking-[-0.045em] text-inverse-foreground sm:text-[3.5rem]">
-              {copy.hero.titleLineOne}<br />
+              {copy.hero.titleLineOne}
+              <br />
               {copy.hero.titleLineTwoPrefix}
               <span className="text-rating">
-                {copy.hero.titleHighlightOne}<br />{copy.hero.titleHighlightTwo}
+                {copy.hero.titleHighlightOne}
+                <br />
+                {copy.hero.titleHighlightTwo}
               </span>
               {copy.hero.titleSuffix}
             </h1>
@@ -69,11 +74,16 @@ export function HeroSection({ backgroundImageUrl }: HeroSectionProps) {
           </div>
         </div>
 
-        <ShipmentSearch
-          className={`${styles.searchReveal} mt-9 lg:absolute lg:inset-x-0 lg:bottom-11 lg:mt-0`}
-          copy={copy.search}
-          language={language}
-        />
+        {/* La barre interroge le référentiel d'aéroports et le catalogue
+            réels. L'ancienne portait une liste de villes figée dans le
+            code — une ville absente rendait la recherche impossible sans
+            que rien ne l'explique — et demandait un poids que personne
+            ne connaît avant de savoir ce qu'il envoie. */}
+        <div
+          className={`${styles.searchReveal} mx-auto mt-9 w-full max-w-3xl px-4 lg:absolute lg:inset-x-0 lg:bottom-11 lg:mt-0`}
+        >
+          <SearchBar tone="marketing" />
+        </div>
       </section>
 
       <div className="bg-marketing-page">

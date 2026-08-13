@@ -47,12 +47,25 @@ export function AfricaRouteIllustration() {
       fill="none"
     >
       <defs>
-        <linearGradient id="africa-map-fill" x1="36" y1="22" x2="173" y2="178" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="africa-map-fill"
+          x1="36"
+          y1="22"
+          x2="173"
+          y2="178"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="var(--inverse-foreground)" stopOpacity="0.32" />
           <stop offset="1" stopColor="var(--inverse-foreground)" stopOpacity="0.1" />
         </linearGradient>
         <pattern id="africa-grid" width="11" height="11" patternUnits="userSpaceOnUse">
-          <circle cx="1.5" cy="1.5" r="0.75" fill="var(--inverse-foreground)" fillOpacity="0.24" />
+          <circle
+            cx="1.5"
+            cy="1.5"
+            r="0.75"
+            fill="var(--inverse-foreground)"
+            fillOpacity="0.24"
+          />
         </pattern>
         <clipPath id="africa-clip">
           <path d={africaOutlinePath} />
@@ -93,7 +106,9 @@ export function AfricaRouteIllustration() {
           <path
             key={route}
             d={route}
-            className={index % 2 === 0 ? `${styles.route} ${styles.routeFast}` : styles.route}
+            className={
+              index % 2 === 0 ? `${styles.route} ${styles.routeFast}` : styles.route
+            }
             style={{ animationDelay: `${index * -0.7}s` }}
           />
         ))}

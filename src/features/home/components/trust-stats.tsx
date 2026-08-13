@@ -12,11 +12,19 @@ export function TrustStats({ copy }: { copy: HomeContent["stats"] }) {
           const Icon = statIcons[index] ?? Globe2;
 
           return (
-            <div key={value} className="flex items-center justify-center gap-4 xl:justify-start">
-              <Icon className="size-10 shrink-0 stroke-[1.7] text-rating" aria-hidden="true" />
+            <div
+              key={value}
+              className="flex items-center justify-center gap-4 xl:justify-start"
+            >
+              <Icon
+                className="size-10 shrink-0 stroke-[1.7] text-rating"
+                aria-hidden="true"
+              />
               <p className="text-sm leading-5">
                 <strong className="block text-base font-bold">{value}</strong>
-                <span className="whitespace-pre-line text-inverse-muted-foreground">{label}</span>
+                <span className="whitespace-pre-line text-inverse-muted-foreground">
+                  {label}
+                </span>
               </p>
             </div>
           );

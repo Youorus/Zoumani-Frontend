@@ -38,7 +38,7 @@ export function useAuthFlow() {
   // déclencherait aucun réaffichage.
   const [email, setEmail] = useState("");
 
-  const run = useCallback(async <T,>(action: () => Promise<T>): Promise<T | null> => {
+  const run = useCallback(async <T>(action: () => Promise<T>): Promise<T | null> => {
     setBusy(true);
     setError(null);
     try {
@@ -154,10 +154,7 @@ async function submitEmailCodeRequest(
   return toStep(await submitEmailCode(challengeId, code));
 }
 
-async function submitPhoneCodeRequest(
-  challengeId: string,
-  code: string,
-): Promise<void> {
+async function submitPhoneCodeRequest(challengeId: string, code: string): Promise<void> {
   const { submitPhoneCode } = await import("@/lib/auth/auth-client");
   await submitPhoneCode(challengeId, code);
 }

@@ -4,8 +4,16 @@
   padding-block: 8rem;
   scroll-margin-top: 5rem;
   background:
-    radial-gradient(circle at 10% 18%, color-mix(in srgb, var(--secondary) 13%, transparent), transparent 25rem),
-    radial-gradient(circle at 92% 58%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 28rem),
+    radial-gradient(
+      circle at 10% 18%,
+      color-mix(in srgb, var(--secondary) 13%, transparent),
+      transparent 25rem
+    ),
+    radial-gradient(
+      circle at 92% 58%,
+      color-mix(in srgb, var(--primary) 8%, transparent),
+      transparent 28rem
+    ),
     var(--marketing-page);
   color: var(--marketing-panel-foreground);
 }
@@ -21,7 +29,13 @@
   );
   background-size: 1.25rem 1.25rem;
   content: "";
-  mask-image: linear-gradient(to bottom, transparent, var(--foreground) 16%, var(--foreground) 84%, transparent);
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    var(--foreground) 16%,
+    var(--foreground) 84%,
+    transparent
+  );
   opacity: 0.32;
 }
 
@@ -127,7 +141,8 @@
   border: 1px solid color-mix(in srgb, var(--marketing-panel-foreground) 10%, transparent);
   border-radius: var(--shape-radius-lg);
   background: var(--marketing-panel);
-  box-shadow: 0 2rem 5rem -3rem color-mix(in srgb, var(--marketing-panel-foreground) 62%, transparent);
+  box-shadow: 0 2rem 5rem -3rem
+    color-mix(in srgb, var(--marketing-panel-foreground) 62%, transparent);
   isolation: isolate;
 }
 
@@ -255,7 +270,8 @@
   border: 1px solid color-mix(in srgb, var(--marketing-panel) 60%, transparent);
   border-radius: var(--shape-radius-sm);
   background: color-mix(in srgb, var(--marketing-panel) 91%, transparent);
-  box-shadow: 0 1rem 2.5rem -1.75rem color-mix(in srgb, var(--inverse-surface) 68%, transparent);
+  box-shadow: 0 1rem 2.5rem -1.75rem
+    color-mix(in srgb, var(--inverse-surface) 68%, transparent);
   backdrop-filter: blur(14px);
   color: var(--marketing-panel-foreground);
 }
@@ -272,7 +288,8 @@
   border: 1px solid color-mix(in srgb, var(--marketing-panel) 64%, transparent);
   border-radius: var(--shape-radius-full);
   background: color-mix(in srgb, var(--marketing-panel) 90%, transparent);
-  box-shadow: 0 0.8rem 2rem -1.35rem color-mix(in srgb, var(--inverse-surface) 62%, transparent);
+  box-shadow: 0 0.8rem 2rem -1.35rem
+    color-mix(in srgb, var(--inverse-surface) 62%, transparent);
   backdrop-filter: blur(12px);
   color: var(--marketing-panel-foreground);
   font-family: var(--font-display), serif;
@@ -413,9 +430,14 @@
   overflow: hidden;
   border-radius: var(--shape-radius-lg);
   background:
-    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary) 31%, transparent), transparent 44%),
+    radial-gradient(
+      circle at 50% 0%,
+      color-mix(in srgb, var(--primary) 31%, transparent),
+      transparent 44%
+    ),
     var(--inverse-surface);
-  box-shadow: 0 2.5rem 6rem -4rem color-mix(in srgb, var(--inverse-surface) 72%, transparent);
+  box-shadow: 0 2.5rem 6rem -4rem
+    color-mix(in srgb, var(--inverse-surface) 72%, transparent);
   color: var(--inverse-foreground);
   text-align: center;
 }

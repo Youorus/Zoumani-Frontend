@@ -1,7 +1,15 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, BellRing, Check, CheckCircle2, LoaderCircle, LockKeyhole, UserRoundPlus } from "lucide-react";
+import {
+  ArrowRight,
+  BellRing,
+  Check,
+  CheckCircle2,
+  LoaderCircle,
+  LockKeyhole,
+  UserRoundPlus,
+} from "lucide-react";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 
@@ -64,7 +72,9 @@ export function EmptySearchResults({
 
           <form
             className={styles.formGrid}
-            onSubmit={handleSubmit((values) => alert.mutate({ ...values, search: filters }))}
+            onSubmit={handleSubmit((values) =>
+              alert.mutate({ ...values, search: filters }),
+            )}
             noValidate
           >
             <div className={styles.field}>
@@ -77,7 +87,9 @@ export function EmptySearchResults({
                 aria-invalid={Boolean(errors.email)}
                 {...register("email")}
               />
-              {errors.email ? <p className={styles.fieldError}>{errors.email.message}</p> : null}
+              {errors.email ? (
+                <p className={styles.fieldError}>{errors.email.message}</p>
+              ) : null}
             </div>
             <div className={styles.field}>
               <label htmlFor="alert-phone">{copy.phoneLabel}</label>
@@ -89,7 +101,9 @@ export function EmptySearchResults({
                 aria-invalid={Boolean(errors.phone)}
                 {...register("phone")}
               />
-              {errors.phone ? <p className={styles.fieldError}>{errors.phone.message}</p> : null}
+              {errors.phone ? (
+                <p className={styles.fieldError}>{errors.phone.message}</p>
+              ) : null}
             </div>
             <div className={styles.consent}>
               <Controller
@@ -106,11 +120,21 @@ export function EmptySearchResults({
               />
               <div>
                 <label htmlFor="alert-consent">{copy.consentLabel}</label>
-                {errors.consent ? <p className={styles.fieldError}>{errors.consent.message}</p> : null}
+                {errors.consent ? (
+                  <p className={styles.fieldError}>{errors.consent.message}</p>
+                ) : null}
               </div>
             </div>
-            <button className={`${styles.alertSubmit} focus-ring`} type="submit" disabled={alert.isPending}>
-              {alert.isPending ? <LoaderCircle className="animate-spin" size={16} /> : <BellRing size={16} />}
+            <button
+              className={`${styles.alertSubmit} focus-ring`}
+              type="submit"
+              disabled={alert.isPending}
+            >
+              {alert.isPending ? (
+                <LoaderCircle className="animate-spin" size={16} />
+              ) : (
+                <BellRing size={16} />
+              )}
               {alert.isPending ? copy.submittingLabel : copy.submitLabel}
             </button>
           </form>

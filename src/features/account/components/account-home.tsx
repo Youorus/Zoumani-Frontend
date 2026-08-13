@@ -8,7 +8,7 @@ import { useAccountCopy } from "@/features/account/components/account-copy-provi
 import type { AccountCopy } from "@/features/account/content/account-content";
 import { accountLanguage } from "@/features/account/lib/account-language";
 import { homeContent } from "@/features/home/components/home-content";
-import { ShipmentSearch } from "@/features/home/components/shipment-search";
+import { SearchBar } from "@/features/travel/components/search-bar";
 import { SearchResultsView } from "@/features/shipment-search/components/search-results-view";
 import type { TripSearchFilters } from "@/features/shipment-search/schemas/trip-search.schema";
 import type { AuthenticatedUser } from "@/lib/auth/auth.types";
@@ -48,11 +48,8 @@ export function AccountHome({
   /** Vrai à la toute première venue : le compte vient d'être créé. */
   welcome: boolean;
 }) {
-  // `null` tant qu'on n'a rien cherché : l'écran d'arrivée montre ce
-  // qu'on peut faire, pas une liste vide qui ressemble à une panne.
   const copy = useAccountCopy();
   const language = accountLanguage(user.preferredLanguage);
-  const [filters, setFilters] = useState<TripSearchFilters | null>(null);
 
   return (
     <div className="mx-auto w-full max-w-[1492px] px-4 sm:px-8 lg:px-12">
@@ -72,31 +69,17 @@ export function AccountHome({
         {copy.search.title}
       </h2>
 
-      {/* La barre de la page d'accueil, telle quelle : mêmes champs, même
-          attente, mêmes villes. Importée et non recopiée — une correction
-          faite d'un côté vaut pour les deux. */}
-      <ShipmentSearch
-        className="px-0 sm:px-0 lg:px-0"
-        copy={homeContent[language].search}
-        language={language}
-        onSearch={({ from, to, weight }) =>
-          setFilters({ from, to, weight, lang: language })
-        }
-      />
+      {/* La même barre que la page d'accueil, importée et non recopiée :
+          une correction faite d'un côté vaut pour les deux. Elle mène à
+          la page de résultats plutôt que d'afficher en place — un
+          expéditeur qui affine sa recherche veut pouvoir revenir en
+          arrière, et une URL le permet. */}
+      <SearchBar />
 
-      {filters ? (
-        <section className="mt-6 sm:mt-8" aria-live="polite">
-          {/* Le même composant que la page de résultats : même attente,
-              même carte de voyageur, même message quand il n'y a personne
-              sur le trajet. */}
-          <SearchResultsView filters={filters} language={language} />
-        </section>
-      ) : (
-        <div className="mt-6 grid gap-4 sm:mt-8 lg:grid-cols-[1.4fr_1fr]">
-          <ProposeTripCard copy={copy.actions.travel} />
-          <IdentityCard copy={copy.identity} verified={user.identityVerified} />
-        </div>
-      )}
+      <div className="mt-6 grid gap-4 sm:mt-8 lg:grid-cols-[1.4fr_1fr]">
+        <ProposeTripCard copy={copy.actions.travel} />
+        <IdentityCard copy={copy.identity} verified={user.identityVerified} />
+      </div>
     </div>
   );
 }

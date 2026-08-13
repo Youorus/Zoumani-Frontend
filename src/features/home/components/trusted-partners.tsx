@@ -38,7 +38,9 @@ function PartnerList({ partners, category, duplicate = false }: PartnerListProps
             className={styles.logo}
           />
           {partner.visualLabel ? (
-            <span className={styles.visualLabel} aria-hidden="true">{partner.visualLabel}</span>
+            <span className={styles.visualLabel} aria-hidden="true">
+              {partner.visualLabel}
+            </span>
           ) : null}
         </li>
       ))}
@@ -53,7 +55,12 @@ interface PartnerMarqueeProps {
   reverse?: boolean;
 }
 
-function PartnerMarquee({ category, label, partners, reverse = false }: PartnerMarqueeProps) {
+function PartnerMarquee({
+  category,
+  label,
+  partners,
+  reverse = false,
+}: PartnerMarqueeProps) {
   return (
     <div className={styles.marqueeRow}>
       <p className={styles.rowLabel}>
@@ -71,8 +78,12 @@ function PartnerMarquee({ category, label, partners, reverse = false }: PartnerM
 }
 
 export function TrustedPartners({ copy }: { copy: HomeContent["partners"] }) {
-  const logisticsPartners = trustedPartners.filter(({ category }) => category === "logistics");
-  const insurancePartners = trustedPartners.filter(({ category }) => category === "insurance");
+  const logisticsPartners = trustedPartners.filter(
+    ({ category }) => category === "logistics",
+  );
+  const insurancePartners = trustedPartners.filter(
+    ({ category }) => category === "insurance",
+  );
 
   return (
     <section
@@ -81,7 +92,9 @@ export function TrustedPartners({ copy }: { copy: HomeContent["partners"] }) {
       aria-labelledby="trusted-partners-title"
     >
       <div className="mx-auto max-w-[760px] px-5 text-center sm:px-8">
-        <p className="text-xs font-bold tracking-[0.16em] text-primary uppercase">{copy.eyebrow}</p>
+        <p className="text-xs font-bold tracking-[0.16em] text-primary uppercase">
+          {copy.eyebrow}
+        </p>
         <h2
           id="trusted-partners-title"
           className="mt-2 font-sans text-2xl leading-tight font-extrabold tracking-[-0.03em] text-marketing-panel-foreground sm:text-[1.75rem]"
@@ -92,7 +105,6 @@ export function TrustedPartners({ copy }: { copy: HomeContent["partners"] }) {
           {copy.description}
         </p>
       </div>
-
 
       <div className={styles.marqueeStack} aria-label={copy.listLabel}>
         <PartnerMarquee

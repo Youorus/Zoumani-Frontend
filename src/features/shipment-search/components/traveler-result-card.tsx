@@ -68,14 +68,26 @@ export function TravelerResultCard({
             <h2>{trip.traveler.name}</h2>
             <p className={styles.travelerMeta}>
               <span className={styles.rating}>
-                <Star size={12} fill="currentColor" aria-hidden="true" /> {trip.traveler.rating}
+                <Star size={12} fill="currentColor" aria-hidden="true" />{" "}
+                {trip.traveler.rating}
               </span>
-              <span>{trip.traveler.reviewCount} {copy.reviews}</span>
+              <span>
+                {trip.traveler.reviewCount} {copy.reviews}
+              </span>
               {trip.traveler.verified ? (
-                <span><BadgeCheck size={12} aria-hidden="true" /> {copy.verified}</span>
+                <span>
+                  <BadgeCheck size={12} aria-hidden="true" /> {copy.verified}
+                </span>
               ) : null}
-              <span>{trip.traveler.completedTrips} {copy.trips}</span>
-              <span>{trip.traveler.points.toLocaleString(language === "fr" ? "fr-FR" : "en-GB")} {copy.points}</span>
+              <span>
+                {trip.traveler.completedTrips} {copy.trips}
+              </span>
+              <span>
+                {trip.traveler.points.toLocaleString(
+                  language === "fr" ? "fr-FR" : "en-GB",
+                )}{" "}
+                {copy.points}
+              </span>
               <span>{trip.traveler.responseTime[language]}</span>
             </p>
           </div>
@@ -89,28 +101,39 @@ export function TravelerResultCard({
       <div className={styles.tripRoute}>
         <div>
           <strong>{origin?.city ?? trip.origin}</strong>
-          <small>{formatDate(trip.departureAt, language)} · {origin?.airport}</small>
+          <small>
+            {formatDate(trip.departureAt, language)} · {origin?.airport}
+          </small>
         </div>
         <span className={styles.routeRail} aria-hidden="true">
           <Plane size={17} />
         </span>
         <div className={styles.destination}>
           <strong>{destination?.city ?? trip.destination}</strong>
-          <small>{formatDate(trip.arrivalAt, language)} · {destination?.airport}</small>
+          <small>
+            {formatDate(trip.arrivalAt, language)} · {destination?.airport}
+          </small>
         </div>
       </div>
 
       <div className={styles.metrics}>
         <div className={styles.metric}>
-          <small><Gauge size={12} aria-hidden="true" /> {copy.capacity}</small>
+          <small>
+            <Gauge size={12} aria-hidden="true" /> {copy.capacity}
+          </small>
           <strong>{trip.availableCapacityKg} kg</strong>
         </div>
         <div className={styles.metric}>
-          <small><CalendarDays size={12} aria-hidden="true" /> {language === "fr" ? "Remise" : "Handover"}</small>
+          <small>
+            <CalendarDays size={12} aria-hidden="true" />{" "}
+            {language === "fr" ? "Remise" : "Handover"}
+          </small>
           <strong>{trip.handoverLabel[language]}</strong>
         </div>
         <div className={styles.metric}>
-          <small><PackageCheck size={12} aria-hidden="true" /> {copy.perKg}</small>
+          <small>
+            <PackageCheck size={12} aria-hidden="true" /> {copy.perKg}
+          </small>
           <strong>{formatPrice(trip, language)} / kg</strong>
         </div>
       </div>

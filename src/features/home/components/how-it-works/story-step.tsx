@@ -39,7 +39,8 @@ interface StoryStatusProps {
 }
 
 function StoryStatus({ moment, proof }: StoryStatusProps) {
-  const StatusIcon = moment === "arrival" ? BellRing : moment === "journey" ? PackageCheck : ShieldCheck;
+  const StatusIcon =
+    moment === "arrival" ? BellRing : moment === "journey" ? PackageCheck : ShieldCheck;
 
   return (
     <div className={`${styles.status} ${styles[`status-${moment}`]}`}>
@@ -55,7 +56,10 @@ function StoryStatus({ moment, proof }: StoryStatusProps) {
       </div>
 
       {proof.origin && proof.destination ? (
-        <div className={styles.statusRoute} aria-label={`${proof.origin} – ${proof.destination}`}>
+        <div
+          className={styles.statusRoute}
+          aria-label={`${proof.origin} – ${proof.destination}`}
+        >
           <span>{proof.origin}</span>
           <span className={styles.statusRouteLine} aria-hidden="true">
             <Plane size={13} />

@@ -103,7 +103,8 @@ export const shipmentSearchContent: Record<HomeLanguage, ShipmentSearchContent> 
         "Les nouveaux départs arrivent chaque jour. Laissez-nous un moyen simple de vous prévenir dès qu’une place se libère.",
       alertEyebrow: "Info rapide · sans créer de compte",
       alertTitle: "Prévenez-moi dès qu’un voyage apparaît",
-      alertDescription: "Votre alerte reprend automatiquement ce trajet et le poids du colis.",
+      alertDescription:
+        "Votre alerte reprend automatiquement ce trajet et le poids du colis.",
       emailLabel: "Adresse email",
       emailPlaceholder: "vous@exemple.com",
       phoneLabel: "Numéro de téléphone",
@@ -113,17 +114,23 @@ export const shipmentSearchContent: Record<HomeLanguage, ShipmentSearchContent> 
       submittingLabel: "Création de l’alerte…",
       privacyNote: "Pas de spam. Vous pourrez arrêter l’alerte à tout moment.",
       successTitle: "Votre alerte est en route.",
-      successDescription: "Nous vous préviendrons par email et téléphone dès qu’un trajet correspond.",
+      successDescription:
+        "Nous vous préviendrons par email et téléphone dès qu’un trajet correspond.",
       accountEyebrow: "Vous envoyez régulièrement ?",
       accountTitle: "Créez votre espace et gagnez du temps au prochain colis.",
       accountDescription:
         "Enregistrez vos trajets favoris, suivez vos demandes et retrouvez tous vos échanges au même endroit.",
       accountCta: "Créer mon compte expéditeur",
-      accountBenefits: ["Recherche mémorisée", "Suivi centralisé", "Profil reconnu par les voyageurs"],
+      accountBenefits: [
+        "Recherche mémorisée",
+        "Suivi centralisé",
+        "Profil reconnu par les voyageurs",
+      ],
     },
     error: {
       title: "La recherche a été interrompue",
-      description: "Votre trajet est conservé. Vous pouvez relancer sans tout recommencer.",
+      description:
+        "Votre trajet est conservé. Vous pouvez relancer sans tout recommencer.",
       retryLabel: "Relancer la recherche",
     },
   },
@@ -170,7 +177,8 @@ export const shipmentSearchContent: Record<HomeLanguage, ShipmentSearchContent> 
         "New departures appear every day. Leave us a simple way to notify you as soon as space becomes available.",
       alertEyebrow: "Quick update · no account required",
       alertTitle: "Let me know when a journey appears",
-      alertDescription: "Your alert automatically remembers this route and parcel weight.",
+      alertDescription:
+        "Your alert automatically remembers this route and parcel weight.",
       emailLabel: "Email address",
       emailPlaceholder: "you@example.com",
       phoneLabel: "Phone number",
@@ -180,13 +188,18 @@ export const shipmentSearchContent: Record<HomeLanguage, ShipmentSearchContent> 
       submittingLabel: "Creating your alert…",
       privacyNote: "No spam. You can stop the alert at any time.",
       successTitle: "Your alert is on its way.",
-      successDescription: "We will notify you by email and phone as soon as a journey matches.",
+      successDescription:
+        "We will notify you by email and phone as soon as a journey matches.",
       accountEyebrow: "Do you send regularly?",
       accountTitle: "Create your space and save time on your next parcel.",
       accountDescription:
         "Save favourite routes, follow requests and keep every conversation in one place.",
       accountCta: "Create my sender account",
-      accountBenefits: ["Saved search", "Centralised tracking", "A profile travelers recognise"],
+      accountBenefits: [
+        "Saved search",
+        "Centralised tracking",
+        "A profile travelers recognise",
+      ],
     },
     error: {
       title: "The search was interrupted",

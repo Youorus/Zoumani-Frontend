@@ -227,7 +227,6 @@ export async function resubmitVerification(): Promise<Verification> {
   return toVerification((await unwrap(response)) as RawVerification);
 }
 
-
 /**
  * Les pièces du dossier, avec leur nature.
  *
@@ -244,5 +243,8 @@ export async function fetchDocuments(): Promise<{ id: string; documentType: stri
   const payload = (await response.json()) as {
     documents: { id: string; document_type: string }[];
   };
-  return payload.documents.map((doc) => ({ id: doc.id, documentType: doc.document_type }));
+  return payload.documents.map((doc) => ({
+    id: doc.id,
+    documentType: doc.document_type,
+  }));
 }

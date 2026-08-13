@@ -13,8 +13,17 @@
     var(--hero-scrim),
     var(
       --hero-background-image,
-      radial-gradient(circle at 72% 36%, color-mix(in srgb, var(--secondary) 34%, transparent), transparent 24%),
-      linear-gradient(118deg, var(--hero-canvas) 0%, color-mix(in srgb, var(--primary) 20%, var(--hero-canvas)) 58%, var(--inverse-surface) 100%)
+      radial-gradient(
+        circle at 72% 36%,
+        color-mix(in srgb, var(--secondary) 34%, transparent),
+        transparent 24%
+      ),
+      linear-gradient(
+        118deg,
+        var(--hero-canvas) 0%,
+        color-mix(in srgb, var(--primary) 20%, var(--hero-canvas)) 58%,
+        var(--inverse-surface) 100%
+      )
     );
   background-position: center, center, center;
   background-size: cover, cover, cover;
@@ -99,7 +108,13 @@
 @media (max-width: 39.99rem) {
   .heroBackground {
     background-color: var(--hero-canvas);
-    background-position: center, center, 64% top;
-    background-size: cover, cover, auto 34rem;
+    background-position:
+      center,
+      center,
+      64% top;
+    background-size:
+      cover,
+      cover,
+      auto 34rem;
   }
 }
