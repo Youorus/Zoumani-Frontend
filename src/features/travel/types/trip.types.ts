@@ -146,6 +146,46 @@ export function toTrip(raw: RawTrip): Trip {
   };
 }
 
+// ─── Les preuves de billet ─────────────────────────────────────────────
+
+/**
+ * Nature du document fourni.
+ *
+ * Le niveau de preuve n'est pas le même selon le document : une carte
+ * d'embarquement atteste d'un enregistrement effectif, une confirmation
+ * de réservation seulement d'une intention payée. L'écran le dit, parce
+ * que déposer le bon document accélère la vérification.
+ */
+export type ProofKind = "e_ticket" | "boarding_pass" | "booking_confirmation";
+
+export type ProofStatus = "uploaded" | "accepted" | "rejected" | "replaced";
+
+export interface Proof {
+  id: string;
+  kind: ProofKind;
+  status: ProofStatus;
+  rejectionReason: string | null;
+  createdAt: string;
+}
+
+export interface RawProof {
+  id: string;
+  kind: ProofKind;
+  status: ProofStatus;
+  rejection_reason: string | null;
+  created_at: string;
+}
+
+export function toProof(raw: RawProof): Proof {
+  return {
+    id: raw.id,
+    kind: raw.kind,
+    status: raw.status,
+    rejectionReason: raw.rejection_reason,
+    createdAt: raw.created_at,
+  };
+}
+
 // ─── Le programme de fidélité ──────────────────────────────────────────
 
 export interface Tier {

@@ -1,38 +1,58 @@
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
-import { Container } from "@/components/layout/container";
-import { PageHeader } from "@/components/layout/page-header";
-import { getQueryClient } from "@/lib/query/query-client";
+import { TripDetailView } from "@/features/travel/components/trip-detail-view";
+import { toCapacity, type RawCapacity } from "@/features/travel/types/travel.types";
+import {
+  toProof,
+  toTrip,
+  type RawPage,
+  type RawProof,
+  type RawTrip,
+} from "@/features/travel/types/trip.types";
+import { callApi } from "@/lib/api/upstream.server";
 
-import { getTripDetail } from "@/features/trips/api/get-trip-detail";
-import { TripDetailView } from "@/features/trips/components/trip-detail-view";
-import { tripQueryKeys } from "@/features/trips/queries/trip-query-keys";
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export const dynamic = "force-dynamic";
 
-export default async function TripDetailPage({
+export default async function Page({
   params,
 }: {
   params: Promise<{ tripId: string }>;
 }) {
   const { tripId } = await params;
-  const queryClient = getQueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: tripQueryKeys.detail(tripId),
-    queryFn: () => getTripDetail(tripId),
-  });
+  // Les trois appels partent ensemble : ils ne dépendent pas les uns des
+  // autres, et les enchaîner tripleraient l'attente avant le premier
+  // pixel sur une page qui en a besoin de trois.
+  const [voyage, offre, preuves] = await Promise.all([
+    callApi({ method: "GET", path: `/trips/${tripId}` }),
+    callApi({ method: "GET", path: `/trips/${tripId}/capacity` }),
+    callApi({ method: "GET", path: `/trips/${tripId}/proofs` }),
+  ]);
+
+  // L'API rend le même 404 pour un voyage inexistant et pour celui d'un
+  // autre : les distinguer permettrait d'énumérer les voyages d'autrui.
+  if (voyage.status === 404) {
+    notFound();
+  }
+  if (voyage.status !== 200) {
+    throw new Error(`L'API a répondu ${voyage.status} sur /trips/${tripId}.`);
+  }
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Container className="space-y-8">
-        <PageHeader
-          eyebrow="Trip Detail"
-          title="Detail d’un voyage"
-          description="Exemple complet de detail hydrate, mis a jour ensuite via hook client et evenement realtime."
-        />
-        <TripDetailView tripId={tripId} />
-      </Container>
-    </HydrationBoundary>
+    <TripDetailView
+      trip={toTrip(voyage.body as RawTrip)}
+      // 404 sur l'offre signifie « pas encore créée », pas « erreur ».
+      capacity={offre.status === 200 ? toCapacity(offre.body as RawCapacity) : null}
+      proofs={
+        preuves.status === 200
+          ? (preuves.body as RawPage<RawProof>).items.map(toProof)
+          : []
+      }
+    />
   );
 }

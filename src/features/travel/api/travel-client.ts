@@ -20,9 +20,13 @@ import {
   type RawFlightLookup,
 } from "../types/travel.types";
 import {
+  toProof,
   toRewards,
   toTrip,
+  type Proof,
+  type ProofKind,
   type RawPage,
+  type RawProof,
   type RawRewards,
   type RawTrip,
   type Rewards,
@@ -354,4 +358,37 @@ export async function updateItinerary(
 export async function findAirportByCode(code: string): Promise<Airport | null> {
   const trouves = await searchAirports(code);
   return trouves.find((airport) => airport.iata === code.toUpperCase()) ?? null;
+}
+
+/** Les preuves déposées sur un voyage. */
+export async function listProofs(tripId: string): Promise<Proof[]> {
+  const response = await fetch(`${PROXY}/trips/${tripId}/proofs`, {
+    cache: "no-store",
+  });
+  const page = (await unwrap(response)) as RawPage<RawProof>;
+  return page.items.map(toProof);
+}
+
+/**
+ * Dépose une preuve de billet.
+ *
+ * Le fichier traverse l'API plutôt qu'une URL présignée : le document
+ * doit être confronté à la politique du bucket **et** rattaché au voyage
+ * dans la même opération. Un envoi direct laisserait, en cas d'abandon,
+ * des billets orphelins dans le stockage.
+ */
+export async function uploadProof(
+  tripId: string,
+  kind: ProofKind,
+  file: File,
+): Promise<void> {
+  const form = new FormData();
+  form.append("kind", kind);
+  form.append("file", file);
+
+  const response = await fetch(`${PROXY}/trips/${tripId}/proofs`, {
+    method: "POST",
+    body: form,
+  });
+  await unwrap(response);
 }
