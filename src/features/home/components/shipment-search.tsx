@@ -2,6 +2,7 @@
 
 import {
   ArrowLeftRight,
+  Check,
   ChevronDown,
   CircleCheck,
   MapPin,
@@ -317,26 +318,48 @@ function ContentPicker({
       <DropdownMenuContent
         align="start"
         sideOffset={12}
-        className="max-h-72 min-w-[16rem] overflow-y-auto border-marketing-panel-border bg-marketing-panel text-marketing-panel-foreground shadow-[0_24px_60px_-24px_rgb(52_24_7_/_0.45)]"
+        className="max-h-72 min-w-[19rem] overflow-y-auto border-marketing-panel-border bg-marketing-panel text-marketing-panel-foreground shadow-[0_24px_60px_-24px_rgb(52_24_7_/_0.45)]"
       >
-        {categories.map((category) => (
-          <DropdownMenuCheckboxItem
-            key={category.code}
-            checked={selected.includes(category.code)}
-            // Le menu reste ouvert : cocher trois catégories ne doit pas
-            // demander de le rouvrir trois fois.
-            onSelect={(event) => event.preventDefault()}
-            onCheckedChange={() => onToggle(category.code)}
-            className="py-2.5 text-marketing-panel-foreground data-[highlighted]:bg-primary/10"
-          >
-            <span className="flex min-w-40 items-baseline justify-between gap-4">
-              <span>{category.label}</span>
-              <span className="text-xs text-marketing-panel-muted-foreground">
-                {category.unit === "piece" ? "pièce" : "kg"}
+        {categories.map((category) => {
+          const choisie = selected.includes(category.code);
+          return (
+            <DropdownMenuCheckboxItem
+              key={category.code}
+              checked={choisie}
+              // Le menu reste ouvert : cocher trois catégories ne doit
+              // pas demander de le rouvrir trois fois.
+              onSelect={(event) => event.preventDefault()}
+              onCheckedChange={() => onToggle(category.code)}
+              // `pl-3` annule la gouttière que le composant partagé
+              // réserve à sa coche : on dessine la case nous-mêmes, pour
+              // qu'elle soit visible **avant** d'être cochée. Une coche
+              // seule ne montre que ce qui est déjà choisi, et l'on ne
+              // voit pas qu'il y a quelque chose à choisir.
+              className="py-2.5 pl-3 text-marketing-panel-foreground data-[highlighted]:bg-primary/10"
+            >
+              <span className="flex w-full items-center gap-3">
+                <span
+                  aria-hidden
+                  className={`grid size-[1.125rem] shrink-0 place-items-center rounded border transition-colors ${
+                    choisie
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-marketing-panel-border bg-marketing-panel"
+                  }`}
+                >
+                  {choisie && <Check className="size-3" strokeWidth={3} />}
+                </span>
+
+                {/* `flex-1` pousse l'unité contre le bord droit : toutes
+                    s'alignent alors sur une même colonne, quelle que
+                    soit la longueur du nom. */}
+                <span className="flex-1 truncate">{category.label}</span>
+                <span className="w-12 shrink-0 text-right text-xs text-marketing-panel-muted-foreground">
+                  {category.unit === "piece" ? "/ pièce" : "/ kg"}
+                </span>
               </span>
-            </span>
-          </DropdownMenuCheckboxItem>
-        ))}
+            </DropdownMenuCheckboxItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );
