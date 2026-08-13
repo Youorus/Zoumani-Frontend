@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { homeContent, type HomeLanguage } from "@/features/home/components/home-content";
 import { HomeFooter } from "@/features/home/components/footer/home-footer";
-import { HeroHeader } from "@/features/home/components/hero-header";
+import { SiteHeader } from "./site-header";
 import { ShipmentSearch } from "@/features/home/components/shipment-search";
 
 interface SearchPageShellProps {
@@ -32,7 +32,7 @@ interface SearchPageShellProps {
  * chez qui il se trouve.
  */
 export function SearchPageShell({ children, connected }: SearchPageShellProps) {
-  const [language, setLanguage] = useState<HomeLanguage>("fr");
+  const [language] = useState<HomeLanguage>("fr");
   const copy = homeContent[language];
 
   if (connected) {
@@ -50,7 +50,11 @@ export function SearchPageShell({ children, connected }: SearchPageShellProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <HeroHeader copy={copy} language={language} onLanguageChange={setLanguage} />
+      {/* L'en-tête des pages internes, pas celui de l'accueil : ce
+          dernier est `fixed` avec un logo blanc, fait pour flotter au
+          dessus de la photo du hero. Sur fond clair, son logo devient
+          invisible et le contenu passe dessous. */}
+      <SiteHeader connected={false} />
 
       <main className="flex-1">
         {/* La barre reste en haut des résultats : affiner une recherche

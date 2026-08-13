@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { cancelTrip, deleteTrip } from "../api/travel-client";
 import type { Trip, TripStage } from "../types/trip.types";
+import { TripRoute } from "./trip-route";
 
 interface MyTripsViewProps {
   trips: Trip[];
@@ -86,13 +87,11 @@ export function MyTripsView({ trips }: MyTripsViewProps) {
           <li key={trip.id} className="rounded-2xl border border-border p-4">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <p className="flex items-center gap-2 font-medium">
-                  <span>{trip.originAirportCode}</span>
-                  <span aria-hidden className="text-muted-foreground">
-                    →
-                  </span>
-                  <span>{trip.destinationAirportCode}</span>
-                </p>
+                <TripRoute
+                  origin={{ code: trip.originAirportCode }}
+                  destination={{ code: trip.destinationAirportCode }}
+                  size="compact"
+                />
                 <p className="mt-0.5 text-sm text-muted-foreground">
                   {formatUtc(trip.departureAt)}
                   {trip.segments[0] && (

@@ -15,6 +15,7 @@ import {
 import type { Capacity } from "../types/travel.types";
 import type { Proof, ProofKind, Trip } from "../types/trip.types";
 import { AttestationField } from "./attestation-field";
+import { TripRoute } from "./trip-route";
 
 interface TripDetailViewProps {
   trip: Trip;
@@ -73,13 +74,15 @@ export function TripDetailView({ trip, capacity, proofs }: TripDetailViewProps) 
         >
           ← Mes trajets
         </Link>
-        <h1 className="mt-2 flex items-center gap-2.5 text-2xl font-semibold tracking-tight">
-          <span>{trip.originAirportCode}</span>
-          <span aria-hidden className="text-muted-foreground">
-            →
-          </span>
-          <span>{trip.destinationAirportCode}</span>
+        <h1 className="sr-only">
+          {trip.originAirportCode} vers {trip.destinationAirportCode}
         </h1>
+        <div className="mt-2">
+          <TripRoute
+            origin={{ code: trip.originAirportCode }}
+            destination={{ code: trip.destinationAirportCode }}
+          />
+        </div>
         <p className="mt-1 text-sm text-muted-foreground">
           {formatUtc(trip.departureAt)} · heure UTC
         </p>

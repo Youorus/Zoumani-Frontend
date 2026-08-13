@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Plane, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
-import { flagOf, formatDistance, type CapacityMatch } from "../types/trip.types";
+import { formatDistance, type CapacityMatch } from "../types/trip.types";
+import { TripRoute } from "./trip-route";
 
 interface TravelerCardProps {
   match: CapacityMatch;
@@ -35,23 +36,18 @@ export function TravelerCard({ match, labels }: TravelerCardProps) {
   return (
     <article className="group overflow-hidden rounded-2xl border border-border bg-background transition-shadow hover:shadow-[0_18px_50px_-28px_rgb(13_6_2_/_0.45)]">
       {/* ── Le trajet, en bandeau ── */}
-      <div className="flex items-center gap-3 border-b border-border bg-muted/40 px-4 py-3 sm:px-5">
-        <Ville ville={match.originCity} code={match.origin} pays={match.originCountry} />
-
-        <span
-          className="flex flex-1 items-center gap-1.5 text-muted-foreground"
-          aria-hidden
-        >
-          <span className="h-px flex-1 bg-border" />
-          <Plane className="size-4 rotate-90 text-primary" />
-          <span className="h-px flex-1 bg-border" />
-        </span>
-
-        <Ville
-          ville={match.destinationCity}
-          code={match.destination}
-          pays={match.destinationCountry}
-          alignRight
+      <div className="border-b border-border bg-muted/40 px-4 py-3 sm:px-5">
+        <TripRoute
+          origin={{
+            code: match.origin,
+            city: match.originCity,
+            country: match.originCountry,
+          }}
+          destination={{
+            code: match.destination,
+            city: match.destinationCity,
+            country: match.destinationCountry,
+          }}
         />
       </div>
 
@@ -140,36 +136,6 @@ export function TravelerCard({ match, labels }: TravelerCardProps) {
         </Link>
       </div>
     </article>
-  );
-}
-
-function Ville({
-  ville,
-  code,
-  pays,
-  alignRight = false,
-}: {
-  ville: string;
-  code: string;
-  pays: string;
-  alignRight?: boolean;
-}) {
-  return (
-    <span className={alignRight ? "text-right" : ""}>
-      <span
-        className="flex items-center gap-1.5"
-        style={alignRight ? { flexDirection: "row-reverse" } : undefined}
-      >
-        <span aria-hidden className="text-base leading-none">
-          {flagOf(pays)}
-        </span>
-        <span className="font-display text-lg leading-tight text-foreground">
-          {ville}
-        </span>
-      </span>
-      {/* Le code reste lisible : c'est lui qui figure sur un billet. */}
-      <span className="block font-mono text-xs text-muted-foreground">{code}</span>
-    </span>
   );
 }
 

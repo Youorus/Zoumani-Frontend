@@ -1,8 +1,9 @@
 "use client";
 
-import { Plane, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
-import { flagOf, formatDistance, type CapacityMatch } from "../types/trip.types";
+import { formatDistance, type CapacityMatch } from "../types/trip.types";
+import { TripRoute } from "./trip-route";
 
 interface TripSummaryBannerProps {
   match: CapacityMatch;
@@ -37,15 +38,27 @@ export function TripSummaryBanner({ match }: TripSummaryBannerProps) {
             <span className="truncate">{match.traveler.displayName}</span>
             <ShieldCheck className="size-3.5 shrink-0 text-success" aria-hidden />
           </p>
-          <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
-            <span aria-hidden>{flagOf(match.originCountry)}</span>
-            <span>{match.originCity}</span>
-            <Plane className="size-3 rotate-90 text-primary" aria-hidden />
-            <span aria-hidden>{flagOf(match.destinationCountry)}</span>
-            <span>{match.destinationCity}</span>
-            <span aria-hidden>·</span>
-            <span>{formatDay(match.departureAt)}</span>
-          </p>
+          <span className="flex flex-wrap items-center gap-x-1.5">
+            <TripRoute
+              origin={{
+                code: match.origin,
+                city: match.originCity,
+                country: match.originCountry,
+              }}
+              destination={{
+                code: match.destination,
+                city: match.destinationCity,
+                country: match.destinationCountry,
+              }}
+              size="compact"
+            />
+            <span aria-hidden className="text-xs text-muted-foreground">
+              ·
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {formatDay(match.departureAt)}
+            </span>
+          </span>
         </div>
 
         <div className="shrink-0 text-right">
