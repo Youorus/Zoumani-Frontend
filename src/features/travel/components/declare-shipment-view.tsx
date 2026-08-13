@@ -10,13 +10,16 @@ import {
   uploadParcelPhoto,
 } from "../api/travel-client";
 import type { Capacity } from "../types/travel.types";
-import { estimateLineMinor } from "../types/trip.types";
+import { estimateLineMinor, type CapacityMatch } from "../types/trip.types";
 import { HandoverStep } from "./handover-step";
+import { TripSummaryBanner } from "./trip-summary-banner";
 
 interface DeclareShipmentViewProps {
   capacity: Capacity;
   /** Libellés des catégories, résolus côté serveur. */
   labels: Record<string, string>;
+  /** Le voyage choisi, rappelé à chaque étape. */
+  match: CapacityMatch;
   /** Position de l'expéditeur, issue de son adresse vérifiée. */
   sender: { latitude: number; longitude: number; countryCode: string } | null;
   /** Distance jusqu'au voyageur, si les deux adresses sont situées. */
@@ -54,6 +57,7 @@ interface LigneSaisie {
 export function DeclareShipmentView({
   capacity,
   labels,
+  match,
   sender,
   distanceMeters,
 }: DeclareShipmentViewProps) {
@@ -203,6 +207,11 @@ export function DeclareShipmentView({
               : "En main propre, ou déposé dans un point relais près de chez vous."}
         </p>
       </header>
+
+      {/* Rappelé à chaque étape : trois écrans séparent la première
+          quantité de la transmission, et perdre de vue avec qui l'on
+          envoie oblige à revenir en arrière pour vérifier. */}
+      <TripSummaryBanner match={match} />
 
       {etape === "saisie" ? (
         <>

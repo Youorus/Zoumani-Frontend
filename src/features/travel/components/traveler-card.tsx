@@ -57,18 +57,36 @@ export function TravelerCard({ match, labels }: TravelerCardProps) {
 
       <div className="p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          {/* ── La date et la place, ce qui décide ── */}
-          <div>
-            <p className="text-sm text-muted-foreground">
-              {formatDate(match.departureAt)}
-            </p>
-            <p className="mt-1 flex items-baseline gap-1.5">
-              <span className="font-display text-3xl leading-none text-foreground">
-                {match.availableWeightKg}
-              </span>
-              <span className="text-sm font-medium text-foreground">kg</span>
-              <span className="text-sm text-muted-foreground">disponibles</span>
-            </p>
+          {/* ── Ce qui décide : quand, et combien de place ──
+              Les deux au même niveau. Une date lointaine écarte une
+              offre aussi sûrement qu'un poids insuffisant, et la
+              reléguer en légende obligeait à la chercher. */}
+          <div className="flex items-stretch gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                Départ
+              </p>
+              <p className="mt-0.5 font-display text-xl leading-tight text-foreground">
+                {formatDay(match.departureAt)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {formatWeekday(match.departureAt)} · {formatTime(match.departureAt)}
+              </p>
+            </div>
+
+            <span aria-hidden className="w-px self-stretch bg-border" />
+
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                Place libre
+              </p>
+              <p className="mt-0.5 flex items-baseline gap-1">
+                <span className="font-display text-xl leading-tight text-foreground">
+                  {match.availableWeightKg}
+                </span>
+                <span className="text-sm font-medium text-foreground">kg</span>
+              </p>
+            </div>
           </div>
 
           {/* ── Qui, et à quelle distance ── */}
@@ -190,12 +208,28 @@ function Avatar({ name, url }: { name: string; url: string | null }) {
   );
 }
 
-/** La date du départ, en toutes lettres : elle se lit sans calcul. */
-function formatDate(iso: string): string {
+/** « 20 août » — le jour, court, lisible d'un coup d'œil. */
+function formatDay(iso: string): string {
   return new Intl.DateTimeFormat("fr-FR", {
-    weekday: "long",
     day: "numeric",
     month: "long",
+    timeZone: "UTC",
+  }).format(new Date(iso));
+}
+
+/** Le jour de la semaine : il situe la date sans calcul mental. */
+function formatWeekday(iso: string): string {
+  return new Intl.DateTimeFormat("fr-FR", {
+    weekday: "long",
+    timeZone: "UTC",
+  }).format(new Date(iso));
+}
+
+/** L'heure de départ, en UTC — celle que la compagnie publie. */
+function formatTime(iso: string): string {
+  return new Intl.DateTimeFormat("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
     timeZone: "UTC",
   }).format(new Date(iso));
 }

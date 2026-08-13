@@ -5,6 +5,7 @@ import { DeclareShipmentView } from "@/features/travel/components/declare-shipme
 import type { RawCatalog } from "@/features/travel/types/travel.types";
 import {
   toCapacityFromMatch,
+  toCapacityMatch,
   type RawCapacityMatch,
 } from "@/features/travel/types/trip.types";
 import { callApi } from "@/lib/api/upstream.server";
@@ -83,6 +84,7 @@ export default async function Page({
   return (
     <DeclareShipmentView
       capacity={toCapacityFromMatch(offre.body as RawCapacityMatch)}
+      match={toCapacityMatch(offre.body as RawCapacityMatch)}
       labels={labels}
       sender={sender}
       distanceMeters={Number.isFinite(distance) ? distance : null}
