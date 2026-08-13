@@ -126,6 +126,18 @@ export function MyTripsView({ trips }: MyTripsViewProps) {
                 Voir le détail
               </Link>
 
+              {/* Proposé seulement quand le serveur dit que c'est
+                  possible : offrir un lien qui mène à un refus fait
+                  perdre confiance dans tous les autres. */}
+              {trip.isEditable && (
+                <Link
+                  href={`/trips/${trip.id}/modifier`}
+                  className="rounded-lg border border-border px-3 py-1.5 text-sm"
+                >
+                  Modifier
+                </Link>
+              )}
+
               {trip.stage !== "clos" &&
                 (confirming === trip.id ? (
                   <>

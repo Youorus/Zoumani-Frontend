@@ -313,3 +313,45 @@ export async function fetchRewards(): Promise<Rewards> {
   const response = await fetch(`${PROXY}/rewards/me`, { cache: "no-store" });
   return toRewards((await unwrap(response)) as RawRewards);
 }
+
+/**
+ * Remplace l'itinéraire d'un voyage.
+ *
+ * **Un remplacement, pas une retouche.** Corriger une escale change les
+ * rangs, les correspondances et les bornes du voyage, qui ne se valident
+ * que comme un tout — c'est le contrat de l'API, et l'écran d'édition
+ * suit la même logique : il renvoie l'itinéraire entier.
+ */
+export async function updateItinerary(
+  tripId: string,
+  segments: SegmentDraft[],
+): Promise<Trip> {
+  const response = await fetch(`${PROXY}/trips/${tripId}/itinerary`, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      segments: segments.map((segment) => ({
+        segment_order: segment.segmentOrder,
+        airline_code: segment.airlineCode,
+        flight_number: segment.flightNumber,
+        origin_airport_code: segment.originAirportCode,
+        destination_airport_code: segment.destinationAirportCode,
+        departure_at: segment.departureAt,
+        arrival_at: segment.arrivalAt,
+      })),
+    }),
+  });
+  return toTrip((await unwrap(response)) as RawTrip);
+}
+
+/**
+ * Un aéroport par son code, pour pré-remplir un formulaire.
+ *
+ * L'API de recherche répond sur un code exact — c'est son premier
+ * critère de classement — ce qui évite une seconde route pour une seule
+ * lecture.
+ */
+export async function findAirportByCode(code: string): Promise<Airport | null> {
+  const trouves = await searchAirports(code);
+  return trouves.find((airport) => airport.iata === code.toUpperCase()) ?? null;
+}
