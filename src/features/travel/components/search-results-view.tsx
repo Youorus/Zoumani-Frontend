@@ -113,7 +113,15 @@ function CarteVoyageur({
       </div>
 
       <Link
-        href={`/envois/nouveau?capacity=${match.capacityId}`}
+        href={
+          // La distance voyage dans l'URL : elle vient d'être calculée
+          // par la recherche, et la recalculer à l'écran suivant
+          // supposerait de connaître la position du voyageur — que
+          // l'API ne rend jamais.
+          match.distanceMeters !== null
+            ? `/envois/nouveau?capacity=${match.capacityId}&distance=${Math.round(match.distanceMeters)}`
+            : `/envois/nouveau?capacity=${match.capacityId}`
+        }
         className="mt-3 block w-full rounded-xl bg-primary px-4 py-2.5 text-center text-sm font-medium text-primary-foreground"
       >
         Envoyer avec ce voyageur

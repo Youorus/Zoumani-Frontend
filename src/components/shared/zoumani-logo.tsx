@@ -5,10 +5,7 @@ interface ZoumaniLogoProps {
   inverse?: boolean;
 }
 
-export function ZoumaniLogo({
-  className,
-  inverse = false,
-}: ZoumaniLogoProps) {
+export function ZoumaniLogo({ className, inverse = false }: ZoumaniLogoProps) {
   return (
     <span
       className={cn(

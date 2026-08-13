@@ -2,15 +2,11 @@
 
 import { ArrowRight, BadgeCheck, Plane, ShieldAlert } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 
 import { useAccountCopy } from "@/features/account/components/account-copy-provider";
 import type { AccountCopy } from "@/features/account/content/account-content";
 import { accountLanguage } from "@/features/account/lib/account-language";
-import { homeContent } from "@/features/home/components/home-content";
 import { SearchBar } from "@/features/travel/components/search-bar";
-import { SearchResultsView } from "@/features/shipment-search/components/search-results-view";
-import type { TripSearchFilters } from "@/features/shipment-search/schemas/trip-search.schema";
 import type { AuthenticatedUser } from "@/lib/auth/auth.types";
 
 /**

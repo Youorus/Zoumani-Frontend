@@ -20,6 +20,7 @@ import {
   type RawFlightLookup,
 } from "../types/travel.types";
 import {
+  toHandoverOptions,
   toProof,
   toShipment,
   toRewards,
@@ -28,6 +29,8 @@ import {
   type ProofKind,
   type RawPage,
   type HandoverMethod,
+  type HandoverOptions,
+  type RawHandoverOptions,
   type RawProof,
   type RawShipment,
   type ShipmentSummary,
@@ -510,4 +513,33 @@ function toRawLine(line: DeclaredLineInput) {
     photo_key: line.photoKey ?? null,
     declared_value_minor: line.declaredValueMinor ?? null,
   };
+}
+
+/**
+ * Les façons de remettre le colis, et ce qu'elles coûtent.
+ *
+ * Le conseil et les tarifs sont calculés par le serveur : deux clients
+ * les calculeraient différemment, et c'est un montant qui sera facturé.
+ */
+export async function fetchHandoverOptions(input: {
+  latitude: number;
+  longitude: number;
+  countryCode: string;
+  weightGrams: number;
+  distanceMeters?: number | null;
+}): Promise<HandoverOptions> {
+  const params = new URLSearchParams({
+    latitude: String(input.latitude),
+    longitude: String(input.longitude),
+    country_code: input.countryCode,
+    weight_grams: String(input.weightGrams),
+  });
+  if (input.distanceMeters != null) {
+    params.set("distance_meters", String(input.distanceMeters));
+  }
+
+  const response = await fetch(`${PROXY}/handover/options?${params}`, {
+    cache: "no-store",
+  });
+  return toHandoverOptions((await unwrap(response)) as RawHandoverOptions);
 }

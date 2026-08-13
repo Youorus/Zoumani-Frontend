@@ -36,7 +36,10 @@ export default async function ConnexionPage({ searchParams }: ConnexionPageProps
   const redirectTo = firstValue(params.suite);
 
   return (
-    <VisitorFlowPage contextLabel={authContent[language].contextLabel} language={language}>
+    <VisitorFlowPage
+      contextLabel={authContent[language].contextLabel}
+      language={language}
+    >
       <AuthView language={language} redirectTo={redirectTo} />
     </VisitorFlowPage>
   );

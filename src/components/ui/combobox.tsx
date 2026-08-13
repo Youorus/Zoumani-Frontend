@@ -119,7 +119,10 @@ export function Combobox({
             />
           </div>
 
-          <Command.List id={listId} className="max-h-72 overflow-y-auto overscroll-contain p-2">
+          <Command.List
+            id={listId}
+            className="max-h-72 overflow-y-auto overscroll-contain p-2"
+          >
             <Command.Empty className="px-3 py-8 text-center text-sm text-marketing-panel-muted-foreground">
               {emptyText}
             </Command.Empty>
@@ -131,7 +134,11 @@ export function Combobox({
                 <Command.Item
                   key={option.value}
                   value={option.value}
-                  keywords={[option.label, option.description ?? "", ...(option.keywords ?? [])]}
+                  keywords={[
+                    option.label,
+                    option.description ?? "",
+                    ...(option.keywords ?? []),
+                  ]}
                   onSelect={() => {
                     onValueChange(option.value);
                     updateOpen(false);

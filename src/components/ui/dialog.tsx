@@ -54,20 +54,17 @@ export const DialogContent = forwardRef<
 
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
-export function DialogHeader({
-  className,
-  ...props
-}: ComponentPropsWithoutRef<"div">) {
+export function DialogHeader({ className, ...props }: ComponentPropsWithoutRef<"div">) {
   return <div className={cn("flex flex-col gap-2 pr-10", className)} {...props} />;
 }
 
-export function DialogFooter({
-  className,
-  ...props
-}: ComponentPropsWithoutRef<"div">) {
+export function DialogFooter({ className, ...props }: ComponentPropsWithoutRef<"div">) {
   return (
     <div
-      className={cn("mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end", className)}
+      className={cn(
+        "mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end",
+        className,
+      )}
       {...props}
     />
   );

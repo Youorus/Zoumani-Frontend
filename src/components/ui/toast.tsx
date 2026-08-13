@@ -46,13 +46,18 @@ export function ToastProvider({ children }: PropsWithChildren) {
     setToasts((currentToasts) => currentToasts.filter((toast) => toast.id !== id));
   }, []);
 
-  const dismiss = useCallback((id: string) => {
-    setToasts((currentToasts) =>
-      currentToasts.map((toast) => (toast.id === id ? { ...toast, open: false } : toast)),
-    );
+  const dismiss = useCallback(
+    (id: string) => {
+      setToasts((currentToasts) =>
+        currentToasts.map((toast) =>
+          toast.id === id ? { ...toast, open: false } : toast,
+        ),
+      );
 
-    window.setTimeout(() => removeToast(id), 180);
-  }, [removeToast]);
+      window.setTimeout(() => removeToast(id), 180);
+    },
+    [removeToast],
+  );
 
   const toast = useCallback(
     ({ variant = "info", duration = 4200, ...payload }: ToastPayload) => {
@@ -80,32 +85,34 @@ export function ToastProvider({ children }: PropsWithChildren) {
     <ToastContext.Provider value={value}>
       <ToastPrimitive.Provider swipeDirection="right">
         {children}
-        {toasts.map(({ id, title, description, action, duration, variant = "info", open }) => (
-          <ToastPrimitive.Root
-            key={id}
-            open={open}
-            duration={duration}
-            onOpenChange={(nextOpen) => {
-              if (!nextOpen) {
-                dismiss(id);
-              }
-            }}
-            className={cn(
-              "grid gap-1 rounded-2xl border p-4 shadow-lifted",
-              toastVariantClasses[variant],
-            )}
-          >
-            <ToastPrimitive.Title className="text-sm font-semibold">
-              {title}
-            </ToastPrimitive.Title>
-            {description ? (
-              <ToastPrimitive.Description className="text-sm text-muted-foreground">
-                {description}
-              </ToastPrimitive.Description>
-            ) : null}
-            {action ? <div className="mt-2">{action}</div> : null}
-          </ToastPrimitive.Root>
-        ))}
+        {toasts.map(
+          ({ id, title, description, action, duration, variant = "info", open }) => (
+            <ToastPrimitive.Root
+              key={id}
+              open={open}
+              duration={duration}
+              onOpenChange={(nextOpen) => {
+                if (!nextOpen) {
+                  dismiss(id);
+                }
+              }}
+              className={cn(
+                "grid gap-1 rounded-2xl border p-4 shadow-lifted",
+                toastVariantClasses[variant],
+              )}
+            >
+              <ToastPrimitive.Title className="text-sm font-semibold">
+                {title}
+              </ToastPrimitive.Title>
+              {description ? (
+                <ToastPrimitive.Description className="text-sm text-muted-foreground">
+                  {description}
+                </ToastPrimitive.Description>
+              ) : null}
+              {action ? <div className="mt-2">{action}</div> : null}
+            </ToastPrimitive.Root>
+          ),
+        )}
         <ToastPrimitive.Viewport className="fixed right-4 bottom-4 z-[var(--z-toast)] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3 outline-none" />
       </ToastPrimitive.Provider>
     </ToastContext.Provider>

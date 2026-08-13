@@ -180,7 +180,12 @@ export async function callApi(options: CallOptions): Promise<UpstreamResult> {
 
   // Le jeton d'accès a expiré — le cas nominal après quinze minutes.
   if (!(await refreshSession())) {
-    return { status: 401, body: await parse(first), refreshed: false, cacheControl: null };
+    return {
+      status: 401,
+      body: await parse(first),
+      refreshed: false,
+      cacheControl: null,
+    };
   }
 
   const second = await rawCall(options, await readAccessToken());

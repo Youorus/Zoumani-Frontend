@@ -9,19 +9,9 @@ interface EmptyStateProps {
   className?: string;
 }
 
-export function EmptyState({
-  title,
-  description,
-  action,
-  className,
-}: EmptyStateProps) {
+export function EmptyState({ title, description, action, className }: EmptyStateProps) {
   return (
-    <div
-      className={cn(
-        "panel-surface flex flex-col items-start gap-4 p-6",
-        className,
-      )}
-    >
+    <div className={cn("panel-surface flex flex-col items-start gap-4 p-6", className)}>
       <div className="space-y-2">
         <h3 className="font-display text-2xl text-foreground">{title}</h3>
         <p className="max-w-xl text-sm leading-6 text-muted-foreground">{description}</p>

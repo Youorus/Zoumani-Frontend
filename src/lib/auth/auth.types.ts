@@ -132,6 +132,9 @@ export function can(user: AuthenticatedUser | null, permission: Permission): boo
 }
 
 /** La personne détient-elle **au moins une** de ces permissions ? */
-export function canAny(user: AuthenticatedUser | null, permissions: Permission[]): boolean {
+export function canAny(
+  user: AuthenticatedUser | null,
+  permissions: Permission[],
+): boolean {
   return permissions.some((permission) => can(user, permission));
 }

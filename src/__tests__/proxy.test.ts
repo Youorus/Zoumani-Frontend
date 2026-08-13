@@ -104,7 +104,9 @@ describe("la porte d'entrée pour qui est déjà entré", () => {
     // Une redirection ouverte transformerait la page de connexion en
     // tremplin d'hameçonnage : le lien serait légitime jusqu'au dernier
     // saut.
-    const response = proxy(requestFor("/connexion?suite=https%3A%2F%2Failleurs.fr", true));
+    const response = proxy(
+      requestFor("/connexion?suite=https%3A%2F%2Failleurs.fr", true),
+    );
 
     expect(response.headers.get("location")).toContain("/compte");
     expect(response.headers.get("location")).not.toContain("ailleurs.fr");

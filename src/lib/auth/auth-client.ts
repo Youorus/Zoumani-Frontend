@@ -40,9 +40,9 @@ export class AuthError extends Error {
 }
 
 async function unwrap(response: Response): Promise<unknown> {
-  const payload = (await response.json().catch(() => null)) as
-    | { error?: { message?: string; details?: { reason?: string; field?: string } } }
-    | null;
+  const payload = (await response.json().catch(() => null)) as {
+    error?: { message?: string; details?: { reason?: string; field?: string } };
+  } | null;
 
   if (!response.ok) {
     throw new AuthError(
@@ -115,10 +115,7 @@ export async function submitEmailCode(
 }
 
 /** Étape 3 — valide le code du SMS. La session est ouverte au retour. */
-export async function submitPhoneCode(
-  challengeId: string,
-  code: string,
-): Promise<void> {
+export async function submitPhoneCode(challengeId: string, code: string): Promise<void> {
   await unwrap(await post("/api/auth/login/phone", { challenge_id: challengeId, code }));
 }
 

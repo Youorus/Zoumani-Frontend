@@ -407,3 +407,85 @@ export function estimateLineMinor(
   // Au prorata, comme le domaine : 500 g à 8 €/kg font 4 €.
   return Math.round((unitPriceMinor * quantity) / 1000);
 }
+
+// ─── La remise du colis ────────────────────────────────────────────────
+
+export type HandoverAdvice = "in_person_only" | "either" | "carrier_recommended";
+export type ServicePointOutcome = "found" | "none_nearby" | "unavailable";
+
+export interface ServicePoint {
+  code: string;
+  name: string;
+  carrier: string;
+  carrierName: string;
+  street: string;
+  postalCode: string;
+  city: string;
+  latitude: number;
+  longitude: number;
+  distanceMeters: number | null;
+  openingTimes: string[];
+}
+
+export interface CarrierQuote {
+  carrier: string;
+  label: string;
+  priceMinor: number;
+  priceMajor: string;
+}
+
+export interface HandoverOptions {
+  advice: HandoverAdvice;
+  distanceMeters: number | null;
+  quotes: CarrierQuote[];
+  /** `unavailable` n'est **pas** « aucun point » : voir l'API. */
+  pointsOutcome: ServicePointOutcome;
+  servicePoints: ServicePoint[];
+}
+
+export interface RawHandoverOptions {
+  advice: HandoverAdvice;
+  distance_meters: number | null;
+  quotes: { carrier: string; label: string; price_minor: number; price_major: string }[];
+  points_outcome: ServicePointOutcome;
+  service_points: {
+    code: string;
+    name: string;
+    carrier: string;
+    carrier_name: string;
+    street: string;
+    postal_code: string;
+    city: string;
+    latitude: number;
+    longitude: number;
+    distance_meters: number | null;
+    opening_times: string[];
+  }[];
+}
+
+export function toHandoverOptions(raw: RawHandoverOptions): HandoverOptions {
+  return {
+    advice: raw.advice,
+    distanceMeters: raw.distance_meters,
+    quotes: raw.quotes.map((quote) => ({
+      carrier: quote.carrier,
+      label: quote.label,
+      priceMinor: quote.price_minor,
+      priceMajor: quote.price_major,
+    })),
+    pointsOutcome: raw.points_outcome,
+    servicePoints: raw.service_points.map((point) => ({
+      code: point.code,
+      name: point.name,
+      carrier: point.carrier,
+      carrierName: point.carrier_name,
+      street: point.street,
+      postalCode: point.postal_code,
+      city: point.city,
+      latitude: point.latitude,
+      longitude: point.longitude,
+      distanceMeters: point.distance_meters,
+      openingTimes: point.opening_times,
+    })),
+  };
+}

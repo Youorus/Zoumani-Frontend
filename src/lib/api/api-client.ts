@@ -28,7 +28,10 @@ function buildUrl(path: string) {
 
 function createTimeoutSignal(timeoutMs: number) {
   const controller = new AbortController();
-  const timeoutId = window.setTimeout(() => controller.abort("Request timeout"), timeoutMs);
+  const timeoutId = window.setTimeout(
+    () => controller.abort("Request timeout"),
+    timeoutMs,
+  );
 
   return {
     signal: controller.signal,
@@ -129,7 +132,8 @@ async function request<TResponse, TBody = unknown>(
     cache = "no-store",
   } = options;
 
-  const timeoutController = typeof window !== "undefined" ? createTimeoutSignal(timeoutMs) : null;
+  const timeoutController =
+    typeof window !== "undefined" ? createTimeoutSignal(timeoutMs) : null;
   const mergedSignal = mergeSignals(signal, timeoutController?.signal);
 
   try {
@@ -151,11 +155,7 @@ async function request<TResponse, TBody = unknown>(
       // Sans cela, le navigateur n'envoie pas le cookie de session et le
       // serveur ne verrait jamais qui appelle.
       credentials: "same-origin",
-      body: body
-        ? body instanceof FormData
-          ? body
-          : JSON.stringify(body)
-        : undefined,
+      body: body ? (body instanceof FormData ? body : JSON.stringify(body)) : undefined,
       signal: mergedSignal,
       cache,
     });
@@ -163,7 +163,10 @@ async function request<TResponse, TBody = unknown>(
     const parsedPayload = await parseResponse<ApiErrorPayload | TResponse>(response);
 
     if (!response.ok) {
-      throw normalizeHttpError(response, parsedPayload as ApiErrorPayload | string | undefined);
+      throw normalizeHttpError(
+        response,
+        parsedPayload as ApiErrorPayload | string | undefined,
+      );
     }
 
     return parsedPayload as TResponse;

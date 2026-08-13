@@ -5,11 +5,7 @@ import "./globals.css";
 
 import { JsonLd } from "@/components/seo/json-ld";
 import { siteConfig, siteUrl, isIndexable } from "@/lib/seo/site";
-import {
-  buildGraph,
-  organizationSchema,
-  websiteSchema,
-} from "@/lib/seo/structured-data";
+import { buildGraph, organizationSchema, websiteSchema } from "@/lib/seo/structured-data";
 
 import { AppProviders } from "./providers";
 

@@ -4,9 +4,11 @@ import {
   formatDistance,
   stageOfTrip,
   toCapacityMatch,
+  toHandoverOptions,
   toRewards,
   toTrip,
   type RawCapacityMatch,
+  type RawHandoverOptions,
   type RawRewards,
   type RawTrip,
   type TripStatus,
@@ -187,5 +189,66 @@ describe("l'affichage d'une distance", () => {
     // Personne ne décide sur 300 mètres à cette échelle.
     expect(formatDistance(42_300)).toBe("42 km");
     expect(formatDistance(5_000_000)).toBe("5000 km");
+  });
+});
+
+describe("les options de remise", () => {
+  const brut: RawHandoverOptions = {
+    advice: "carrier_recommended",
+    distance_meters: 45_000,
+    quotes: [
+      {
+        carrier: "mondial_relay",
+        label: "Mondial Relay",
+        price_minor: 450,
+        price_major: "4.50",
+      },
+      { carrier: "colissimo", label: "Colissimo", price_minor: 590, price_major: "5.90" },
+    ],
+    points_outcome: "found",
+    service_points: [
+      {
+        code: "367047",
+        name: "CARREFOUR BON APP",
+        carrier: "colissimo",
+        carrier_name: "Colissimo",
+        street: "15 RUE DE LA VERRERIE",
+        postal_code: "75004",
+        city: "PARIS",
+        latitude: 48.857292,
+        longitude: 2.354634,
+        distance_meters: 319,
+        opening_times: ["08:00 - 20:00"],
+      },
+    ],
+  };
+
+  it("conserve le conseil rendu par le serveur", () => {
+    // Le seuil est une décision commerciale : la dupliquer côté client
+    // ferait diverger les deux au premier ajustement.
+    expect(toHandoverOptions(brut).advice).toBe("carrier_recommended");
+  });
+
+  it("distingue « pas pu chercher » de « aucun point »", () => {
+    // Le test qui protège d'un mensonge : un fournisseur en panne ne
+    // doit jamais faire croire qu'aucun relais n'existe.
+    expect(
+      toHandoverOptions({ ...brut, points_outcome: "unavailable" }).pointsOutcome,
+    ).toBe("unavailable");
+    expect(
+      toHandoverOptions({ ...brut, points_outcome: "none_nearby" }).pointsOutcome,
+    ).toBe("none_nearby");
+  });
+
+  it("garde les prix affichables calculés par le serveur", () => {
+    expect(toHandoverOptions(brut).quotes[0].priceMajor).toBe("4.50");
+  });
+
+  it("traduit un point de dépôt avec ses horaires", () => {
+    const point = toHandoverOptions(brut).servicePoints[0];
+
+    expect(point.carrierName).toBe("Colissimo");
+    expect(point.distanceMeters).toBe(319);
+    expect(point.openingTimes).toEqual(["08:00 - 20:00"]);
   });
 });

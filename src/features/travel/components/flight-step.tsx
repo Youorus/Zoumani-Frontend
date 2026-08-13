@@ -122,7 +122,9 @@ export function FlightStep({ onConfirmed }: FlightStepProps) {
       cta={{
         label: lookup === null ? "Vérifier mon vol" : "Continuer",
         disabled:
-          lookup === null ? !complet || memeAeroport || isChecking : !peutContinuer,
+          lookup === null
+            ? !complet || memeAeroport || dansLePasse || isChecking
+            : !peutContinuer,
         busy: isChecking,
         onClick: lookup === null ? verifier : continuer,
       }}
@@ -201,6 +203,12 @@ export function FlightStep({ onConfirmed }: FlightStepProps) {
             />
           </div>
         </div>
+
+        {dansLePasse && (
+          <p className="text-sm text-error" role="alert">
+            Cette date est passée. Choisissez la date de votre prochain vol.
+          </p>
+        )}
 
         <p className="text-sm text-muted-foreground">
           Pas besoin de saisir l&apos;heure : nous la récupérons auprès de la compagnie.

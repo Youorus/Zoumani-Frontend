@@ -29,9 +29,13 @@ export default async function Page({
     redirect("/compte");
   }
 
-  const [offre, catalogue] = await Promise.all([
+  // Le dossier d'identité accompagne l'offre : c'est de lui que vient la
+  // position qui permet de proposer des points de dépôt proches. Les
+  // trois appels partent ensemble — les enchaîner tripleraient l'attente.
+  const [offre, catalogue, dossier] = await Promise.all([
     callApi({ method: "GET", path: `/capacities/${capacityId}` }),
     callApi({ method: "GET", path: "/parcel-categories" }),
+    callApi({ method: "GET", path: "/identity-verifications/me" }),
   ]);
 
   if (offre.status === 404) {
@@ -48,10 +52,36 @@ export default async function Page({
     ]),
   );
 
+  // Une position absente n'est pas une erreur : le géocodage échoue
+  // souvent sur ce corridor. La remise se fera alors en main propre.
+  const verification =
+    dossier.status === 200
+      ? (dossier.body as {
+          address_latitude: number | null;
+          address_longitude: number | null;
+          country_of_residence: string | null;
+        })
+      : null;
+  const sender =
+    verification?.address_latitude != null &&
+    verification.address_longitude != null &&
+    verification.country_of_residence
+      ? {
+          latitude: verification.address_latitude,
+          longitude: verification.address_longitude,
+          countryCode: verification.country_of_residence,
+        }
+      : null;
+
+  const distance =
+    typeof params.distance === "string" ? Number.parseFloat(params.distance) : null;
+
   return (
     <DeclareShipmentView
       capacity={toCapacity(offre.body as RawCapacity)}
       labels={labels}
+      sender={sender}
+      distanceMeters={Number.isFinite(distance) ? distance : null}
     />
   );
 }

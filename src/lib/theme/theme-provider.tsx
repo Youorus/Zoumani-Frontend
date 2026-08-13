@@ -48,7 +48,11 @@ function getInitialColorScheme(): ColorScheme {
 
   const storedColorScheme = window.localStorage.getItem(COLOR_SCHEME_STORAGE_KEY);
 
-  if (storedColorScheme === "light" || storedColorScheme === "dark" || storedColorScheme === "system") {
+  if (
+    storedColorScheme === "light" ||
+    storedColorScheme === "dark" ||
+    storedColorScheme === "system"
+  ) {
     return storedColorScheme;
   }
 
@@ -67,7 +71,8 @@ function applyThemeToDocument(brand: BrandTheme, scheme: ColorScheme) {
   const rootElement = document.documentElement;
 
   rootElement.dataset.brand = brand;
-  rootElement.dataset.colorScheme = scheme === "system" ? resolveSystemColorScheme() : scheme;
+  rootElement.dataset.colorScheme =
+    scheme === "system" ? resolveSystemColorScheme() : scheme;
 }
 
 export function ThemeProvider({ children }: PropsWithChildren) {

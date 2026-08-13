@@ -11,11 +11,16 @@ import {
 } from "../api/travel-client";
 import type { Capacity } from "../types/travel.types";
 import { estimateLineMinor } from "../types/trip.types";
+import { HandoverStep } from "./handover-step";
 
 interface DeclareShipmentViewProps {
   capacity: Capacity;
   /** Libellés des catégories, résolus côté serveur. */
   labels: Record<string, string>;
+  /** Position de l'expéditeur, issue de son adresse vérifiée. */
+  sender: { latitude: number; longitude: number; countryCode: string } | null;
+  /** Distance jusqu'au voyageur, si les deux adresses sont situées. */
+  distanceMeters: number | null;
 }
 
 interface LigneSaisie {
@@ -46,11 +51,21 @@ interface LigneSaisie {
  * À côté de la catégorie qu'elle documente, et non dans une étape
  * séparée. Ce qu'on photographie, c'est ce qu'on vient de déclarer.
  */
-export function DeclareShipmentView({ capacity, labels }: DeclareShipmentViewProps) {
+export function DeclareShipmentView({
+  capacity,
+  labels,
+  sender,
+  distanceMeters,
+}: DeclareShipmentViewProps) {
   const router = useRouter();
   const [lignes, setLignes] = useState<Record<string, LigneSaisie>>({});
   const [busy, setBusy] = useState(false);
-  const [etape, setEtape] = useState<"saisie" | "photos">("saisie");
+  const [etape, setEtape] = useState<"saisie" | "photos" | "remise">("saisie");
+  const [remise, setRemise] = useState<{
+    method: "in_person" | "carrier";
+    pointCode: string | null;
+    extraMinor: number;
+  }>({ method: "in_person", pointCode: null, extraMinor: 0 });
   const [shipmentId, setShipmentId] = useState<string | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
 
@@ -174,12 +189,18 @@ export function DeclareShipmentView({ capacity, labels }: DeclareShipmentViewPro
     <div className="mx-auto w-full max-w-lg space-y-5 p-4 sm:p-6">
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">
-          {etape === "saisie" ? "Que voulez-vous envoyer ?" : "Photographiez le contenu"}
+          {etape === "saisie"
+            ? "Que voulez-vous envoyer ?"
+            : etape === "photos"
+              ? "Photographiez le contenu"
+              : "Comment remettre le colis ?"}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {etape === "saisie"
             ? `Ce voyageur dispose de ${capacity.availableWeightKg} kg.`
-            : "Une photo par type de contenu. Elle protège les deux parties en cas de litige."}
+            : etape === "photos"
+              ? "Une photo par type de contenu. Elle protège les deux parties en cas de litige."
+              : "En main propre, ou déposé dans un point relais près de chez vous."}
         </p>
       </header>
 
@@ -273,7 +294,7 @@ export function DeclareShipmentView({ capacity, labels }: DeclareShipmentViewPro
             {busy ? "…" : "Continuer"}
           </button>
         </>
-      ) : (
+      ) : etape === "photos" ? (
         <>
           <ul className="space-y-2.5">
             {choisies.map((offer) => (
@@ -319,11 +340,11 @@ export function DeclareShipmentView({ capacity, labels }: DeclareShipmentViewPro
 
           <button
             type="button"
-            onClick={transmettre}
-            disabled={!photosCompletes || busy}
+            onClick={() => setEtape("remise")}
+            disabled={!photosCompletes}
             className="w-full rounded-xl bg-primary px-4 py-3 font-medium text-primary-foreground disabled:opacity-40"
           >
-            {busy ? "Envoi en cours…" : "Transmettre ma demande"}
+            Continuer
           </button>
           <button
             type="button"
@@ -333,7 +354,7 @@ export function DeclareShipmentView({ capacity, labels }: DeclareShipmentViewPro
             Revenir aux quantités
           </button>
         </>
-      )}
+      ) : null}
 
       {failure && (
         <p

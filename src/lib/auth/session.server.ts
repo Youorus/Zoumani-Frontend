@@ -30,7 +30,6 @@ import { ACCESS_COOKIE, REFRESH_COOKIE } from "./session-cookies";
  * ce qui bloque le CSRF sans casser les liens entrants.
  */
 
-
 /**
  * Contenu d'une session émise par l'API.
  *

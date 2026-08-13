@@ -15,11 +15,7 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: keyof typeof badgeVariants;
 }
 
-export function Badge({
-  className,
-  variant = "surface",
-  ...props
-}: BadgeProps) {
+export function Badge({ className, variant = "surface", ...props }: BadgeProps) {
   return (
     <span
       className={cn(

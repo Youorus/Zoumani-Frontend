@@ -17,10 +17,7 @@ interface RealtimeProviderProps extends PropsWithChildren {
   handlers?: RealtimeEventHandler[];
 }
 
-export function RealtimeProvider({
-  children,
-  handlers = [],
-}: RealtimeProviderProps) {
+export function RealtimeProvider({ children, handlers = [] }: RealtimeProviderProps) {
   const queryClient = useQueryClient();
 
   useEffect(() => {

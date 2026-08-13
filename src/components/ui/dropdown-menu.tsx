@@ -79,7 +79,10 @@ export const DropdownMenuLabel = forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Label
     ref={ref}
-    className={cn("px-3 py-2 text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase", className)}
+    className={cn(
+      "px-3 py-2 text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase",
+      className,
+    )}
     {...props}
   />
 ));
@@ -90,14 +93,24 @@ export function DropdownMenuSeparator({
   className,
   ...props
 }: ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>) {
-  return <DropdownMenuPrimitive.Separator className={cn("my-2 h-px bg-border", className)} {...props} />;
+  return (
+    <DropdownMenuPrimitive.Separator
+      className={cn("my-2 h-px bg-border", className)}
+      {...props}
+    />
+  );
 }
 
 export function DropdownMenuShortcut({
   className,
   ...props
 }: ComponentPropsWithoutRef<"span">) {
-  return <span className={cn("ml-auto text-xs tracking-wide text-muted-foreground", className)} {...props} />;
+  return (
+    <span
+      className={cn("ml-auto text-xs tracking-wide text-muted-foreground", className)}
+      {...props}
+    />
+  );
 }
 
 export function DropdownMenuSubTrigger({

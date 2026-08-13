@@ -9,8 +9,5 @@ export interface RealtimeEvent<TPayload = unknown> {
 
 export interface RealtimeEventHandler {
   type: string;
-  handle: (payload: {
-    event: RealtimeEvent;
-    queryClient: QueryClient;
-  }) => void;
+  handle: (payload: { event: RealtimeEvent; queryClient: QueryClient }) => void;
 }

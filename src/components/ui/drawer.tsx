@@ -32,7 +32,8 @@ export const DrawerOverlay = forwardRef<
 DrawerOverlay.displayName = "DrawerOverlay";
 
 const drawerSides = {
-  right: "top-0 right-0 h-full w-[min(92vw,30rem)] translate-x-0 data-[state=closed]:translate-x-full",
+  right:
+    "top-0 right-0 h-full w-[min(92vw,30rem)] translate-x-0 data-[state=closed]:translate-x-full",
   left: "top-0 left-0 h-full w-[min(92vw,30rem)] translate-x-0 data-[state=closed]:-translate-x-full",
   bottom:
     "right-0 bottom-0 left-0 w-full rounded-b-none rounded-t-[1.75rem] data-[state=closed]:translate-y-full",

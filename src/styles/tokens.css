@@ -8,16 +8,8 @@
   --violet-colis-prive: #56207a;
   --vert-whatsapp: #25d366;
 
-  --font-body:
-    "Avenir Next",
-    "Segoe UI",
-    "Helvetica Neue",
-    sans-serif;
-  --font-display:
-    "Iowan Old Style",
-    "Palatino Linotype",
-    "Book Antiqua",
-    serif;
+  --font-body: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
 
   --lagoon-depth: #0f766e;
   --oasis-foam: #d9fff8;
@@ -67,10 +59,31 @@
   --hero-glass: rgb(74 39 17 / 0.68);
   --hero-glass-border: rgb(255 250 245 / 0.18);
   --hero-scrim:
-    linear-gradient(90deg, rgb(16 8 3 / 0.9) 0%, rgb(16 8 3 / 0.64) 36%, rgb(16 8 3 / 0.16) 68%, rgb(16 8 3 / 0.38) 100%),
-    linear-gradient(180deg, rgb(16 8 3 / 0.24) 0%, transparent 42%, rgb(16 8 3 / 0.34) 100%);
-  --promo-traveler-overlay: linear-gradient(90deg, rgb(126 31 11 / 0.18) 0%, rgb(171 42 15 / 0.88) 38%, rgb(108 29 14 / 0.7) 100%);
-  --promo-parcel-overlay: linear-gradient(90deg, transparent 0%, rgb(228 135 0 / 0.32) 32%, rgb(238 153 0 / 0.82) 100%);
+    linear-gradient(
+      90deg,
+      rgb(16 8 3 / 0.9) 0%,
+      rgb(16 8 3 / 0.64) 36%,
+      rgb(16 8 3 / 0.16) 68%,
+      rgb(16 8 3 / 0.38) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(16 8 3 / 0.24) 0%,
+      transparent 42%,
+      rgb(16 8 3 / 0.34) 100%
+    );
+  --promo-traveler-overlay: linear-gradient(
+    90deg,
+    rgb(126 31 11 / 0.18) 0%,
+    rgb(171 42 15 / 0.88) 38%,
+    rgb(108 29 14 / 0.7) 100%
+  );
+  --promo-parcel-overlay: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(228 135 0 / 0.32) 32%,
+    rgb(238 153 0 / 0.82) 100%
+  );
   --marketing-page: #fff8f0;
   --marketing-panel: #fffdf9;
   --marketing-panel-foreground: #2b1d17;
@@ -121,10 +134,31 @@
   --hero-glass: rgb(8 49 52 / 0.7);
   --hero-glass-border: rgb(217 255 248 / 0.18);
   --hero-scrim:
-    linear-gradient(90deg, rgb(5 25 27 / 0.92) 0%, rgb(5 25 27 / 0.66) 38%, rgb(5 25 27 / 0.18) 70%, rgb(5 25 27 / 0.42) 100%),
-    linear-gradient(180deg, rgb(5 25 27 / 0.2) 0%, transparent 42%, rgb(5 25 27 / 0.38) 100%);
-  --promo-traveler-overlay: linear-gradient(90deg, rgb(8 67 65 / 0.28) 0%, rgb(11 87 83 / 0.88) 38%, rgb(7 56 57 / 0.74) 100%);
-  --promo-parcel-overlay: linear-gradient(90deg, transparent 0%, rgb(8 88 84 / 0.3) 32%, rgb(8 88 84 / 0.88) 100%);
+    linear-gradient(
+      90deg,
+      rgb(5 25 27 / 0.92) 0%,
+      rgb(5 25 27 / 0.66) 38%,
+      rgb(5 25 27 / 0.18) 70%,
+      rgb(5 25 27 / 0.42) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(5 25 27 / 0.2) 0%,
+      transparent 42%,
+      rgb(5 25 27 / 0.38) 100%
+    );
+  --promo-traveler-overlay: linear-gradient(
+    90deg,
+    rgb(8 67 65 / 0.28) 0%,
+    rgb(11 87 83 / 0.88) 38%,
+    rgb(7 56 57 / 0.74) 100%
+  );
+  --promo-parcel-overlay: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(8 88 84 / 0.3) 32%,
+    rgb(8 88 84 / 0.88) 100%
+  );
   --marketing-page: #f7f5ef;
   --marketing-panel: #fdfcf8;
   --marketing-panel-foreground: #16324f;

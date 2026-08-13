@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  can,
-  canAny,
-  toAuthenticatedUser,
-  type RawCurrentUser,
-} from "../auth.types";
+import { can, canAny, toAuthenticatedUser, type RawCurrentUser } from "../auth.types";
 
 const raw: RawCurrentUser = {
   id: "f7d8c2a1-0000-4000-8000-000000000001",

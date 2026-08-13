@@ -2,7 +2,13 @@ import type { SVGProps } from "react";
 
 export function CheckIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" {...props}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      {...props}
+    >
       <path d="m5 13 4 4L19 7" />
     </svg>
   );
@@ -10,7 +16,13 @@ export function CheckIcon(props: SVGProps<SVGSVGElement>) {
 
 export function ChevronDownIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" {...props}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      {...props}
+    >
       <path d="m6 9 6 6 6-6" />
     </svg>
   );
@@ -18,7 +30,13 @@ export function ChevronDownIcon(props: SVGProps<SVGSVGElement>) {
 
 export function CloseIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" {...props}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      {...props}
+    >
       <path d="m6 6 12 12M18 6 6 18" />
     </svg>
   );
