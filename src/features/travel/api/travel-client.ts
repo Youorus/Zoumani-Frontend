@@ -21,12 +21,16 @@ import {
 } from "../types/travel.types";
 import {
   toProof,
+  toShipment,
   toRewards,
   toTrip,
   type Proof,
   type ProofKind,
   type RawPage,
+  type HandoverMethod,
   type RawProof,
+  type RawShipment,
+  type ShipmentSummary,
   type RawRewards,
   type RawTrip,
   type Rewards,
@@ -418,4 +422,92 @@ export async function updateCapacity(
     }),
   });
   return toCapacity((await unwrap(response)) as RawCapacity);
+}
+
+// ─── Les expéditions ───────────────────────────────────────────────────
+
+export interface DeclaredLineInput {
+  categoryCode: string;
+  quantityKg?: number;
+  pieces?: number;
+  photoKey?: string | null;
+  declaredValueMinor?: number | null;
+}
+
+/** L'offre visée, telle que l'expéditeur la voit avant de déclarer. */
+export async function getCapacity(capacityId: string): Promise<Capacity> {
+  const response = await fetch(`${PROXY}/capacities/${capacityId}`, {
+    cache: "no-store",
+  });
+  return toCapacity((await unwrap(response)) as RawCapacity);
+}
+
+/** Crée la demande d'expédition sur une offre. */
+export async function declareShipment(
+  capacityId: string,
+  lines: DeclaredLineInput[],
+  handover: HandoverMethod = "in_person",
+): Promise<ShipmentSummary> {
+  const response = await fetch(`${PROXY}/shipments?capacity_id=${capacityId}`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ lines: lines.map(toRawLine), handover }),
+  });
+  return toShipment((await unwrap(response)) as RawShipment);
+}
+
+/**
+ * Dépose la photo d'un contenu et rend sa **clé**.
+ *
+ * La clé, jamais l'URL : une URL signée expire, et une URL publique
+ * encoderait le fournisseur de stockage (AGENTS.md §6.12).
+ */
+export async function uploadParcelPhoto(shipmentId: string, file: File): Promise<string> {
+  const form = new FormData();
+  form.append("file", file);
+
+  const response = await fetch(`${PROXY}/shipments/${shipmentId}/photos`, {
+    method: "POST",
+    body: form,
+  });
+  const payload = (await unwrap(response)) as { photo_key: string };
+  return payload.photo_key;
+}
+
+/** Remplace le contenu déclaré. */
+export async function updateShipment(
+  shipmentId: string,
+  lines: DeclaredLineInput[],
+  handover: HandoverMethod = "in_person",
+): Promise<ShipmentSummary> {
+  const response = await fetch(`${PROXY}/shipments/${shipmentId}`, {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ lines: lines.map(toRawLine), handover }),
+  });
+  return toShipment((await unwrap(response)) as RawShipment);
+}
+
+/** Transmet la demande, en attente de paiement. */
+export async function submitShipment(shipmentId: string): Promise<ShipmentSummary> {
+  const response = await fetch(`${PROXY}/shipments/${shipmentId}/submission`, {
+    method: "POST",
+  });
+  return toShipment((await unwrap(response)) as RawShipment);
+}
+
+/** Les expéditions de l'expéditeur connecté. */
+export async function listMyShipments(): Promise<ShipmentSummary[]> {
+  const response = await fetch(`${PROXY}/shipments`, { cache: "no-store" });
+  return ((await unwrap(response)) as RawShipment[]).map(toShipment);
+}
+
+function toRawLine(line: DeclaredLineInput) {
+  return {
+    category_code: line.categoryCode,
+    quantity_kg: line.quantityKg ?? null,
+    pieces: line.pieces ?? null,
+    photo_key: line.photoKey ?? null,
+    declared_value_minor: line.declaredValueMinor ?? null,
+  };
 }

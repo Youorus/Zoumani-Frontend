@@ -1,17 +1,37 @@
 import type { Metadata } from "next";
 
-import { ComingSoon } from "@/features/account/components/coming-soon";
+import { MyShipmentsView } from "@/features/travel/components/my-shipments-view";
+import type { RawCatalog } from "@/features/travel/types/travel.types";
+import { toShipment, type RawShipment } from "@/features/travel/types/trip.types";
+import { callApi } from "@/lib/api/upstream.server";
 
-/*
- * Aucun titre traduit ici : `metadata` est calculée côté serveur, sans
- * accès à la langue du compte, qui vit dans un contexte de rendu. Le
- * titre du navigateur reste celui de l'application — moindre mal comparé
- * à un onglet en français sur un écran anglais.
- */
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function Page() {
-  return <ComingSoon section="shipments" />;
+export const dynamic = "force-dynamic";
+
+export default async function Page() {
+  const [envois, catalogue] = await Promise.all([
+    callApi({ method: "GET", path: "/shipments" }),
+    callApi({ method: "GET", path: "/parcel-categories" }),
+  ]);
+
+  if (envois.status !== 200) {
+    throw new Error(`L'API a répondu ${envois.status} sur /shipments.`);
+  }
+
+  const labels = Object.fromEntries(
+    ((catalogue.body as RawCatalog | undefined)?.categories ?? []).map((category) => [
+      category.code,
+      category.label,
+    ]),
+  );
+
+  return (
+    <MyShipmentsView
+      shipments={(envois.body as RawShipment[]).map(toShipment)}
+      labels={labels}
+    />
+  );
 }

@@ -313,3 +313,97 @@ export function formatDistance(meters: number): string {
   const km = meters / 1000;
   return km < 10 ? `${km.toFixed(1)} km` : `${Math.round(km)} km`;
 }
+
+// ─── L'expédition ──────────────────────────────────────────────────────
+
+export type ShipmentStatus = "draft" | "pending_payment" | "confirmed" | "cancelled";
+export type HandoverMethod = "in_person" | "carrier";
+
+export interface ParcelLine {
+  categoryCode: string;
+  /** Décidé par l'offre du voyageur, jamais par l'expéditeur. */
+  perPiece: boolean;
+  quantityKg: number | null;
+  pieces: number | null;
+  unitPriceMinor: number;
+  totalMinor: number;
+  hasPhoto: boolean;
+}
+
+export interface ShipmentSummary {
+  id: string;
+  capacityId: string;
+  status: ShipmentStatus;
+  handover: HandoverMethod;
+  currency: string;
+  lines: ParcelLine[];
+  /** Ce qui revient au voyageur. Ni commission, ni assurance, ni transport. */
+  totalMinor: number;
+  totalMajor: string;
+  weightKg: number;
+  isEditable: boolean;
+}
+
+export interface RawShipment {
+  id: string;
+  capacity_id: string;
+  status: ShipmentStatus;
+  handover: HandoverMethod;
+  currency: string;
+  lines: {
+    category_code: string;
+    per_piece: boolean;
+    quantity_kg: number | null;
+    pieces: number | null;
+    unit_price_minor: number;
+    total_minor: number;
+    has_photo: boolean;
+  }[];
+  total_minor: number;
+  total_major: string;
+  weight_kg: number;
+  is_editable: boolean;
+}
+
+export function toShipment(raw: RawShipment): ShipmentSummary {
+  return {
+    id: raw.id,
+    capacityId: raw.capacity_id,
+    status: raw.status,
+    handover: raw.handover,
+    currency: raw.currency,
+    lines: raw.lines.map((line) => ({
+      categoryCode: line.category_code,
+      perPiece: line.per_piece,
+      quantityKg: line.quantity_kg,
+      pieces: line.pieces,
+      unitPriceMinor: line.unit_price_minor,
+      totalMinor: line.total_minor,
+      hasPhoto: line.has_photo,
+    })),
+    totalMinor: raw.total_minor,
+    totalMajor: raw.total_major,
+    weightKg: raw.weight_kg,
+    isEditable: raw.is_editable,
+  };
+}
+
+/**
+ * Le coût d'une ligne, calculé **pour l'affichage seul**.
+ *
+ * Le serveur reste la référence : c'est son total qui est facturé. Cette
+ * estimation existe pour que le chiffre bouge pendant qu'on tape, sans
+ * un aller-retour par frappe — un prix qui n'apparaît qu'après validation
+ * fait hésiter, et l'hésitation fait abandonner.
+ */
+export function estimateLineMinor(
+  unitPriceMinor: number,
+  quantity: number,
+  perPiece: boolean,
+): number {
+  if (perPiece) {
+    return unitPriceMinor * quantity;
+  }
+  // Au prorata, comme le domaine : 500 g à 8 €/kg font 4 €.
+  return Math.round((unitPriceMinor * quantity) / 1000);
+}
