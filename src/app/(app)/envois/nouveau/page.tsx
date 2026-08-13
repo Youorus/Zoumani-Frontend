@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { DeclareShipmentView } from "@/features/travel/components/declare-shipment-view";
+import type { RawCatalog } from "@/features/travel/types/travel.types";
 import {
-  toCapacity,
-  type RawCapacity,
-  type RawCatalog,
-} from "@/features/travel/types/travel.types";
+  toCapacityFromMatch,
+  type RawCapacityMatch,
+} from "@/features/travel/types/trip.types";
 import { callApi } from "@/lib/api/upstream.server";
 
 export const metadata: Metadata = {
@@ -33,7 +33,9 @@ export default async function Page({
   // position qui permet de proposer des points de dépôt proches. Les
   // trois appels partent ensemble — les enchaîner tripleraient l'attente.
   const [offre, catalogue, dossier] = await Promise.all([
-    callApi({ method: "GET", path: `/capacities/${capacityId}` }),
+    // `/offer` et non `/capacities/{id}` : la seconde n'ouvre l'offre
+    // qu'à son voyageur, et un expéditeur y recevait un 404.
+    callApi({ method: "GET", path: `/capacities/${capacityId}/offer` }),
     callApi({ method: "GET", path: "/parcel-categories" }),
     callApi({ method: "GET", path: "/identity-verifications/me" }),
   ]);
@@ -42,7 +44,9 @@ export default async function Page({
     notFound();
   }
   if (offre.status !== 200) {
-    throw new Error(`L'API a répondu ${offre.status} sur /capacities/${capacityId}.`);
+    throw new Error(
+      `L'API a répondu ${offre.status} sur /capacities/${capacityId}/offer.`,
+    );
   }
 
   const labels = Object.fromEntries(
@@ -78,7 +82,7 @@ export default async function Page({
 
   return (
     <DeclareShipmentView
-      capacity={toCapacity(offre.body as RawCapacity)}
+      capacity={toCapacityFromMatch(offre.body as RawCapacityMatch)}
       labels={labels}
       sender={sender}
       distanceMeters={Number.isFinite(distance) ? distance : null}

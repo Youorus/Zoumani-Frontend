@@ -1,3 +1,4 @@
+import type { Capacity } from "./travel.types";
 /**
  * Le voyage tel que l'API le rend, et tel que l'interface le manipule.
  *
@@ -254,7 +255,11 @@ export interface CapacityMatch {
   tripId: string;
   traveler: TravelerCard;
   origin: string;
+  originCity: string;
+  originCountry: string;
   destination: string;
+  destinationCity: string;
+  destinationCountry: string;
   departureAt: string;
   availableWeightKg: number;
   currency: string;
@@ -268,7 +273,11 @@ export interface RawCapacityMatch {
   trip_id: string;
   traveler: { display_name: string; photo_url: string | null };
   origin: string;
+  origin_city: string;
+  origin_country: string;
   destination: string;
+  destination_city: string;
+  destination_country: string;
   departure_at: string;
   available_weight_kg: number;
   currency: string;
@@ -285,7 +294,11 @@ export function toCapacityMatch(raw: RawCapacityMatch): CapacityMatch {
       photoUrl: raw.traveler.photo_url,
     },
     origin: raw.origin,
+    originCity: raw.origin_city,
+    originCountry: raw.origin_country,
     destination: raw.destination,
+    destinationCity: raw.destination_city,
+    destinationCountry: raw.destination_country,
     departureAt: raw.departure_at,
     availableWeightKg: raw.available_weight_kg,
     currency: raw.currency,
@@ -487,5 +500,58 @@ export function toHandoverOptions(raw: RawHandoverOptions): HandoverOptions {
       distanceMeters: point.distance_meters,
       openingTimes: point.opening_times,
     })),
+  };
+}
+
+/**
+ * Le drapeau d'un pays, depuis son code ISO.
+ *
+ * Composé d'indicateurs régionaux Unicode : aucune image à charger, et
+ * le rendu suit la police du système. Un drapeau se reconnaît plus vite
+ * qu'un nom de pays sur une carte qu'on parcourt du regard.
+ */
+export function flagOf(countryCode: string): string {
+  if (countryCode.length !== 2) {
+    return "";
+  }
+  return String.fromCodePoint(
+    ...[...countryCode.toUpperCase()].map(
+      (lettre) => 0x1f1e6 + lettre.charCodeAt(0) - 65,
+    ),
+  );
+}
+
+/**
+ * Une offre consultée par un expéditeur, ramenée à la forme `Capacity`.
+ *
+ * La route publique rend un **résultat de recherche** — offre, voyageur
+ * anonymisé, distance — quand l'écran de déclaration attend une offre.
+ * On extrait ce qui l'intéresse plutôt que d'exposer deux formes de la
+ * même chose dans toute l'application.
+ *
+ * Les champs qu'un expéditeur n'a pas à connaître — l'état de
+ * publication, les notes du voyageur — prennent des valeurs neutres :
+ * l'écran ne les lit pas, et les inventer serait pire que les omettre.
+ */
+export function toCapacityFromMatch(raw: RawCapacityMatch): Capacity {
+  const match = toCapacityMatch(raw);
+  return {
+    id: match.capacityId,
+    tripId: match.tripId,
+    status: "published",
+    totalWeightKg: match.availableWeightKg,
+    availableWeightKg: match.availableWeightKg,
+    currency: match.currency,
+    offers: match.offers.map((offer) => ({
+      categoryCode: offer.categoryCode,
+      // Le prix affichable suffit à l'écran ; l'entier reste la vérité
+      // côté serveur, qui recalcule le total à l'enregistrement.
+      priceMinor: Math.round(Number.parseFloat(offer.priceMajor) * 100),
+      priceMajor: offer.priceMajor,
+      currency: match.currency,
+      perPiece: offer.perPiece,
+    })),
+    notes: null,
+    isEditable: false,
   };
 }

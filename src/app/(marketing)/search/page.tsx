@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { SearchPageShell } from "@/features/travel/components/search-page-shell";
 import { SearchResultsView } from "@/features/travel/components/search-results-view";
 import type { RawCatalog } from "@/features/travel/types/travel.types";
 import {
@@ -35,13 +36,21 @@ export default async function Page({
   // Sans trajet, rien à chercher : on rend l'écran vide avec sa barre
   // plutôt qu'une erreur — l'utilisateur arrive parfois par un lien
   // tronqué ou un favori.
+  // La session décide de ce qu'il y a **autour** des résultats, pas de
+  // ce qu'ils contiennent : la recherche est publique, et un visiteur
+  // voit exactement les mêmes offres.
+  const session = await callApi({ method: "GET", path: "/auth/me" });
+  const connected = session.status === 200;
+
   if (!origin || !destination) {
     return (
-      <SearchResultsView
-        matches={[]}
-        criteria={{ origin, destination, categories }}
-        labels={{}}
-      />
+      <SearchPageShell connected={connected}>
+        <SearchResultsView
+          matches={[]}
+          criteria={{ origin, destination, categories }}
+          labels={{}}
+        />
+      </SearchPageShell>
     );
   }
 
@@ -66,14 +75,16 @@ export default async function Page({
   );
 
   return (
-    <SearchResultsView
-      matches={
-        resultats.status === 200
-          ? (resultats.body as RawCapacityMatch[]).map(toCapacityMatch)
-          : []
-      }
-      criteria={{ origin, destination, categories }}
-      labels={labels}
-    />
+    <SearchPageShell connected={connected}>
+      <SearchResultsView
+        matches={
+          resultats.status === 200
+            ? (resultats.body as RawCapacityMatch[]).map(toCapacityMatch)
+            : []
+        }
+        criteria={{ origin, destination, categories }}
+        labels={labels}
+      />
+    </SearchPageShell>
   );
 }
