@@ -30,6 +30,7 @@ interface DeclareShipmentViewProps {
   match: CapacityMatch;
   /** Position de l'expéditeur, issue de son adresse vérifiée. */
   sender: { latitude: number; longitude: number; countryCode: string } | null;
+  senderCountryCode: string | null;
   /** Distance jusqu'au voyageur, si les deux adresses sont situées. */
   distanceMeters: number | null;
 }
@@ -65,6 +66,7 @@ export function DeclareShipmentView({
   labels,
   match,
   sender,
+  senderCountryCode,
   distanceMeters,
 }: DeclareShipmentViewProps) {
   const router = useRouter();
@@ -484,6 +486,7 @@ export function DeclareShipmentView({
         <>
           <HandoverStep
             sender={sender}
+            senderCountryCode={senderCountryCode}
             weightGrams={Math.max(100, Math.round(poidsDeclare * 1000))}
             distanceMeters={distanceMeters}
             parcelTotalMinor={totalMinor}

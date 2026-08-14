@@ -5,14 +5,15 @@ import {
   BadgeCheck,
   CalendarDays,
   CircleDashed,
+  Coins,
   Gift,
   Plane,
   ShieldAlert,
-  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 
 import { useAccountCopy } from "@/features/account/components/account-copy-provider";
+import { useAccountUser } from "@/features/account/components/account-user-provider";
 import { UserAvatar } from "@/features/account/components/user-avatar";
 import type { AccountCopy } from "@/features/account/content/account-content";
 import { accountLanguage } from "@/features/account/lib/account-language";
@@ -21,21 +22,19 @@ import { ShipmentSearch } from "@/features/home/components/shipment-search";
 import { TripRoute } from "@/features/travel/components/trip-route";
 import type { Rewards, Trip } from "@/features/travel/types/trip.types";
 import type { VerificationStage } from "@/features/verification/types/verification.types";
-import type { AuthenticatedUser } from "@/lib/auth/auth.types";
 
 export function AccountHome({
-  user,
   welcome,
   verificationStage,
   trips,
   rewards,
 }: {
-  user: AuthenticatedUser;
   welcome: boolean;
   verificationStage: VerificationStage | null;
   trips: Trip[] | null;
   rewards: Rewards | null;
 }) {
+  const { user } = useAccountUser();
   const copy = useAccountCopy();
   const language = accountLanguage(user.preferredLanguage);
   const nextTrip = trips ? findNextTrip(trips) : null;
@@ -79,7 +78,7 @@ export function AccountHome({
               className="focus-ring flex min-w-52 items-center gap-3 rounded-2xl border border-warning/20 bg-warning/10 px-4 py-3 transition-transform hover:-translate-y-0.5"
             >
               <span className="grid size-11 place-items-center rounded-xl bg-warning text-warning-foreground">
-                <Sparkles className="size-5" aria-hidden />
+                <Coins className="size-5" aria-hidden />
               </span>
               <span>
                 <strong className="block text-xl leading-none text-foreground">
@@ -93,7 +92,7 @@ export function AccountHome({
           ) : (
             <div className="flex min-w-52 items-center gap-3 rounded-2xl border border-border bg-muted/40 px-4 py-3">
               <span className="grid size-11 place-items-center rounded-xl bg-muted text-muted-foreground">
-                <Sparkles className="size-5" aria-hidden />
+                <Coins className="size-5" aria-hidden />
               </span>
               <span className="text-xs font-semibold text-muted-foreground">
                 {copy.dashboard.unavailableTitle}

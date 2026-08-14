@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { DeclareShipmentView } from "@/features/travel/components/declare-shipment-view";
+import type { RawVerification } from "@/features/verification/types/verification.types";
 import type { RawCatalog } from "@/features/travel/types/travel.types";
 import {
   toCapacityFromMatch,
@@ -62,11 +63,7 @@ export default async function Page({
   // qu'il manque au lieu d'inventer un point de dépôt.
   const verification =
     dossier.status === 200
-      ? (dossier.body as {
-          address_latitude: number | null;
-          address_longitude: number | null;
-          country_of_residence: string | null;
-        })
+      ? (dossier.body as RawVerification)
       : null;
   const sender =
     verification?.address_latitude != null &&
@@ -88,6 +85,7 @@ export default async function Page({
       match={match}
       labels={labels}
       sender={sender}
+      senderCountryCode={verification?.country_of_residence ?? match.originCountry}
       distanceMeters={match.distanceMeters}
     />
   );

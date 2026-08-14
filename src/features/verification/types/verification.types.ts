@@ -61,6 +61,8 @@ export interface RawVerification {
   nationality: string | null;
   country_of_residence: string | null;
   residential_address: string | null;
+  address_latitude: number | null;
+  address_longitude: number | null;
   rejection_reason: string | null;
   submitted_at: string | null;
   verified_at: string | null;

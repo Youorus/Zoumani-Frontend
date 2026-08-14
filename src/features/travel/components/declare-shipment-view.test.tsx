@@ -147,6 +147,7 @@ describe("parcours d'envoi", () => {
         labels={{ clothing: "Vêtements" }}
         match={match}
         sender={{ latitude: 48.85, longitude: 2.35, countryCode: "FR" }}
+        senderCountryCode="FR"
         distanceMeters={12_000}
       />,
     );

@@ -6,7 +6,7 @@ import {
   MessageCircle,
   Package,
   Plane,
-  Sparkles,
+  Coins,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
@@ -23,11 +23,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAccountCopy } from "@/features/account/components/account-copy-provider";
+import { useAccountUser } from "@/features/account/components/account-user-provider";
 import { UserAvatar } from "@/features/account/components/user-avatar";
 import { VerificationBadge } from "@/features/verification/components/verification-badge";
 import { VerificationMenuEntry } from "@/features/verification/components/verification-menu-entry";
 import type { VerificationStage } from "@/features/verification/types/verification.types";
-import type { AuthenticatedUser } from "@/lib/auth/auth.types";
 import { useAuth } from "@/lib/auth/use-auth";
 
 /**
@@ -50,13 +50,12 @@ import { useAuth } from "@/lib/auth/use-auth";
  * quel compte est ouvert.
  */
 export function AccountMenu({
-  user,
   stage,
 }: {
-  user: AuthenticatedUser;
   /** Où en est la vérification d'identité de cette personne. */
   stage: VerificationStage;
 }) {
+  const { user } = useAccountUser();
   const router = useRouter();
   const { signOut } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
@@ -67,7 +66,7 @@ export function AccountMenu({
     { href: "/compte/trajets", label: menu.trips, icon: Plane },
     // Placé juste après les trajets : c'est en les publiant qu'on gagne
     // des points, et l'entrée n'a de sens que dans ce voisinage.
-    { href: "/compte/points", label: menu.rewards, icon: Sparkles },
+    { href: "/compte/points", label: menu.rewards, icon: Coins },
     { href: "/compte/messages", label: menu.messages, icon: MessageCircle },
     { href: "/compte/profil", label: menu.profile, icon: UserRound },
     { href: "/compte/paiements", label: menu.payments, icon: CreditCard },

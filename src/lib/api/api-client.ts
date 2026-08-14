@@ -1,4 +1,4 @@
-import { ApiError } from "./api-errors";
+import { ApiError, apiErrorFromPayload } from "./api-errors";
 import type { ApiErrorPayload, ApiRequestOptions, HttpMethod } from "./api-types";
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -82,19 +82,10 @@ function normalizeHttpError(
   response: Response,
   payload: ApiErrorPayload | string | undefined,
 ) {
-  if (typeof payload === "string") {
-    return new ApiError({
-      status: response.status,
-      code: "HTTP_ERROR",
-      message: payload || response.statusText || "HTTP error",
-    });
-  }
-
-  return new ApiError({
+  return apiErrorFromPayload({
     status: response.status,
-    code: payload?.code ?? "HTTP_ERROR",
-    message: payload?.message ?? response.statusText ?? "HTTP error",
-    details: payload?.details,
+    statusText: response.statusText,
+    payload,
   });
 }
 

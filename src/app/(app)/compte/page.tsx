@@ -13,16 +13,8 @@ import {
   type RawVerification,
 } from "@/features/verification/types/verification.types";
 import { callApi } from "@/lib/api/upstream.server";
-import { toAuthenticatedUser, type RawCurrentUser } from "@/lib/auth/auth.types";
 
-/**
- * L'accueil de l'espace personnel.
- *
- * La session est relue ici bien que le gabarit l'ait déjà fait : Next
- * rend les deux en parallèle et ne transmet rien de l'un à l'autre. La
- * seconde lecture ne coûte rien de plus en pratique — la réponse est
- * identique et le jeton n'est pas re-négocié.
- */
+/** L'accueil de l'espace personnel, alimenté par les seuls agrégats métier. */
 export const metadata: Metadata = {
   title: "Votre espace",
   robots: { index: false, follow: false },
@@ -33,17 +25,13 @@ export default async function ComptePage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [me, dossier, tripsResponse, rewardsResponse, params] = await Promise.all([
-    callApi({ method: "GET", path: "/auth/me" }),
+  const [dossier, tripsResponse, rewardsResponse, params] = await Promise.all([
     callApi({ method: "GET", path: "/identity-verifications/me" }),
     callApi({ method: "GET", path: "/trips" }),
     callApi({ method: "GET", path: "/rewards/me" }),
     searchParams,
   ]);
 
-  if (me.status !== 200) {
-    throw new Error(`L'API a répondu ${me.status} sur /auth/me.`);
-  }
   const trips =
     tripsResponse.status === 200
       ? (tripsResponse.body as RawPage<RawTrip>).items.map(toTrip)
@@ -51,7 +39,6 @@ export default async function ComptePage({
 
   return (
     <AccountHome
-      user={toAuthenticatedUser(me.body as RawCurrentUser)}
       verificationStage={
         dossier.status === 200
           ? stageOf((dossier.body as RawVerification).status)

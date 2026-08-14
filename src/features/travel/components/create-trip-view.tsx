@@ -14,6 +14,10 @@ import {
   submitTrip,
   uploadProof,
 } from "../api/travel-client";
+import {
+  describeTripSubmissionError,
+  type TripSubmissionPhase,
+} from "../lib/trip-submission-error";
 import type { ProofKind } from "../types/trip.types";
 import {
   fromMinorUnits,
@@ -157,6 +161,7 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
 
     setIsSubmitting(true);
     setErrors({});
+    let submissionPhase: TripSubmissionPhase = "trip";
     try {
       let tripId = progress.tripId;
       if (!tripId) {
@@ -166,11 +171,13 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
       }
 
       if (!progress.proofUploaded) {
+        submissionPhase = "proof";
         await uploadProof(tripId, proof.kind, proof.file);
         setProgress((current) => ({ ...current, proofUploaded: true }));
       }
 
       if (!progress.capacityCreated) {
+        submissionPhase = "capacity";
         await offerCapacity(tripId, {
           totalWeightKg: Number.parseFloat(weight.replace(",", ".")),
           currency: DEVISE,
@@ -183,14 +190,12 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
         setProgress((current) => ({ ...current, capacityCreated: true }));
       }
 
+      submissionPhase = "submission";
       await submitTrip(tripId, attestation.version);
       router.push(`/compte/trajets?nouveau=${tripId}`);
     } catch (error) {
       setErrors({
-        global:
-          error instanceof Error
-            ? error.message
-            : "L'enregistrement n'a pas abouti. Réessayez.",
+        global: describeTripSubmissionError(error, submissionPhase),
       });
       setIsSubmitting(false);
     }
@@ -306,7 +311,7 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
       }}
       footnote={
         errors.global ? (
-          <p className="text-sm text-error" role="alert">
+          <p className="whitespace-pre-line text-sm text-error" role="alert">
             {errors.global}
           </p>
         ) : undefined

@@ -9,7 +9,7 @@ import {
   Handshake,
   MapPin,
   PackageCheck,
-  Sparkles,
+  Coins,
   Store,
   Weight,
 } from "lucide-react";
@@ -45,7 +45,7 @@ export function TravelerCard({ match, labels }: TravelerCardProps) {
         </div>
 
         <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">
-          <Sparkles className="size-3.5" aria-hidden />
+          <Coins className="size-3.5" aria-hidden />
           {match.traveler.rewardPoints > 0
             ? `${match.traveler.rewardPoints.toLocaleString("fr-FR")} points Zoumani`
             : "Nouveau sur Zoumani"}

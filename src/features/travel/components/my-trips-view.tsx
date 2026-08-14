@@ -267,13 +267,43 @@ const BADGES: Record<TripStatus, { label: string; className: string }> = {
 };
 
 function Badge({ status }: { status: TripStatus }) {
-  const badge = BADGES[status];
+  const badge = BADGES[status] ?? {
+    label: "Mise à jour en cours",
+    className: "bg-muted text-muted-foreground",
+  };
   return (
     <span
       className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ${badge.className}`}
     >
       {badge.label}
     </span>
+  );
+}
+
+export function TripsUnavailable() {
+  return (
+    <div className="mx-auto w-full max-w-3xl px-4 sm:px-8">
+      <section className="rounded-[2rem] border border-warning/25 bg-warning/8 px-6 py-10 text-center sm:px-10">
+        <PlaneTakeoff className="mx-auto size-8 text-warning" aria-hidden />
+        <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-warning">
+          Carnet de route
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold">
+          Vos voyages reviennent dans un instant.
+        </h1>
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          Nous n&apos;affichons jamais une liste vide à la place d&apos;une panne. Vos
+          voyages restent enregistrés et aucune action n&apos;est nécessaire.
+        </p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="focus-ring mt-6 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground"
+        >
+          Réessayer
+        </button>
+      </section>
+    </div>
   );
 }
 

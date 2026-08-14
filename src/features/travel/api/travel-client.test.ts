@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   fetchHandoverOptions,
   findAirportByCode,
+  offerCapacity,
   searchAirports,
   updateShipment,
 } from "./travel-client";
@@ -76,9 +77,43 @@ describe("contrat d'une expédition", () => {
       countryCode: "FR",
       weightGrams: 2_000,
       acceptsInPerson: true,
+      radiusMeters: 15_000,
     });
 
     expect(fetchMock.mock.calls[0][0]).toContain("accepts_in_person=true");
+    expect(fetchMock.mock.calls[0][0]).toContain("radius_meters=15000");
+  });
+});
+
+describe("compatibilité du contrat de capacité", () => {
+  it("n'envoie pas le champ récent quand le choix n'a pas été renseigné", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          id: "capacity-1",
+          trip_id: "trip-1",
+          status: "draft",
+          total_weight_kg: 8,
+          available_weight_kg: 8,
+          currency: "EUR",
+          offers: [],
+          accepts_in_person: false,
+          notes: null,
+          is_editable: true,
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await offerCapacity("trip-1", {
+      totalWeightKg: 8,
+      currency: "EUR",
+      offers: [],
+    });
+
+    const request = fetchMock.mock.calls[0][1] as RequestInit;
+    expect(JSON.parse(request.body as string)).not.toHaveProperty("accepts_in_person");
   });
 });
 

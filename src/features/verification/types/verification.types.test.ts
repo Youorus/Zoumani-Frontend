@@ -88,6 +88,8 @@ describe("conversion du dossier", () => {
     nationality: "CM",
     country_of_residence: null,
     residential_address: null,
+    address_latitude: null,
+    address_longitude: null,
     rejection_reason: "Document illisible.",
     submitted_at: "2026-08-11T10:00:00Z",
     verified_at: null,

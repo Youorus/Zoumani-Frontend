@@ -4,19 +4,14 @@ import { useRef, useState } from "react";
 import { Camera, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import type { AuthenticatedUser } from "@/lib/auth/auth.types";
-
 import { UserAvatar } from "./user-avatar";
+import { useAccountUser } from "./account-user-provider";
 import {
   ACCEPTED_PHOTO_TYPES,
   MAX_PHOTO_BYTES,
   removeProfilePhoto,
   uploadProfilePhoto,
 } from "../api/photo-client";
-
-interface AvatarUploaderProps {
-  user: AuthenticatedUser;
-}
 
 /**
  * La photo de profil, déposée depuis son espace.
@@ -40,8 +35,9 @@ interface AvatarUploaderProps {
  * ne protège rien — il évite simplement de téléverser cinq mégaoctets
  * pour s'entendre dire non.
  */
-export function AvatarUploader({ user }: AvatarUploaderProps) {
+export function AvatarUploader() {
   const router = useRouter();
+  const { user, updateProfilePicture } = useAccountUser();
   const [photoUrl, setPhotoUrl] = useState(user.profilePictureUrl);
   const [apercu, setApercu] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -71,10 +67,10 @@ export function AvatarUploader({ user }: AvatarUploaderProps) {
     try {
       const compte = await uploadProfilePhoto(file);
       setPhotoUrl(compte.profilePictureUrl);
+      updateProfilePicture(compte.profilePictureUrl);
       setApercu(null);
-      // Le layout relit `/auth/me` et transmet la même URL signée à
-      // tous les avatars. Une seule invalidation remplace plusieurs
-      // états locaux qui finiraient nécessairement par diverger.
+      // Le contexte met immédiatement tous les avatars à jour ; le
+      // rafraîchissement recale ensuite les composants serveur sur `/auth/me`.
       router.refresh();
     } catch (error) {
       setApercu(null);
@@ -94,6 +90,7 @@ export function AvatarUploader({ user }: AvatarUploaderProps) {
     try {
       const compte = await removeProfilePhoto();
       setPhotoUrl(compte.profilePictureUrl);
+      updateProfilePicture(compte.profilePictureUrl);
       setApercu(null);
       router.refresh();
     } catch (error) {

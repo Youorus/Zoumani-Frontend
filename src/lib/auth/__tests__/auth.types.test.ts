@@ -48,6 +48,22 @@ describe("conversion du contrat de l'API", () => {
 
     expect(serialized).not.toContain("token");
   });
+
+  it("reste navigable pendant un déploiement avec un ancien contrat", () => {
+    const legacy = {
+      id: raw.id,
+      first_name: raw.first_name,
+      last_name: raw.last_name,
+      email: raw.email,
+      phone: raw.phone,
+    } satisfies RawCurrentUser;
+
+    const user = toAuthenticatedUser(legacy);
+
+    expect(user.fullName).toBe("Aïcha Diallo");
+    expect(user.permissions).toEqual([]);
+    expect(user.profilePictureUrl).toBeNull();
+  });
 });
 
 describe("permissions", () => {

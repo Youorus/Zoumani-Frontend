@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
-import { MyTripsView } from "@/features/travel/components/my-trips-view";
+import {
+  MyTripsView,
+  TripsUnavailable,
+} from "@/features/travel/components/my-trips-view";
 import {
   toRewards,
   toTrip,
@@ -34,7 +37,7 @@ export default async function Page({
   // Une liste vide et une erreur ne se confondent pas : l'écran « aucun
   // trajet » invite à en créer un, ce qui serait absurde après une panne.
   if (reponse.status !== 200) {
-    throw new Error(`L'API a répondu ${reponse.status} sur /trips.`);
+    return <TripsUnavailable />;
   }
   const page = reponse.body as RawPage<RawTrip>;
   const rewards =

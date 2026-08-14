@@ -13,6 +13,8 @@ import { ServicePointsMap } from "./service-points-map";
 interface HandoverStepProps {
   /** Position de l'expéditeur, issue de son adresse vérifiée. */
   sender: { latitude: number; longitude: number; countryCode: string } | null;
+  /** Pays de résidence, disponible même si l'adresse n'a pas été géocodée. */
+  senderCountryCode: string | null;
   weightGrams: number;
   /** Distance jusqu'au voyageur. `null` si l'une des adresses est inconnue. */
   distanceMeters: number | null;
@@ -52,6 +54,7 @@ interface HandoverStepProps {
  */
 export function HandoverStep({
   sender,
+  senderCountryCode,
   weightGrams,
   distanceMeters,
   parcelTotalMinor,
@@ -59,14 +62,19 @@ export function HandoverStep({
   onChange,
 }: HandoverStepProps) {
   const [options, setOptions] = useState<HandoverOptions | null>(null);
+  const [position, setPosition] = useState(sender);
   const [method, setMethod] = useState<"in_person" | "carrier">(
     acceptsInPerson ? "in_person" : "carrier",
   );
   const [point, setPoint] = useState<ServicePoint | null>(null);
   const [chargement, setChargement] = useState(false);
+  const [localisation, setLocalisation] = useState(false);
+  const [lookupFailure, setLookupFailure] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [radiusMeters, setRadiusMeters] = useState(5_000);
 
   useEffect(() => {
-    if (!sender) {
+    if (!position) {
       return;
     }
     let vivant = true;
@@ -77,16 +85,18 @@ export function HandoverStep({
       .then(() => {
         if (!controller.annule) {
           setChargement(true);
+          setLookupFailure(null);
         }
       })
       .then(() =>
         fetchHandoverOptions({
-          latitude: sender.latitude,
-          longitude: sender.longitude,
-          countryCode: sender.countryCode,
+          latitude: position.latitude,
+          longitude: position.longitude,
+          countryCode: position.countryCode,
           weightGrams,
           distanceMeters,
           acceptsInPerson,
+          radiusMeters,
         }),
       )
       .then((valeur) => {
@@ -94,17 +104,34 @@ export function HandoverStep({
           return;
         }
         setOptions(valeur);
+        setPoint((current) =>
+          current
+            ? (valeur.servicePoints.find(
+                (candidate) =>
+                  candidate.code === current.code && candidate.carrier === current.carrier,
+              ) ?? null)
+            : null,
+        );
         if (valeur.advice === "carrier_required") {
           setMethod("carrier");
         }
       })
-      .catch(() => undefined)
+      .catch((error) => {
+        if (vivant) {
+          setOptions(null);
+          setLookupFailure(
+            error instanceof Error
+              ? error.message
+              : "La recherche des points de dépôt n'a pas abouti.",
+          );
+        }
+      })
       .finally(() => vivant && setChargement(false));
     return () => {
       vivant = false;
       controller.annule = true;
     };
-  }, [sender, weightGrams, distanceMeters, acceptsInPerson]);
+  }, [position, weightGrams, distanceMeters, acceptsInPerson, radiusMeters, refreshKey]);
 
   const quote =
     options?.quotes.find((q) => q.carrier === point?.carrier) ?? options?.quotes[0];
@@ -120,13 +147,63 @@ export function HandoverStep({
     });
   }, [method, point, quote, extraMinor, onChange]);
 
-  if (!sender) {
+  function useCurrentPosition() {
+    if (!senderCountryCode || !navigator.geolocation) {
+      setLookupFailure(
+        "La localisation n'est pas disponible sur cet appareil. Vérifiez votre adresse dans votre profil.",
+      );
+      return;
+    }
+    setLocalisation(true);
+    setLookupFailure(null);
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setPosition({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          countryCode: senderCountryCode,
+        });
+        setLocalisation(false);
+      },
+      () => {
+        setLookupFailure(
+          "Nous n'avons pas pu utiliser votre position. Autorisez-la, ou vérifiez l'adresse de votre profil.",
+        );
+        setLocalisation(false);
+      },
+      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 },
+    );
+  }
+
+  if (!position) {
     return (
-      <Encadre>
-        {acceptsInPerson
-          ? "Nous ne connaissons pas encore votre adresse. Vous pouvez convenir d'une remise en main propre avec le voyageur."
-          : "Ajoutez une adresse vérifiée à votre profil pour afficher les points de dépôt proches de chez vous."}
-      </Encadre>
+      <div className="space-y-3 rounded-2xl border border-primary/25 bg-primary/5 p-4">
+        <div>
+          <p className="font-medium text-foreground">Trouvons les relais autour de vous</p>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            Votre adresse vérifiée n&apos;a pas pu être placée sur la carte. Votre
+            position sert uniquement à cette recherche de proximité.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={useCurrentPosition}
+          disabled={localisation || !senderCountryCode}
+          className="focus-ring rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground disabled:opacity-50"
+        >
+          {localisation ? "Localisation en cours…" : "Afficher les relais près de moi"}
+        </button>
+        {acceptsInPerson && (
+          <p className="text-xs text-muted-foreground">
+            La remise en main propre reste disponible si vous préférez convenir d&apos;un lieu.
+          </p>
+        )}
+        {lookupFailure && (
+          <p className="text-sm text-error" role="alert">
+            {lookupFailure}
+          </p>
+        )}
+      </div>
     );
   }
 
@@ -170,7 +247,25 @@ export function HandoverStep({
       </div>
 
       {chargement && (
-        <p className="text-sm text-muted-foreground">Recherche des points de dépôt…</p>
+        <div className="rounded-xl border border-primary/20 bg-primary/5 p-3" role="status">
+          <p className="text-sm font-medium text-foreground">Recherche autour de vous…</p>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-primary/15">
+            <span className="block h-full w-1/2 animate-pulse rounded-full bg-primary" />
+          </div>
+        </div>
+      )}
+
+      {lookupFailure && !chargement && (
+        <div className="rounded-xl border border-error/25 bg-error/5 p-3" role="alert">
+          <p className="text-sm text-muted-foreground">{lookupFailure}</p>
+          <button
+            type="button"
+            onClick={() => setRefreshKey((current) => current + 1)}
+            className="focus-ring mt-2 rounded-lg text-sm font-bold text-primary"
+          >
+            Relancer la recherche
+          </button>
+        </div>
       )}
 
       {options?.pointsOutcome === "unavailable" && (
@@ -181,11 +276,30 @@ export function HandoverStep({
         </Encadre>
       )}
 
+      {options &&
+        (options.pointsOutcome === "none_nearby" ||
+          (options.pointsOutcome === "found" && options.servicePoints.length === 0)) && (
+        <div className="rounded-xl border border-border bg-muted/50 p-3">
+          <p className="text-sm text-muted-foreground">
+            Aucun relais compatible n&apos;a été trouvé dans un rayon de {radiusMeters / 1_000} km.
+          </p>
+          {radiusMeters < 50_000 && (
+            <button
+              type="button"
+              onClick={() => setRadiusMeters(radiusMeters < 15_000 ? 15_000 : 50_000)}
+              className="focus-ring mt-2 rounded-lg text-sm font-bold text-primary"
+            >
+              Élargir la recherche à {radiusMeters < 15_000 ? 15 : 50} km
+            </button>
+          )}
+        </div>
+      )}
+
       {method === "carrier" && options && options.servicePoints.length > 0 && (
         <div className="space-y-3">
           <ServicePointsMap
             points={options.servicePoints}
-            center={{ latitude: sender.latitude, longitude: sender.longitude }}
+            center={{ latitude: position.latitude, longitude: position.longitude }}
             selected={point?.code ?? null}
             onSelect={(code) =>
               setPoint(options.servicePoints.find((p) => p.code === code) ?? null)

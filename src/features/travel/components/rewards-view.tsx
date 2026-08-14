@@ -7,6 +7,7 @@ import {
   BedDouble,
   CarFront,
   Check,
+  Coins,
   Gift,
   Hotel,
   LockKeyhole,
@@ -14,7 +15,6 @@ import {
   PackageCheck,
   Plane,
   PlaneTakeoff,
-  Sparkles,
   Trophy,
 } from "lucide-react";
 
@@ -68,7 +68,7 @@ export function RewardsUnavailable() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
       <section className="rounded-[1.75rem] border border-warning/25 bg-warning/8 px-6 py-10 text-center sm:px-10">
-        <Sparkles className="mx-auto size-8 text-warning" aria-hidden />
+        <Coins className="mx-auto size-8 text-warning" aria-hidden />
         <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-warning">
           Programme Zoumani
         </p>
@@ -117,6 +117,13 @@ function RewardsHero({
             Vous êtes rémunéré pour vos kilos. En plus, chaque engagement réellement tenu
             rapproche d&apos;une nuit, d&apos;une voiture et, au sommet, d&apos;un billet offert.
           </p>
+          <a
+            href="#recompenses"
+            className="focus-ring mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"
+          >
+            Explorer mes récompenses
+            <ArrowRight className="size-4" aria-hidden />
+          </a>
         </div>
 
         <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm sm:p-6">
@@ -183,7 +190,10 @@ function RewardsHero({
 function RewardCatalog({ rewards }: { rewards: RewardCatalogItem[] }) {
   if (rewards.length === 0) {
     return (
-      <section className="rounded-[1.75rem] border border-dashed border-primary/30 bg-primary/5 px-6 py-10 text-center">
+      <section
+        id="recompenses"
+        className="scroll-mt-24 rounded-[1.75rem] border border-dashed border-primary/30 bg-primary/5 px-6 py-10 text-center"
+      >
         <Gift className="mx-auto size-7 text-primary" aria-hidden />
         <h2 className="mt-4 text-2xl font-semibold">Vos avantages se préparent</h2>
         <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">
@@ -195,7 +205,10 @@ function RewardCatalog({ rewards }: { rewards: RewardCatalogItem[] }) {
   }
 
   return (
-    <section className="rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8">
+    <section
+      id="recompenses"
+      className="scroll-mt-24 rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8"
+    >
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
@@ -359,7 +372,7 @@ function EarningRules({ rewards }: { rewards: Rewards }) {
           copy="Votre billet confirme une route réelle."
         />
         <GainCard
-          icon={Sparkles}
+          icon={Coins}
           points={rewards.earningRules.capacity_published}
           title="Place publiée"
           copy="Vos kilos deviennent visibles des familles."

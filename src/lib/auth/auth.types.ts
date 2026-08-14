@@ -87,36 +87,39 @@ export interface RawCurrentUser {
   id: string;
   first_name: string;
   last_name: string;
-  full_name: string;
+  full_name?: string;
   email: string | null;
   phone: string | null;
-  preferred_language: string;
-  timezone: string;
-  status: string;
-  email_verified: boolean;
-  phone_verified: boolean;
-  identity_verified: boolean;
-  profile_picture_url: string | null;
-  permissions: string[];
+  preferred_language?: string;
+  timezone?: string;
+  status?: string;
+  email_verified?: boolean;
+  phone_verified?: boolean;
+  identity_verified?: boolean;
+  profile_picture_url?: string | null;
+  permissions?: string[];
 }
 
 /** Convertit la réponse de l'API vers la forme utilisée par l'interface. */
 export function toAuthenticatedUser(raw: RawCurrentUser): AuthenticatedUser {
+  const firstName = typeof raw.first_name === "string" ? raw.first_name : "";
+  const lastName = typeof raw.last_name === "string" ? raw.last_name : "";
+
   return {
     id: raw.id,
-    firstName: raw.first_name,
-    lastName: raw.last_name,
-    fullName: raw.full_name,
-    email: raw.email,
-    phone: raw.phone,
-    preferredLanguage: raw.preferred_language,
-    timezone: raw.timezone,
-    status: raw.status,
-    emailVerified: raw.email_verified,
-    phoneVerified: raw.phone_verified,
-    identityVerified: raw.identity_verified,
-    profilePictureUrl: raw.profile_picture_url,
-    permissions: raw.permissions,
+    firstName,
+    lastName,
+    fullName: raw.full_name?.trim() || `${firstName} ${lastName}`.trim(),
+    email: raw.email ?? null,
+    phone: raw.phone ?? null,
+    preferredLanguage: raw.preferred_language ?? "fr",
+    timezone: raw.timezone ?? "UTC",
+    status: raw.status ?? "active",
+    emailVerified: raw.email_verified ?? false,
+    phoneVerified: raw.phone_verified ?? false,
+    identityVerified: raw.identity_verified ?? false,
+    profilePictureUrl: raw.profile_picture_url ?? null,
+    permissions: Array.isArray(raw.permissions) ? raw.permissions : [],
   };
 }
 

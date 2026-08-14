@@ -1,7 +1,7 @@
 "use client";
 
 import { compressImage } from "@/lib/images/compress";
-import { AuthError } from "@/lib/auth/auth-client";
+import { apiErrorFromPayload } from "@/lib/api/api-errors";
 
 import {
   toCapacity,
@@ -52,17 +52,14 @@ import {
 const PROXY = "/api/proxy";
 
 async function unwrap(response: Response): Promise<unknown> {
-  const payload = (await response.json().catch(() => null)) as {
-    error?: { message?: string; details?: { reason?: string; field?: string } };
-  } | null;
+  const payload: unknown = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new AuthError(
-      payload?.error?.message ?? "Une erreur est survenue.",
-      payload?.error?.details?.reason,
-      response.status,
-      payload?.error?.details?.field,
-    );
+    throw apiErrorFromPayload({
+      status: response.status,
+      statusText: response.statusText,
+      payload,
+    });
   }
   return payload;
 }
@@ -181,7 +178,9 @@ export async function offerCapacity(
         category_code: offer.categoryCode,
         price_minor: offer.priceMinor,
       })),
-      accepts_in_person: draft.acceptsInPerson ?? false,
+      ...(draft.acceptsInPerson === undefined
+        ? {}
+        : { accepts_in_person: draft.acceptsInPerson }),
       notes: draft.notes ?? null,
     }),
   });
@@ -425,7 +424,9 @@ export async function updateCapacity(
         category_code: offer.categoryCode,
         price_minor: offer.priceMinor,
       })),
-      accepts_in_person: draft.acceptsInPerson ?? false,
+      ...(draft.acceptsInPerson === undefined
+        ? {}
+        : { accepts_in_person: draft.acceptsInPerson }),
       notes: draft.notes ?? null,
     }),
   });
@@ -566,6 +567,7 @@ export async function fetchHandoverOptions(input: {
   distanceMeters?: number | null;
   /** Le voyageur accepte-t-il aussi une remise en main propre ? */
   acceptsInPerson?: boolean;
+  radiusMeters?: number;
 }): Promise<HandoverOptions> {
   const params = new URLSearchParams({
     latitude: String(input.latitude),
@@ -577,6 +579,9 @@ export async function fetchHandoverOptions(input: {
     params.set("distance_meters", String(input.distanceMeters));
   }
   params.set("accepts_in_person", String(input.acceptsInPerson ?? false));
+  if (input.radiusMeters) {
+    params.set("radius_meters", String(input.radiusMeters));
+  }
 
   const response = await fetch(`${PROXY}/handover/options?${params}`, {
     cache: "no-store",

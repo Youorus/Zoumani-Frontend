@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthError } from "@/lib/auth/auth-client";
+import { apiErrorFromPayload } from "@/lib/api/api-errors";
 import { toAuthenticatedUser, type RawCurrentUser } from "@/lib/auth/auth.types";
 
 /**
@@ -33,17 +33,14 @@ export const ACCEPTED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"] as
 export const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 
 async function unwrap(response: Response): Promise<unknown> {
-  const payload = (await response.json().catch(() => null)) as {
-    error?: { message?: string; details?: { reason?: string; field?: string } };
-  } | null;
+  const payload: unknown = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new AuthError(
-      payload?.error?.message ?? "Une erreur est survenue.",
-      payload?.error?.details?.reason,
-      response.status,
-      payload?.error?.details?.field,
-    );
+    throw apiErrorFromPayload({
+      status: response.status,
+      statusText: response.statusText,
+      payload,
+    });
   }
   return payload;
 }

@@ -11,7 +11,10 @@ export interface ApiRequestOptions<TBody = unknown> {
 }
 
 export interface ApiErrorPayload {
-  code?: string;
-  message?: string;
-  details?: unknown;
+  error?: {
+    code?: string;
+    message?: string;
+    details?: unknown;
+  };
+  correlation_id?: string;
 }
