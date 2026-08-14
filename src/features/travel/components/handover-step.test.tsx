@@ -10,10 +10,6 @@ vi.mock("../api/travel-client", () => ({
   fetchHandoverOptions: (...args: unknown[]) => fetchHandoverOptions(...args),
 }));
 
-vi.mock("./service-points-map", () => ({
-  ServicePointsMap: () => <div>Carte des relais</div>,
-}));
-
 const options = {
   advice: "carrier_required" as const,
   distanceMeters: 42_000,
@@ -69,8 +65,12 @@ describe("choix de la remise", () => {
       />,
     );
 
-    await screen.findByText("Consigne Pickup République");
-    await user.click(screen.getByRole("button", { name: /Consigne Pickup République/ }));
+    await screen.findByRole("button", {
+      name: "Choisir Consigne Pickup République",
+    });
+    await user.click(
+      screen.getByRole("button", { name: "Choisir Consigne Pickup République" }),
+    );
 
     expect(fetchHandoverOptions).toHaveBeenCalledWith(
       expect.objectContaining({ latitude: 48.85, countryCode: "FR" }),

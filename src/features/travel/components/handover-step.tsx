@@ -8,7 +8,7 @@ import {
   type HandoverOptions,
   type ServicePoint,
 } from "../types/trip.types";
-import { ServicePointsMap } from "./service-points-map";
+import { ServicePointSelector } from "./service-point-selector";
 
 interface HandoverStepProps {
   /** Position de l'expéditeur, issue de son adresse vérifiée. */
@@ -296,56 +296,11 @@ export function HandoverStep({
       )}
 
       {method === "carrier" && options && options.servicePoints.length > 0 && (
-        <div className="space-y-3">
-          <ServicePointsMap
-            points={options.servicePoints}
-            center={{ latitude: position.latitude, longitude: position.longitude }}
-            selected={point?.code ?? null}
-            onSelect={(code) =>
-              setPoint(options.servicePoints.find((p) => p.code === code) ?? null)
-            }
-          />
-
-          <ul className="max-h-72 space-y-2 overflow-y-auto">
-            {options.servicePoints.map((candidat) => {
-              const choisi = candidat.code === point?.code;
-              return (
-                <li key={candidat.code}>
-                  <button
-                    type="button"
-                    onClick={() => setPoint(candidat)}
-                    aria-pressed={choisi}
-                    className={`w-full rounded-xl border p-3 text-left transition-colors ${
-                      choisi
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-foreground/20"
-                    }`}
-                  >
-                    <div className="flex items-baseline justify-between gap-3">
-                      <span className="min-w-0 truncate text-sm font-medium">
-                        {candidat.name}
-                      </span>
-                      {candidat.distanceMeters !== null && (
-                        <span className="shrink-0 text-xs text-muted-foreground">
-                          {formatDistance(candidat.distanceMeters)}
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {candidat.street}, {candidat.postalCode} {candidat.city} ·{" "}
-                      {candidat.carrierName}
-                    </p>
-                    {candidat.openingTimes.length > 0 && (
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {candidat.openingTimes[0]}
-                      </p>
-                    )}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+        <ServicePointSelector
+          points={options.servicePoints}
+          selected={point}
+          onSelect={setPoint}
+        />
       )}
 
       <div className="rounded-xl border border-border p-4">
