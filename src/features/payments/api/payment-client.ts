@@ -5,11 +5,17 @@ import { apiClient } from "@/lib/api/api-client";
 import {
   toCheckoutQuote,
   toInsuranceOffer,
+  toOpenPayment,
+  toPaymentState,
   toServiceFeeQuote,
   type CheckoutQuote,
   type InsuranceOffer,
+  type OpenPayment,
+  type PaymentState,
   type RawCheckoutQuote,
   type RawInsuranceOffer,
+  type RawOpenPayment,
+  type RawPaymentState,
   type RawServiceFeeQuote,
   type ServiceFeeQuote,
 } from "../types/payment.types";
@@ -64,4 +70,33 @@ export async function getCheckout(shipmentId: string): Promise<CheckoutQuote> {
     `/payments/shipments/${shipmentId}/quote`,
   );
   return toCheckoutQuote(raw);
+}
+
+/**
+ * Ouvre la Checkout Session qui correspond au devis persistant.
+ *
+ * Aucun montant ne traverse cette requête : le serveur relit son propre
+ * devis, ce qui empêche le navigateur de fixer le prix à payer.
+ */
+export async function openPayment(
+  shipmentId: string,
+  returnPath: string,
+): Promise<OpenPayment> {
+  const raw = await apiClient.post<RawOpenPayment>(
+    `/payments/shipments/${shipmentId}/payment`,
+    { body: { return_path: returnPath } },
+  );
+  return toOpenPayment(raw);
+}
+
+/** Lit la décision du serveur, elle-même alimentée par le webhook Stripe. */
+export async function getPayment(
+  paymentId: string,
+  signal?: AbortSignal,
+): Promise<PaymentState> {
+  const raw = await apiClient.get<RawPaymentState>(
+    `/payments/payments/${encodeURIComponent(paymentId)}`,
+    { signal },
+  );
+  return toPaymentState(raw);
 }

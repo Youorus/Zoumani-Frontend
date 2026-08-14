@@ -5,7 +5,12 @@ import { CheckoutView } from "@/features/payments/components/checkout-view";
 import type { RawCheckoutQuote } from "@/features/payments/types/payment.types";
 import { toCheckoutQuote } from "@/features/payments/types/payment.types";
 import type { RawCatalog } from "@/features/travel/types/travel.types";
-import { toShipment, type RawShipment } from "@/features/travel/types/trip.types";
+import {
+  toCapacityMatch,
+  toShipment,
+  type RawCapacityMatch,
+  type RawShipment,
+} from "@/features/travel/types/trip.types";
 import { callApi } from "@/lib/api/upstream.server";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -30,6 +35,12 @@ export default async function Page({
     throw new Error(`Le récapitulatif de paiement n'a pas pu être chargé.`);
   }
 
+  const mappedShipment = toShipment(shipment.body as RawShipment);
+  const offer = await callApi({
+    method: "GET",
+    path: `/capacities/${mappedShipment.capacityId}/offer`,
+  });
+
   const labels = Object.fromEntries(
     ((catalog.body as RawCatalog | undefined)?.categories ?? []).map((category) => [
       category.code,
@@ -40,7 +51,12 @@ export default async function Page({
   return (
     <CheckoutView
       quote={toCheckoutQuote(quote.body as RawCheckoutQuote)}
-      shipment={toShipment(shipment.body as RawShipment)}
+      shipment={mappedShipment}
+      match={
+        offer.status === 200
+          ? toCapacityMatch(offer.body as RawCapacityMatch)
+          : null
+      }
       labels={labels}
     />
   );

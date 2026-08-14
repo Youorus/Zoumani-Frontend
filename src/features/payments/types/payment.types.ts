@@ -38,6 +38,13 @@ export interface RawServiceFeeQuote {
 
 export type PaymentMethod = "card" | "apple_pay" | "google_pay";
 
+export type PaymentStatus =
+  | "pending"
+  | "succeeded"
+  | "failed"
+  | "expired"
+  | "refunded";
+
 export interface CheckoutQuote {
   id: string;
   shipmentId: string;
@@ -66,6 +73,46 @@ export interface RawCheckoutQuote {
   total_major: string;
   available_methods: PaymentMethod[];
   can_pay: boolean;
+}
+
+export interface OpenPayment {
+  paymentId: string;
+  status: "pending";
+  amountMinor: number;
+  amountMajor: string;
+  currency: string;
+  clientSecret: string;
+  publishableKey: string;
+}
+
+export interface RawOpenPayment {
+  payment_id: string;
+  status: "pending";
+  amount_minor: number;
+  amount_major: string;
+  currency: string;
+  client_secret: string;
+  publishable_key: string;
+}
+
+export interface PaymentState {
+  paymentId: string;
+  status: PaymentStatus;
+  isPaid: boolean;
+  amountMinor: number;
+  amountMajor: string;
+  currency: string;
+  paymentMethod: string | null;
+}
+
+export interface RawPaymentState {
+  payment_id: string;
+  status: PaymentStatus;
+  is_paid: boolean;
+  amount_minor: number;
+  amount_major: string;
+  currency: string;
+  payment_method: string | null;
 }
 
 export function toInsuranceOffer(raw: RawInsuranceOffer): InsuranceOffer {
@@ -105,5 +152,29 @@ export function toCheckoutQuote(raw: RawCheckoutQuote): CheckoutQuote {
     totalMajor: raw.total_major,
     availableMethods: raw.available_methods,
     canPay: raw.can_pay,
+  };
+}
+
+export function toOpenPayment(raw: RawOpenPayment): OpenPayment {
+  return {
+    paymentId: raw.payment_id,
+    status: raw.status,
+    amountMinor: raw.amount_minor,
+    amountMajor: raw.amount_major,
+    currency: raw.currency,
+    clientSecret: raw.client_secret,
+    publishableKey: raw.publishable_key,
+  };
+}
+
+export function toPaymentState(raw: RawPaymentState): PaymentState {
+  return {
+    paymentId: raw.payment_id,
+    status: raw.status,
+    isPaid: raw.is_paid,
+    amountMinor: raw.amount_minor,
+    amountMajor: raw.amount_major,
+    currency: raw.currency,
+    paymentMethod: raw.payment_method,
   };
 }

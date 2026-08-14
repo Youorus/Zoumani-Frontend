@@ -45,7 +45,11 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(self), payment=(self)",
+            // Le Payment Element vit dans une iframe Stripe. Sans ces deux
+            // origines, la politique bloque silencieusement Apple Pay et
+            // Google Pay, même quand Stripe les a activés pour l'appareil.
+            value:
+              'camera=(), microphone=(), geolocation=(self), payment=(self "https://js.stripe.com" "https://checkout.stripe.com")',
           },
           {
             key: "Strict-Transport-Security",
