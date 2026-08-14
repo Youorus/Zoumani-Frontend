@@ -96,7 +96,16 @@ export function ShipmentDetailView({ shipment, labels }: ShipmentDetailViewProps
             <section className="rounded-[1.5rem] border border-primary/25 bg-primary/5 p-5">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Prochaine étape</p>
               <h2 className="mt-2 font-semibold">Paiement sécurisé</h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Le module de paiement n&apos;est pas encore activé. Votre demande reste enregistrée sans débit.</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Votre récapitulatif détaillé est prêt. Vous pouvez vérifier le transport,
+                la protection et les futurs moyens de règlement sans être débité.
+              </p>
+              <Link
+                href={`/envois/${shipment.id}/paiement`}
+                className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"
+              >
+                Voir le récapitulatif
+              </Link>
             </section>
           )}
         </aside>

@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { prepareCheckout } from "@/features/payments/api/payment-client";
+import { InsuranceStep } from "@/features/payments/components/insurance-step";
+
 import {
   declareShipment,
   submitShipment,
@@ -67,7 +70,9 @@ export function DeclareShipmentView({
   const router = useRouter();
   const [lignes, setLignes] = useState<Record<string, LigneSaisie>>({});
   const [busy, setBusy] = useState(false);
-  const [etape, setEtape] = useState<"saisie" | "photos" | "remise">("saisie");
+  const [etape, setEtape] = useState<
+    "saisie" | "photos" | "remise" | "protection"
+  >("saisie");
   // Une catégorie à la fois : tout demander d'un coup produisait une
   // page où l'on ne savait plus quelle photo documentait quoi.
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -76,8 +81,17 @@ export function DeclareShipmentView({
     method: "in_person" | "carrier";
     pointCode: string | null;
     carrierCode: string | null;
+    quoteToken: string | null;
     extraMinor: number;
-  }>({ method: "in_person", pointCode: null, carrierCode: null, extraMinor: 0 });
+  }>({
+    method: capacity.acceptsInPerson ? "in_person" : "carrier",
+    pointCode: null,
+    carrierCode: null,
+    quoteToken: null,
+    extraMinor: 0,
+  });
+  const [insuranceSelected, setInsuranceSelected] = useState(false);
+  const [declaredValues, setDeclaredValues] = useState<Record<string, string>>({});
   const [shipmentId, setShipmentId] = useState<string | null>(null);
   const [uploadedPhotoKeys, setUploadedPhotoKeys] = useState<Record<string, string>>(
     {},
@@ -116,6 +130,14 @@ export function DeclareShipmentView({
         (lignes[offer.categoryCode]?.quantity ?? "").replace(",", "."),
       );
       return Number.isFinite(valeur) && valeur > 0;
+    });
+  const protectionComplete =
+    !insuranceSelected ||
+    choisies.every((offer) => {
+      const value = Number.parseFloat(
+        (declaredValues[offer.categoryCode] ?? "").replace(",", "."),
+      );
+      return Number.isFinite(value) && value > 0;
     });
 
   function basculer(code: string) {
@@ -198,19 +220,34 @@ export function DeclareShipmentView({
           const base = {
             photoKeys: cles[offer.categoryCode] ?? [],
             note: photos[offer.categoryCode]?.note?.trim() || null,
+            declaredValueMinor: insuranceSelected
+              ? Math.round(
+                  Number.parseFloat(
+                    (declaredValues[offer.categoryCode] ?? "0").replace(",", "."),
+                  ) * 100,
+                )
+              : null,
           };
           return offer.perPiece
             ? { ...base, categoryCode: offer.categoryCode, pieces: Math.floor(valeur) }
             : { ...base, categoryCode: offer.categoryCode, quantityKg: valeur };
         }),
         remise.method,
-        remise.method === "carrier" && remise.pointCode && remise.carrierCode
-          ? { pointCode: remise.pointCode, carrierCode: remise.carrierCode }
+        remise.method === "carrier" &&
+          remise.pointCode &&
+          remise.carrierCode &&
+          remise.quoteToken
+          ? {
+              pointCode: remise.pointCode,
+              carrierCode: remise.carrierCode,
+              quoteToken: remise.quoteToken,
+            }
           : null,
       );
 
       await submitShipment(shipmentId);
-      router.push("/compte/envois");
+      await prepareCheckout(shipmentId, insuranceSelected);
+      router.push(`/envois/${shipmentId}/paiement`);
       router.refresh();
     } catch (error) {
       setFailure(error instanceof Error ? error.message : "La transmission a échoué.");
@@ -218,7 +255,8 @@ export function DeclareShipmentView({
     }
   }
 
-  const stepNumber = etape === "saisie" ? 1 : etape === "photos" ? 2 : 3;
+  const stepNumber =
+    etape === "saisie" ? 1 : etape === "photos" ? 2 : etape === "remise" ? 3 : 4;
 
   return (
     <div className="relative mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-9">
@@ -247,7 +285,7 @@ export function DeclareShipmentView({
             </p>
           </div>
           <ol className="flex gap-2" aria-label="Progression de l'envoi">
-            {["Contenu", "Preuves", "Remise"].map((label, index) => {
+            {["Contenu", "Preuves", "Remise", "Protection"].map((label, index) => {
               const number = index + 1;
               return (
                 <li
@@ -271,7 +309,7 @@ export function DeclareShipmentView({
 
       <div className="relative mt-5 grid items-start gap-5 lg:grid-cols-[0.72fr_1.28fr]">
         <aside className="space-y-4 lg:sticky lg:top-24">
-          {/* Le voyage choisi reste visible pendant les trois étapes. */}
+          {/* Le voyage choisi reste visible pendant tout le parcours. */}
           <TripSummaryBanner match={match} />
           <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
@@ -288,21 +326,25 @@ export function DeclareShipmentView({
         <main className="rounded-[1.75rem] border border-border bg-surface p-5 shadow-[0_24px_70px_-48px_rgb(43_29_23_/_0.55)] sm:p-7">
           <header className="mb-6">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
-              Étape {stepNumber} sur 3
+              Étape {stepNumber} sur 4
             </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
               {etape === "saisie"
                 ? "Que voulez-vous envoyer ?"
                 : etape === "photos"
                   ? "Montrez-nous le contenu"
-                  : "Comment rejoint-il le voyageur ?"}
+                  : etape === "remise"
+                    ? "Comment rejoint-il le voyageur ?"
+                    : "Souhaitez-vous protéger sa valeur ?"}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               {etape === "saisie"
                 ? `Ce voyageur dispose encore de ${capacity.availableWeightKg} kg.`
                 : etape === "photos"
                   ? "Trois angles montrent le volume, l'état et le conditionnement : une vraie protection pour vous deux."
-                  : "En main propre ou via un relais partenaire : choisissez ce qui est simple pour vous."}
+                  : etape === "remise"
+                    ? "Vous choisissez le dépôt ; la distance détermine si une rencontre reste raisonnable."
+                    : "Une décision claire, prise avant de voir le récapitulatif de paiement."}
             </p>
           </header>
 
@@ -438,14 +480,14 @@ export function DeclareShipmentView({
             {photoIndex > 0 ? "Contenu précédent" : "Revenir aux quantités"}
           </button>
         </>
-      ) : (
+      ) : etape === "remise" ? (
         <>
           <HandoverStep
             sender={sender}
             weightGrams={Math.max(100, Math.round(poidsDeclare * 1000))}
             distanceMeters={distanceMeters}
             parcelTotalMinor={totalMinor}
-            acceptsPickup={capacity.acceptsPickup}
+            acceptsInPerson={capacity.acceptsInPerson}
             onChange={setRemise}
           />
 
@@ -457,19 +499,17 @@ export function DeclareShipmentView({
 
           <button
             type="button"
-            onClick={transmettre}
+            onClick={() => setEtape("protection")}
             disabled={
               busy ||
               (remise.method === "carrier" &&
-                (remise.pointCode === null || remise.carrierCode === null))
+                (remise.pointCode === null ||
+                  remise.carrierCode === null ||
+                  remise.quoteToken === null))
             }
             className="focus-ring w-full rounded-xl bg-primary px-4 py-3 font-bold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-40"
           >
-            {busy
-              ? "Transmission…"
-              : remise.extraMinor > 0
-                ? `Confirmer · ${((totalMinor + remise.extraMinor) / 100).toFixed(2)} €`
-                : "Confirmer ma demande d'envoi"}
+            Continuer vers la protection
           </button>
           <button
             type="button"
@@ -481,6 +521,36 @@ export function DeclareShipmentView({
             className="w-full text-sm font-medium text-muted-foreground underline-offset-4 hover:underline"
           >
             Revenir aux photos
+          </button>
+        </>
+      ) : (
+        <>
+          <InsuranceStep
+            lines={choisies.map((offer) => ({
+              categoryCode: offer.categoryCode,
+              label: labels[offer.categoryCode] ?? offer.categoryCode,
+            }))}
+            currency={capacity.currency}
+            selected={insuranceSelected}
+            values={declaredValues}
+            onSelectedChange={setInsuranceSelected}
+            onValuesChange={setDeclaredValues}
+          />
+          <button
+            type="button"
+            onClick={transmettre}
+            disabled={!protectionComplete || busy}
+            className="focus-ring w-full rounded-xl bg-primary px-4 py-3 font-bold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-40"
+          >
+            {busy ? "Préparation du récapitulatif…" : "Voir mon récapitulatif"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setEtape("remise")}
+            disabled={busy}
+            className="w-full text-sm font-medium text-muted-foreground underline-offset-4 hover:underline"
+          >
+            Revenir au mode de remise
           </button>
         </>
           )}

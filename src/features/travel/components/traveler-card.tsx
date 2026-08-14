@@ -24,11 +24,7 @@ interface TravelerCardProps {
 
 /** Une offre lisible comme une promesse de voyage, pas comme une fiche technique. */
 export function TravelerCard({ match, labels }: TravelerCardProps) {
-  const href = (
-    match.distanceMeters !== null
-      ? `/envois/nouveau?capacity=${match.capacityId}&distance=${Math.round(match.distanceMeters)}`
-      : `/envois/nouveau?capacity=${match.capacityId}`
-  ) as Route;
+  const href = `/envois/nouveau?capacity=${match.capacityId}` as Route;
 
   return (
     <article className="group relative overflow-hidden rounded-[1.75rem] border border-border bg-surface shadow-[0_24px_65px_-48px_rgb(43_29_23_/_0.75)] transition duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_30px_75px_-45px_rgb(255_107_0_/_0.38)]">
@@ -83,9 +79,13 @@ export function TravelerCard({ match, labels }: TravelerCardProps) {
             <Fact icon={CalendarDays} label="Départ" value={formatDeparture(match.departureAt)} />
             <Fact icon={Weight} label="Place libre" value={`${match.availableWeightKg} kg`} strong />
             <Fact
-              icon={match.acceptsPickup ? Store : Handshake}
+              icon={match.acceptsInPerson ? Handshake : Store}
               label="Remise du colis"
-              value={match.acceptsPickup ? "Relais partenaire possible" : "En main propre"}
+              value={
+                match.acceptsInPerson
+                  ? "À domicile ou en main propre"
+                  : "Livré au domicile"
+              }
             />
           </dl>
 

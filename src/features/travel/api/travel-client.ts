@@ -161,8 +161,8 @@ export interface CapacityDraft {
   totalWeightKg: number;
   currency: string;
   offers: { categoryCode: string; priceMinor: number }[];
-  /** Le voyageur accepte-t-il d'aller chercher un colis au relais ? */
-  acceptsPickup?: boolean;
+  /** Le voyageur accepte-t-il aussi une remise en main propre ? */
+  acceptsInPerson?: boolean;
   notes?: string | null;
 }
 
@@ -181,7 +181,7 @@ export async function offerCapacity(
         category_code: offer.categoryCode,
         price_minor: offer.priceMinor,
       })),
-      accepts_pickup: draft.acceptsPickup ?? false,
+      accepts_in_person: draft.acceptsInPerson ?? false,
       notes: draft.notes ?? null,
     }),
   });
@@ -425,7 +425,7 @@ export async function updateCapacity(
         category_code: offer.categoryCode,
         price_minor: offer.priceMinor,
       })),
-      accepts_pickup: draft.acceptsPickup ?? false,
+      accepts_in_person: draft.acceptsInPerson ?? false,
       notes: draft.notes ?? null,
     }),
   });
@@ -495,7 +495,7 @@ export async function updateShipment(
   shipmentId: string,
   lines: DeclaredLineInput[],
   handover: HandoverMethod = "in_person",
-  relay: { pointCode: string; carrierCode: string } | null = null,
+  relay: { pointCode: string; carrierCode: string; quoteToken: string } | null = null,
 ): Promise<ShipmentSummary> {
   const response = await fetch(`${PROXY}/shipments/${shipmentId}`, {
     method: "PATCH",
@@ -505,6 +505,7 @@ export async function updateShipment(
       handover,
       service_point_code: relay?.pointCode ?? null,
       carrier_code: relay?.carrierCode ?? null,
+      carrier_quote_token: relay?.quoteToken ?? null,
     }),
   });
   return toShipment((await unwrap(response)) as RawShipment);
@@ -563,8 +564,8 @@ export async function fetchHandoverOptions(input: {
   countryCode: string;
   weightGrams: number;
   distanceMeters?: number | null;
-  /** Le voyageur accepte-t-il le retrait ? Le montant vient du serveur. */
-  withPickup?: boolean;
+  /** Le voyageur accepte-t-il aussi une remise en main propre ? */
+  acceptsInPerson?: boolean;
 }): Promise<HandoverOptions> {
   const params = new URLSearchParams({
     latitude: String(input.latitude),
@@ -575,9 +576,7 @@ export async function fetchHandoverOptions(input: {
   if (input.distanceMeters != null) {
     params.set("distance_meters", String(input.distanceMeters));
   }
-  if (input.withPickup) {
-    params.set("with_pickup", "true");
-  }
+  params.set("accepts_in_person", String(input.acceptsInPerson ?? false));
 
   const response = await fetch(`${PROXY}/handover/options?${params}`, {
     cache: "no-store",

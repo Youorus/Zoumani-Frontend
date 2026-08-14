@@ -60,7 +60,9 @@ export function EditCapacityView({ tripId, capacity }: EditCapacityViewProps) {
       ]),
     ),
   );
-  const [acceptsPickup, setAcceptsPickup] = useState(capacity?.acceptsPickup ?? false);
+  const [acceptsInPerson, setAcceptsInPerson] = useState(
+    capacity?.acceptsInPerson ?? false,
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
 
@@ -123,7 +125,7 @@ export function EditCapacityView({ tripId, capacity }: EditCapacityViewProps) {
         totalWeightKg: poids,
         currency: DEVISE,
         offers,
-        acceptsPickup,
+        acceptsInPerson,
         notes: null,
       };
       if (capacity) {
@@ -239,28 +241,29 @@ export function EditCapacityView({ tripId, capacity }: EditCapacityViewProps) {
       )}
 
       <section>
-        <h2 className="mb-3 text-sm font-medium">Les expéditeurs éloignés</h2>
-        {/* Un interrupteur, pas un montant : le dédommagement est fixé
-            par Zoumani. Un voyageur n'a aucun repère pour le décider, et
-            un expéditeur doit pouvoir comparer deux offres — un prix qui
-            varie sans raison visible fait douter de toute l'annonce. */}
+        <h2 className="mb-3 text-sm font-medium">Comment recevoir les colis</h2>
+        <div className="mb-2.5 rounded-xl border border-primary/20 bg-primary/5 p-3.5">
+          <span className="block text-sm font-medium">Livraison à votre domicile incluse</span>
+          <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
+            Chaque expéditeur peut déposer son colis chez un partenaire. Il vous sera
+            acheminé à l&apos;adresse vérifiée de votre profil, sans déplacement imposé.
+          </span>
+        </div>
         <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border p-3.5">
           <input
             type="checkbox"
-            checked={acceptsPickup}
-            onChange={(event) => setAcceptsPickup(event.target.checked)}
+            checked={acceptsInPerson}
+            onChange={(event) => setAcceptsInPerson(event.target.checked)}
             className="mt-0.5 size-4"
           />
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-medium">
-              J&apos;accepte d&apos;aller chercher un colis en point relais
+              J&apos;accepte aussi une remise en main propre
             </span>
             <span className="mt-0.5 block text-xs text-muted-foreground">
-              Ceux qui habitent loin de vous ne peuvent pas vous rencontrer. Ils déposent
-              leur colis dans un relais près de chez eux, vous le récupérez dans un relais
-              près de chez vous. Zoumani vous verse{" "}
-              <span className="font-medium text-foreground">5 €</span> pour ce
-              déplacement.
+              Si l&apos;expéditeur est suffisamment proche, vous pourrez convenir ensemble
+              d&apos;un lieu et d&apos;un horaire. Au-delà de la distance de sécurité, la
+              livraison restera automatiquement obligatoire.
             </span>
           </span>
         </label>

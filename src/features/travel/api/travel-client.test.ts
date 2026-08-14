@@ -18,6 +18,9 @@ const shipmentResponse = {
   handover: "carrier",
   service_point_code: "RELAY-1",
   carrier_code: "colissimo",
+  shipping_minor: 590,
+  shipping_rate_source: "estimated",
+  shipping_label: "Colissimo",
   currency: "EUR",
   lines: [],
   total_minor: 0,
@@ -39,6 +42,7 @@ describe("contrat d'une expédition", () => {
     await updateShipment("shipment-1", [], "carrier", {
       pointCode: "RELAY-1",
       carrierCode: "colissimo",
+      quoteToken: "signed-quote-token",
     });
 
     const options = fetchMock.mock.calls[0][1] as RequestInit;
@@ -47,10 +51,11 @@ describe("contrat d'une expédition", () => {
       handover: "carrier",
       service_point_code: "RELAY-1",
       carrier_code: "colissimo",
+      carrier_quote_token: "signed-quote-token",
     });
   });
 
-  it("demande au serveur le forfait de retrait quand le voyageur l'accepte", async () => {
+  it("transmet au serveur l'option de remise en main propre", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -70,10 +75,10 @@ describe("contrat d'une expédition", () => {
       longitude: 2.35,
       countryCode: "FR",
       weightGrams: 2_000,
-      withPickup: true,
+      acceptsInPerson: true,
     });
 
-    expect(fetchMock.mock.calls[0][0]).toContain("with_pickup=true");
+    expect(fetchMock.mock.calls[0][0]).toContain("accepts_in_person=true");
   });
 });
 

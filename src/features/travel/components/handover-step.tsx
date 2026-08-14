@@ -18,12 +18,13 @@ interface HandoverStepProps {
   distanceMeters: number | null;
   /** Ce que le colis coûte au voyageur, en unités mineures. */
   parcelTotalMinor: number;
-  /** Ce voyageur accepte-t-il d'aller chercher le colis au relais ? */
-  acceptsPickup: boolean;
+  /** Ce voyageur accepte-t-il aussi une remise en main propre ? */
+  acceptsInPerson: boolean;
   onChange: (choice: {
     method: "in_person" | "carrier";
     pointCode: string | null;
     carrierCode: string | null;
+    quoteToken: string | null;
     extraMinor: number;
   }) => void;
 }
@@ -37,12 +38,11 @@ interface HandoverStepProps {
  * mesure qu'on choisit. Découvrir la somme au moment de payer est la
  * meilleure façon de perdre quelqu'un qui avait décidé d'envoyer.
  *
- * ═══ Le conseil ne verrouille rien ═══
+ * ═══ La distance protège un accord réaliste ═══
  *
- * Le serveur recommande selon la distance, l'interface met en avant —
- * mais les deux modes restent accessibles. Quelqu'un peut vouloir
- * rencontrer un voyageur à cent kilomètres, et quelqu'un d'autre
- * préférer un relais à deux rues.
+ * Le serveur impose le transporteur au-delà du seuil métier. Ce n'est
+ * pas qu'une apparence : `shipment` recalcule la même règle avant de
+ * transmettre la demande.
  *
  * ═══ « Nous n'avons pas pu chercher » n'est pas « il n'y a rien » ═══
  *
@@ -55,11 +55,13 @@ export function HandoverStep({
   weightGrams,
   distanceMeters,
   parcelTotalMinor,
-  acceptsPickup,
+  acceptsInPerson,
   onChange,
 }: HandoverStepProps) {
   const [options, setOptions] = useState<HandoverOptions | null>(null);
-  const [method, setMethod] = useState<"in_person" | "carrier">("in_person");
+  const [method, setMethod] = useState<"in_person" | "carrier">(
+    acceptsInPerson ? "in_person" : "carrier",
+  );
   const [point, setPoint] = useState<ServicePoint | null>(null);
   const [chargement, setChargement] = useState(false);
 
@@ -84,7 +86,7 @@ export function HandoverStep({
           countryCode: sender.countryCode,
           weightGrams,
           distanceMeters,
-          withPickup: acceptsPickup,
+          acceptsInPerson,
         }),
       )
       .then((valeur) => {
@@ -92,9 +94,7 @@ export function HandoverStep({
           return;
         }
         setOptions(valeur);
-        // Le conseil décide de ce qui est **présélectionné**, pas de ce
-        // qui est possible.
-        if (valeur.advice === "carrier_recommended" && valeur.servicePoints.length > 0) {
+        if (valeur.advice === "carrier_required") {
           setMethod("carrier");
         }
       })
@@ -104,7 +104,7 @@ export function HandoverStep({
       vivant = false;
       controller.annule = true;
     };
-  }, [sender, weightGrams, distanceMeters, acceptsPickup]);
+  }, [sender, weightGrams, distanceMeters, acceptsInPerson]);
 
   const quote =
     options?.quotes.find((q) => q.carrier === point?.carrier) ?? options?.quotes[0];
@@ -115,15 +115,17 @@ export function HandoverStep({
       method,
       pointCode: method === "carrier" ? (point?.code ?? null) : null,
       carrierCode: method === "carrier" ? (point?.carrier ?? null) : null,
+      quoteToken: method === "carrier" ? (quote?.quoteToken ?? null) : null,
       extraMinor,
     });
-  }, [method, point, extraMinor, onChange]);
+  }, [method, point, quote, extraMinor, onChange]);
 
   if (!sender) {
     return (
       <Encadre>
-        Nous ne connaissons pas encore votre adresse. La remise se fera en main propre,
-        convenue avec le voyageur.
+        {acceptsInPerson
+          ? "Nous ne connaissons pas encore votre adresse. Vous pouvez convenir d'une remise en main propre avec le voyageur."
+          : "Ajoutez une adresse vérifiée à votre profil pour afficher les points de dépôt proches de chez vous."}
       </Encadre>
     );
   }
@@ -148,22 +150,21 @@ export function HandoverStep({
           detail="Vous convenez d'un lieu ensemble. Sans frais."
           prix="Gratuit"
           actif={method === "in_person"}
-          recommande={options?.advice === "in_person_only"}
+          disabled={!acceptsInPerson || options?.advice === "carrier_required"}
           onClick={() => setMethod("in_person")}
         />
         <ModeCard
           titre="Dépôt en point relais"
           detail={
-            !acceptsPickup
-              ? "Ce voyageur ne se déplace pas en point relais."
-              : options?.pointsOutcome === "unavailable"
+            options?.pointsOutcome === "unavailable"
                 ? "Momentanément indisponible."
-                : "Vous déposez, le voyageur récupère."
+                : "Vous déposez près de chez vous, le colis est livré au voyageur."
           }
           prix={quote ? `dès ${quote.priceMajor} €` : "—"}
           actif={method === "carrier"}
-          recommande={options?.advice === "carrier_recommended"}
-          disabled={!acceptsPickup || !options || options.servicePoints.length === 0}
+          recommande={options?.advice === "carrier_required"}
+          recommendationLabel="obligatoire"
+          disabled={!options || options.servicePoints.length === 0}
           onClick={() => setMethod("carrier")}
         />
       </div>
@@ -176,7 +177,7 @@ export function HandoverStep({
         <Encadre>
           Nous n&apos;avons pas pu interroger nos transporteurs à l&apos;instant. Ce
           n&apos;est pas qu&apos;il n&apos;y a aucun point près de chez vous — réessayez
-          plus tard, ou convenez d&apos;une remise en main propre.
+          plus tard. Si la distance le permet, la remise en main propre reste disponible.
         </Encadre>
       )}
 
@@ -239,27 +240,13 @@ export function HandoverStep({
             <dt className="text-muted-foreground">Montant pour le voyageur</dt>
             <dd className="tabular-nums">{(parcelTotalMinor / 100).toFixed(2)} €</dd>
           </div>
-          {/* Les deux montants sont distingués : le transport paie
-              l'acheminement, le retrait dédommage le voyageur qui va
-              l'y chercher. Les additionner en silence ferait passer une
-              commission pour un frais postal. */}
           {method === "carrier" && quote && (
-            <>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Acheminement {quote.label}</dt>
-                <dd className="tabular-nums">
-                  {(quote.shippingMinor / 100).toFixed(2)} €
-                </dd>
-              </div>
-              {quote.pickupMinor > 0 && (
-                <div className="flex justify-between gap-4">
-                  <dt className="text-muted-foreground">Retrait par le voyageur</dt>
-                  <dd className="tabular-nums">
-                    {(quote.pickupMinor / 100).toFixed(2)} €
-                  </dd>
-                </div>
-              )}
-            </>
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted-foreground">Livraison {quote.label}</dt>
+              <dd className="tabular-nums">
+                {(quote.shippingMinor / 100).toFixed(2)} €
+              </dd>
+            </div>
           )}
           <div className="flex justify-between gap-4 border-t border-border pt-1.5 font-medium">
             <dt>Total</dt>
@@ -267,7 +254,9 @@ export function HandoverStep({
           </div>
         </dl>
         <p className="mt-2 text-xs text-muted-foreground">
-          Hors frais de service et assurance éventuelle.
+          {quote?.isEstimate
+            ? "Tarif transport estimé. Le montant contractuel sera confirmé avant tout débit."
+            : "Tarif transport Sendcloud confirmé. Protection facultative à l'étape suivante."}
         </p>
       </div>
     </div>
@@ -280,6 +269,7 @@ function ModeCard({
   prix,
   actif,
   recommande,
+  recommendationLabel = "conseillé",
   disabled,
   onClick,
 }: {
@@ -288,6 +278,7 @@ function ModeCard({
   prix: string;
   actif: boolean;
   recommande?: boolean;
+  recommendationLabel?: string;
   disabled?: boolean;
   onClick: () => void;
 }) {
@@ -303,7 +294,7 @@ function ModeCard({
     >
       {recommande && (
         <span className="absolute right-2.5 top-2.5 rounded-full bg-primary/10 px-2 py-0.5 text-[0.65rem] font-medium text-primary">
-          conseillé
+          {recommendationLabel}
         </span>
       )}
       <span className="block pr-16 text-sm font-medium">{titre}</span>

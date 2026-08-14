@@ -58,7 +58,8 @@ export default async function Page({
   );
 
   // Une position absente n'est pas une erreur : le géocodage échoue
-  // souvent sur ce corridor. La remise se fera alors en main propre.
+  // parfois sur ce corridor. Le choix logistique expliquera alors ce
+  // qu'il manque au lieu d'inventer un point de dépôt.
   const verification =
     dossier.status === 200
       ? (dossier.body as {
@@ -78,16 +79,16 @@ export default async function Page({
         }
       : null;
 
-  const distance =
-    typeof params.distance === "string" ? Number.parseFloat(params.distance) : null;
+  const rawMatch = offre.body as RawCapacityMatch;
+  const match = toCapacityMatch(rawMatch);
 
   return (
     <DeclareShipmentView
-      capacity={toCapacityFromMatch(offre.body as RawCapacityMatch)}
-      match={toCapacityMatch(offre.body as RawCapacityMatch)}
+      capacity={toCapacityFromMatch(rawMatch)}
+      match={match}
       labels={labels}
       sender={sender}
-      distanceMeters={Number.isFinite(distance) ? distance : null}
+      distanceMeters={match.distanceMeters}
     />
   );
 }

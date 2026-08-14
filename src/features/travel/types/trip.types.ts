@@ -311,8 +311,8 @@ export interface CapacityMatch {
   departureAt: string;
   availableWeightKg: number;
   currency: string;
-  /** Ce voyageur va-t-il chercher un colis en point relais ? */
-  acceptsPickup: boolean;
+  /** Ce voyageur accepte-t-il aussi une remise en main propre ? */
+  acceptsInPerson: boolean;
   offers: { categoryCode: string; priceMajor: string; perPiece: boolean }[];
   /** `null` quand l'une des deux adresses n'a pas pu être située. */
   distanceMeters: number | null;
@@ -331,7 +331,7 @@ export interface RawCapacityMatch {
   departure_at: string;
   available_weight_kg: number;
   currency: string;
-  accepts_pickup: boolean;
+  accepts_in_person: boolean;
   offers: { category_code: string; price_major: string; per_piece: boolean }[];
   distance_meters: number | null;
 }
@@ -354,7 +354,7 @@ export function toCapacityMatch(raw: RawCapacityMatch): CapacityMatch {
     departureAt: raw.departure_at,
     availableWeightKg: raw.available_weight_kg,
     currency: raw.currency,
-    acceptsPickup: raw.accepts_pickup,
+    acceptsInPerson: raw.accepts_in_person,
     offers: raw.offers.map((offer) => ({
       categoryCode: offer.category_code,
       priceMajor: offer.price_major,
@@ -394,6 +394,7 @@ export interface ParcelLine {
   unitPriceMinor: number;
   totalMinor: number;
   hasPhoto: boolean;
+  declaredValueMinor: number | null;
 }
 
 export interface ShipmentSummary {
@@ -403,6 +404,9 @@ export interface ShipmentSummary {
   handover: HandoverMethod;
   servicePointCode: string | null;
   carrierCode: string | null;
+  shippingMinor: number;
+  shippingRateSource: "sendcloud" | "estimated" | null;
+  shippingLabel: string | null;
   currency: string;
   lines: ParcelLine[];
   /** Ce qui revient au voyageur. Ni commission, ni assurance, ni transport. */
@@ -419,6 +423,9 @@ export interface RawShipment {
   handover: HandoverMethod;
   service_point_code: string | null;
   carrier_code: string | null;
+  shipping_minor: number;
+  shipping_rate_source: "sendcloud" | "estimated" | null;
+  shipping_label: string | null;
   currency: string;
   lines: {
     category_code: string;
@@ -427,7 +434,8 @@ export interface RawShipment {
     pieces: number | null;
     unit_price_minor: number;
     total_minor: number;
-    has_photo: boolean;
+    photo_count: number;
+    declared_value_minor: number | null;
   }[];
   total_minor: number;
   total_major: string;
@@ -443,6 +451,9 @@ export function toShipment(raw: RawShipment): ShipmentSummary {
     handover: raw.handover,
     servicePointCode: raw.service_point_code,
     carrierCode: raw.carrier_code,
+    shippingMinor: raw.shipping_minor,
+    shippingRateSource: raw.shipping_rate_source,
+    shippingLabel: raw.shipping_label,
     currency: raw.currency,
     lines: raw.lines.map((line) => ({
       categoryCode: line.category_code,
@@ -451,7 +462,8 @@ export function toShipment(raw: RawShipment): ShipmentSummary {
       pieces: line.pieces,
       unitPriceMinor: line.unit_price_minor,
       totalMinor: line.total_minor,
-      hasPhoto: line.has_photo,
+      hasPhoto: line.photo_count > 0,
+      declaredValueMinor: line.declared_value_minor,
     })),
     totalMinor: raw.total_minor,
     totalMajor: raw.total_major,
@@ -482,7 +494,7 @@ export function estimateLineMinor(
 
 // ─── La remise du colis ────────────────────────────────────────────────
 
-export type HandoverAdvice = "in_person_only" | "either" | "carrier_recommended";
+export type HandoverAdvice = "either" | "carrier_required";
 export type ServicePointOutcome = "found" | "none_nearby" | "unavailable";
 
 export interface ServicePoint {
@@ -502,13 +514,13 @@ export interface ServicePoint {
 export interface CarrierQuote {
   carrier: string;
   label: string;
-  /** L'acheminement jusqu'au relais. */
+  /** L'acheminement depuis le relais jusqu'au voyageur. */
   shippingMinor: number;
-  /** Le dédommagement du voyageur qui va l'y chercher. */
-  pickupMinor: number;
-  /** La somme des deux. */
   priceMinor: number;
   priceMajor: string;
+  source: "sendcloud" | "estimated";
+  isEstimate: boolean;
+  quoteToken: string;
 }
 
 export interface HandoverOptions {
@@ -527,9 +539,11 @@ export interface RawHandoverOptions {
     carrier: string;
     label: string;
     shipping_minor: number;
-    pickup_minor: number;
     price_minor: number;
     price_major: string;
+    source: "sendcloud" | "estimated";
+    is_estimate: boolean;
+    quote_token: string;
   }[];
   points_outcome: ServicePointOutcome;
   service_points: {
@@ -555,9 +569,11 @@ export function toHandoverOptions(raw: RawHandoverOptions): HandoverOptions {
       carrier: quote.carrier,
       label: quote.label,
       shippingMinor: quote.shipping_minor,
-      pickupMinor: quote.pickup_minor,
       priceMinor: quote.price_minor,
       priceMajor: quote.price_major,
+      source: quote.source,
+      isEstimate: quote.is_estimate,
+      quoteToken: quote.quote_token,
     })),
     pointsOutcome: raw.points_outcome,
     servicePoints: raw.service_points.map((point) => ({
@@ -615,7 +631,7 @@ export function toCapacityFromMatch(raw: RawCapacityMatch): Capacity {
     totalWeightKg: match.availableWeightKg,
     availableWeightKg: match.availableWeightKg,
     currency: match.currency,
-    acceptsPickup: match.acceptsPickup,
+    acceptsInPerson: match.acceptsInPerson,
     offers: match.offers.map((offer) => ({
       categoryCode: offer.categoryCode,
       // Le prix affichable suffit à l'écran ; l'entier reste la vérité

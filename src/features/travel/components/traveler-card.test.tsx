@@ -17,7 +17,7 @@ const match: CapacityMatch = {
   departureAt: "2026-09-10T10:00:00Z",
   availableWeightKg: 8,
   currency: "EUR",
-  acceptsPickup: true,
+  acceptsInPerson: true,
   offers: [
     { categoryCode: "clothing", priceMajor: "10.00", perPiece: false },
     { categoryCode: "electronics", priceMajor: "18.50", perPiece: true },
@@ -36,11 +36,11 @@ describe("carte d'un voyageur", () => {
 
     expect(screen.getByText("Voyage contrôlé par Zoumani")).toBeInTheDocument();
     expect(screen.getByText("8 kg")).toBeInTheDocument();
-    expect(screen.getByText("Relais partenaire possible")).toBeInTheDocument();
+    expect(screen.getByText("À domicile ou en main propre")).toBeInTheDocument();
     expect(screen.getByText("Vêtements")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Choisir ce voyageur/ })).toHaveAttribute(
       "href",
-      "/envois/nouveau?capacity=capacity-1&distance=12000",
+      "/envois/nouveau?capacity=capacity-1",
     );
   });
 

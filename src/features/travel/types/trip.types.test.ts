@@ -185,7 +185,7 @@ describe("la recherche d'un expéditeur", () => {
     departure_at: "2026-09-01T10:25:00Z",
     available_weight_kg: 23,
     currency: "EUR",
-    accepts_pickup: true,
+    accepts_in_person: true,
     offers: [{ category_code: "clothing", price_major: "8.00", per_piece: false }],
     distance_meters: 6200,
   };
@@ -234,24 +234,28 @@ describe("l'affichage d'une distance", () => {
 
 describe("les options de remise", () => {
   const brut: RawHandoverOptions = {
-    advice: "carrier_recommended",
+    advice: "carrier_required",
     distance_meters: 45_000,
     quotes: [
       {
         carrier: "mondial_relay",
         label: "Mondial Relay",
         shipping_minor: 450,
-        pickup_minor: 500,
-        price_minor: 950,
-        price_major: "9.50",
+        price_minor: 450,
+        price_major: "4.50",
+        source: "estimated",
+        is_estimate: true,
+        quote_token: "quote-mondial",
       },
       {
         carrier: "colissimo",
         label: "Colissimo",
         shipping_minor: 590,
-        pickup_minor: 500,
-        price_minor: 1090,
-        price_major: "10.90",
+        price_minor: 590,
+        price_major: "5.90",
+        source: "sendcloud",
+        is_estimate: false,
+        quote_token: "quote-colissimo",
       },
     ],
     points_outcome: "found",
@@ -275,7 +279,7 @@ describe("les options de remise", () => {
   it("conserve le conseil rendu par le serveur", () => {
     // Le seuil est une décision commerciale : la dupliquer côté client
     // ferait diverger les deux au premier ajustement.
-    expect(toHandoverOptions(brut).advice).toBe("carrier_recommended");
+    expect(toHandoverOptions(brut).advice).toBe("carrier_required");
   });
 
   it("distingue « pas pu chercher » de « aucun point »", () => {
@@ -289,16 +293,14 @@ describe("les options de remise", () => {
     ).toBe("none_nearby");
   });
 
-  it("distingue l'acheminement du dédommagement du voyageur", () => {
-    // Les additionner en silence ferait passer une commission pour un
-    // frais postal — et c'est ainsi qu'on perd la confiance sur une
-    // facture.
+  it("conserve la provenance et le jeton signé du devis", () => {
     const quote = toHandoverOptions(brut).quotes[0];
 
     expect(quote.shippingMinor).toBe(450);
-    expect(quote.pickupMinor).toBe(500);
-    expect(quote.priceMinor).toBe(950);
-    expect(quote.priceMajor).toBe("9.50");
+    expect(quote.priceMinor).toBe(450);
+    expect(quote.priceMajor).toBe("4.50");
+    expect(quote.isEstimate).toBe(true);
+    expect(quote.quoteToken).toBe("quote-mondial");
   });
 
   it("traduit un point de dépôt avec ses horaires", () => {

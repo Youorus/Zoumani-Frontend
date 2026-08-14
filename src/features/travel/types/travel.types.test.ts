@@ -132,7 +132,7 @@ describe("une offre de capacité", () => {
         per_piece: false,
       },
     ],
-    accepts_pickup: false,
+    accepts_in_person: false,
     notes: null,
     is_editable: true,
   };

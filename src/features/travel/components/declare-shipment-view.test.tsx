@@ -11,6 +11,7 @@ const declareShipment = vi.fn();
 const updateShipment = vi.fn();
 const uploadParcelPhoto = vi.fn();
 const submitShipment = vi.fn();
+const prepareCheckout = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push, refresh: vi.fn() }),
@@ -21,6 +22,11 @@ vi.mock("../api/travel-client", () => ({
   updateShipment: (...args: unknown[]) => updateShipment(...args),
   uploadParcelPhoto: (...args: unknown[]) => uploadParcelPhoto(...args),
   submitShipment: (...args: unknown[]) => submitShipment(...args),
+}));
+
+vi.mock("@/features/payments/api/payment-client", () => ({
+  prepareCheckout: (...args: unknown[]) => prepareCheckout(...args),
+  estimateInsurance: vi.fn(),
 }));
 
 vi.mock("./trip-summary-banner", () => ({
@@ -60,6 +66,7 @@ vi.mock("./handover-step", () => ({
       method: "carrier";
       pointCode: string;
       carrierCode: string;
+      quoteToken: string;
       extraMinor: number;
     }) => void;
   }) => (
@@ -70,6 +77,7 @@ vi.mock("./handover-step", () => ({
           method: "carrier",
           pointCode: "RELAY-1",
           carrierCode: "colissimo",
+          quoteToken: "signed-quote-token",
           extraMinor: 500,
         })
       }
@@ -95,7 +103,7 @@ const capacity: Capacity = {
       perPiece: false,
     },
   ],
-  acceptsPickup: true,
+  acceptsInPerson: true,
   notes: null,
   isEditable: false,
 };
@@ -113,7 +121,7 @@ const match: CapacityMatch = {
   departureAt: "2026-09-10T10:00:00Z",
   availableWeightKg: 8,
   currency: "EUR",
-  acceptsPickup: true,
+  acceptsInPerson: true,
   offers: [{ categoryCode: "clothing", priceMajor: "10.00", perPiece: false }],
   distanceMeters: 12_000,
 };
@@ -128,6 +136,7 @@ describe("parcours d'envoi", () => {
       .mockResolvedValueOnce("photo-3");
     updateShipment.mockResolvedValue({ id: "shipment-1" });
     submitShipment.mockResolvedValue({ id: "shipment-1" });
+    prepareCheckout.mockResolvedValue({ id: "quote-1" });
   });
 
   it("va jusqu'à la transmission avec la remise choisie", async () => {
@@ -152,15 +161,21 @@ describe("parcours d'envoi", () => {
     await screen.findByText("Comment rejoint-il le voyageur ?");
 
     await user.click(screen.getByRole("button", { name: "Choisir le relais Zoumani" }));
-    await user.click(screen.getByRole("button", { name: /Confirmer/ }));
+    await user.click(
+      screen.getByRole("button", { name: "Continuer vers la protection" }),
+    );
+    await screen.findByText("Souhaitez-vous protéger sa valeur ?");
+    await user.click(screen.getByRole("button", { name: "Voir mon récapitulatif" }));
 
     await waitFor(() => expect(submitShipment).toHaveBeenCalledWith("shipment-1"));
     expect(updateShipment.mock.calls[0][2]).toBe("carrier");
     expect(updateShipment.mock.calls[0][3]).toEqual({
       pointCode: "RELAY-1",
       carrierCode: "colissimo",
+      quoteToken: "signed-quote-token",
     });
     expect(uploadParcelPhoto).toHaveBeenCalledTimes(3);
-    expect(push).toHaveBeenCalledWith("/compte/envois");
+    expect(prepareCheckout).toHaveBeenCalledWith("shipment-1", false);
+    expect(push).toHaveBeenCalledWith("/envois/shipment-1/paiement");
   });
 });
