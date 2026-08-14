@@ -152,6 +152,12 @@ describe("le programme de fidélité", () => {
     expect(toRewards(brut).history[0].amount).toBeGreaterThan(0);
   });
 
+  it("accepte l'ancien contrat pendant un déploiement décalé", () => {
+    const { rewards: _rewards, ...ancienContrat } = brut;
+
+    expect(toRewards(ancienContrat).rewardCatalog).toEqual([]);
+  });
+
   it("accepte l'absence de palier suivant au sommet", () => {
     const sommet = toRewards({
       ...brut,

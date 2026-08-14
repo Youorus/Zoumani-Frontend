@@ -64,6 +64,33 @@ export function RewardsView({ rewards }: RewardsViewProps) {
   );
 }
 
+export function RewardsUnavailable() {
+  return (
+    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
+      <section className="rounded-[1.75rem] border border-warning/25 bg-warning/8 px-6 py-10 text-center sm:px-10">
+        <Sparkles className="mx-auto size-8 text-warning" aria-hidden />
+        <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-warning">
+          Programme Zoumani
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold">
+          Votre progression revient dans un instant.
+        </h1>
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          Votre espace et vos voyages restent accessibles. Nous ne montrons aucun faux
+          solde pendant que le programme de récompenses est momentanément indisponible.
+        </p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="focus-ring mt-6 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground"
+        >
+          Actualiser ma progression
+        </button>
+      </section>
+    </main>
+  );
+}
+
 function RewardsHero({
   rewards,
   nextReward,
@@ -137,9 +164,14 @@ function RewardsHero({
                 pour {nextReward.title.toLocaleLowerCase("fr-FR")}.
               </p>
             </div>
-          ) : (
+          ) : rewards.rewardCatalog.length > 0 ? (
             <p className="mt-5 text-sm text-inverse-muted-foreground">
               Toutes les récompenses sont ouvertes. Vous avez atteint le sommet Zoumani.
+            </p>
+          ) : (
+            <p className="mt-5 text-sm text-inverse-muted-foreground">
+              Vos points sont bien enregistrés. Le détail des avantages apparaîtra dès
+              que la mise à jour du programme sera disponible.
             </p>
           )}
         </div>
@@ -149,6 +181,19 @@ function RewardsHero({
 }
 
 function RewardCatalog({ rewards }: { rewards: RewardCatalogItem[] }) {
+  if (rewards.length === 0) {
+    return (
+      <section className="rounded-[1.75rem] border border-dashed border-primary/30 bg-primary/5 px-6 py-10 text-center">
+        <Gift className="mx-auto size-7 text-primary" aria-hidden />
+        <h2 className="mt-4 text-2xl font-semibold">Vos avantages se préparent</h2>
+        <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">
+          Le backend conserve votre solde actuel. Le catalogue détaillé sera affiché dès
+          que sa nouvelle version sera en ligne, sans inventer de récompense localement.
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section className="rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">

@@ -36,19 +36,20 @@ export default async function Page({
   if (reponse.status !== 200) {
     throw new Error(`L'API a répondu ${reponse.status} sur /trips.`);
   }
-  if (rewardsResponse.status !== 200) {
-    throw new Error(
-      `L'API a répondu ${rewardsResponse.status} sur /rewards/me.`,
-    );
-  }
-
   const page = reponse.body as RawPage<RawTrip>;
-  const rewards = toRewards(rewardsResponse.body as RawRewards);
+  const rewards =
+    rewardsResponse.status === 200
+      ? toRewards(rewardsResponse.body as RawRewards)
+      : null;
   return (
     <MyTripsView
       trips={page.items.map(toTrip)}
       createdTripId={params.nouveau}
-      cancellationPenalty={Math.abs(rewards.earningRules.commitment_broken ?? 0)}
+      cancellationPenalty={
+        rewards
+          ? Math.abs(rewards.earningRules.commitment_broken ?? 0)
+          : null
+      }
     />
   );
 }

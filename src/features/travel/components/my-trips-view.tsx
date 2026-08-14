@@ -12,7 +12,7 @@ import { TripRoute } from "./trip-route";
 interface MyTripsViewProps {
   trips: Trip[];
   createdTripId?: string;
-  cancellationPenalty: number;
+  cancellationPenalty: number | null;
 }
 
 /**
@@ -237,9 +237,13 @@ export function MyTripsView({
             {confirming === trip.id && trip.stage !== "brouillon" && (
               <p className="mt-2.5 text-xs text-muted-foreground">
                 Des expéditeurs peuvent compter sur ce voyage. Une annulation après
-                vérification retire{" "}
-                <span className="font-medium">{cancellationPenalty} points</span> de
-                votre programme de fidélité.
+                vérification peut retirer des points de votre programme de fidélité
+                {cancellationPenalty !== null ? (
+                  <>
+                    {" "}: <span className="font-medium">{cancellationPenalty} points</span>
+                  </>
+                ) : null}
+                .
               </p>
             )}
             </div>

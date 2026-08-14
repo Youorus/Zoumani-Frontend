@@ -41,13 +41,10 @@ export default async function Page({ params }: { params: Promise<{ tripId: strin
   if (voyage.status !== 200) {
     throw new Error(`L'API a répondu ${voyage.status} sur /trips/${tripId}.`);
   }
-  if (rewardsResponse.status !== 200) {
-    throw new Error(
-      `L'API a répondu ${rewardsResponse.status} sur /rewards/me.`,
-    );
-  }
-
-  const rewards = toRewards(rewardsResponse.body as RawRewards);
+  const rewards =
+    rewardsResponse.status === 200
+      ? toRewards(rewardsResponse.body as RawRewards)
+      : null;
 
   return (
     <TripDetailView
@@ -59,7 +56,11 @@ export default async function Page({ params }: { params: Promise<{ tripId: strin
           ? (preuves.body as RawPage<RawProof>).items.map(toProof)
           : []
       }
-      cancellationPenalty={Math.abs(rewards.earningRules.commitment_broken ?? 0)}
+      cancellationPenalty={
+        rewards
+          ? Math.abs(rewards.earningRules.commitment_broken ?? 0)
+          : null
+      }
     />
   );
 }

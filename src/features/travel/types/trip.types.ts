@@ -242,7 +242,8 @@ export interface RawRewards {
   history: { reason: string; amount: number; occurred_at: string; note: string | null }[];
   all_tiers: Tier[];
   earning_rules: Record<string, number>;
-  rewards: {
+  /** Absent pendant un déploiement où l'API tourne encore sur l'ancien contrat. */
+  rewards?: {
     code: string;
     title: string;
     description: string;
@@ -272,7 +273,7 @@ export function toRewards(raw: RawRewards): Rewards {
     })),
     allTiers: raw.all_tiers,
     earningRules: raw.earning_rules,
-    rewardCatalog: raw.rewards.map((reward) => ({
+    rewardCatalog: (raw.rewards ?? []).map((reward) => ({
       code: reward.code,
       title: reward.title,
       description: reward.description,

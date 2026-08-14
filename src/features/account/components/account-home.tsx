@@ -32,13 +32,13 @@ export function AccountHome({
 }: {
   user: AuthenticatedUser;
   welcome: boolean;
-  verificationStage: VerificationStage;
-  trips: Trip[];
-  rewards: Rewards;
+  verificationStage: VerificationStage | null;
+  trips: Trip[] | null;
+  rewards: Rewards | null;
 }) {
   const copy = useAccountCopy();
   const language = accountLanguage(user.preferredLanguage);
-  const nextTrip = findNextTrip(trips);
+  const nextTrip = trips ? findNextTrip(trips) : null;
 
   return (
     <div className="mx-auto w-full max-w-[1492px] px-4 sm:px-8 lg:px-12">
@@ -73,22 +73,33 @@ export function AccountHome({
             </div>
           </div>
 
-          <Link
-            href="/compte/points"
-            className="focus-ring flex min-w-52 items-center gap-3 rounded-2xl border border-warning/20 bg-warning/10 px-4 py-3 transition-transform hover:-translate-y-0.5"
-          >
-            <span className="grid size-11 place-items-center rounded-xl bg-warning text-warning-foreground">
-              <Sparkles className="size-5" aria-hidden />
-            </span>
-            <span>
-              <strong className="block text-xl leading-none text-foreground">
-                {rewards.balance.toLocaleString(language)}
-              </strong>
-              <span className="text-xs font-semibold text-muted-foreground">
-                {copy.dashboard.rewardsBalance}
+          {rewards ? (
+            <Link
+              href="/compte/points"
+              className="focus-ring flex min-w-52 items-center gap-3 rounded-2xl border border-warning/20 bg-warning/10 px-4 py-3 transition-transform hover:-translate-y-0.5"
+            >
+              <span className="grid size-11 place-items-center rounded-xl bg-warning text-warning-foreground">
+                <Sparkles className="size-5" aria-hidden />
               </span>
-            </span>
-          </Link>
+              <span>
+                <strong className="block text-xl leading-none text-foreground">
+                  {rewards.balance.toLocaleString(language)}
+                </strong>
+                <span className="text-xs font-semibold text-muted-foreground">
+                  {copy.dashboard.rewardsBalance}
+                </span>
+              </span>
+            </Link>
+          ) : (
+            <div className="flex min-w-52 items-center gap-3 rounded-2xl border border-border bg-muted/40 px-4 py-3">
+              <span className="grid size-11 place-items-center rounded-xl bg-muted text-muted-foreground">
+                <Sparkles className="size-5" aria-hidden />
+              </span>
+              <span className="text-xs font-semibold text-muted-foreground">
+                {copy.dashboard.unavailableTitle}
+              </span>
+            </div>
+          )}
         </div>
       </header>
 
@@ -101,7 +112,12 @@ export function AccountHome({
         </h2>
         <div className="mt-3 grid gap-4 lg:grid-cols-3">
           <IdentityCard copy={copy} stage={verificationStage} />
-          <TripCard copy={copy} trip={nextTrip} language={language} />
+          <TripCard
+            copy={copy}
+            trip={nextTrip}
+            language={language}
+            available={trips !== null}
+          />
           <RewardCard copy={copy} rewards={rewards} />
         </div>
       </section>
@@ -151,8 +167,12 @@ function IdentityCard({
   stage,
 }: {
   copy: AccountCopy;
-  stage: VerificationStage;
+  stage: VerificationStage | null;
 }) {
+  if (stage === null) {
+    return <UnavailableCard copy={copy} label={copy.dashboard.identityTitle} />;
+  }
+
   const content = copy.dashboard.identityStages[stage];
   const verified = stage === "verifie";
   const urgent = stage === "a_corriger" || stage === "refuse";
@@ -200,10 +220,12 @@ function TripCard({
   copy,
   trip,
   language,
+  available,
 }: {
   copy: AccountCopy;
   trip: Trip | null;
   language: "fr" | "en";
+  available: boolean;
 }) {
   return (
     <article className="panel-surface flex min-h-64 flex-col justify-between p-5">
@@ -216,7 +238,9 @@ function TripCard({
             {copy.dashboard.tripTitle}
           </span>
         </div>
-        {trip ? (
+        {!available ? (
+          <UnavailableContent copy={copy} />
+        ) : trip ? (
           <>
             <p className="mt-4 inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
               {copy.dashboard.tripStatus[trip.status]}
@@ -242,18 +266,26 @@ function TripCard({
           </>
         )}
       </div>
-      <Link
-        href={trip ? "/compte/trajets" : "/trips/nouveau"}
-        className="focus-ring mt-5 inline-flex items-center gap-2 rounded-lg text-sm font-bold text-primary"
-      >
-        {trip ? copy.dashboard.tripManageCta : copy.dashboard.tripCreateCta}
-        <ArrowRight className="size-4" aria-hidden />
-      </Link>
+      {!available ? (
+        <ReloadAction copy={copy} />
+      ) : (
+        <Link
+          href={trip ? "/compte/trajets" : "/trips/nouveau"}
+          className="focus-ring mt-5 inline-flex items-center gap-2 rounded-lg text-sm font-bold text-primary"
+        >
+          {trip ? copy.dashboard.tripManageCta : copy.dashboard.tripCreateCta}
+          <ArrowRight className="size-4" aria-hidden />
+        </Link>
+      )}
     </article>
   );
 }
 
-function RewardCard({ copy, rewards }: { copy: AccountCopy; rewards: Rewards }) {
+function RewardCard({ copy, rewards }: { copy: AccountCopy; rewards: Rewards | null }) {
+  if (rewards === null) {
+    return <UnavailableCard copy={copy} label={copy.dashboard.rewardsTitle} />;
+  }
+
   const nextReward = rewards.rewardCatalog.find((reward) => !reward.unlocked);
   const featured = nextReward ?? rewards.rewardCatalog.at(-1);
 
@@ -270,7 +302,7 @@ function RewardCard({ copy, rewards }: { copy: AccountCopy; rewards: Rewards }) 
           </span>
         </div>
         <h3 className="mt-4 font-display text-xl leading-tight text-foreground">
-          {featured?.title ?? copy.dashboard.rewardsTop}
+          {featured?.title ?? rewards.tier.name}
         </h3>
         {featured ? (
           <>
@@ -289,7 +321,11 @@ function RewardCard({ copy, rewards }: { copy: AccountCopy; rewards: Rewards }) 
                 : copy.dashboard.rewardsTop}
             </p>
           </>
-        ) : null}
+        ) : (
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            {copy.dashboard.rewardsCatalogPending}
+          </p>
+        )}
       </div>
       <Link
         href="/compte/points"
@@ -299,6 +335,51 @@ function RewardCard({ copy, rewards }: { copy: AccountCopy; rewards: Rewards }) 
         <ArrowRight className="size-4" aria-hidden />
       </Link>
     </article>
+  );
+}
+
+function UnavailableCard({ copy, label }: { copy: AccountCopy; label: string }) {
+  return (
+    <article className="panel-surface flex min-h-64 flex-col justify-between p-5">
+      <div>
+        <div className="flex items-center justify-between gap-3">
+          <span className="grid size-11 place-items-center rounded-xl bg-muted text-muted-foreground">
+            <CircleDashed className="size-5" aria-hidden />
+          </span>
+          <span className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-muted-foreground">
+            {label}
+          </span>
+        </div>
+        <UnavailableContent copy={copy} />
+      </div>
+      <ReloadAction copy={copy} />
+    </article>
+  );
+}
+
+function UnavailableContent({ copy }: { copy: AccountCopy }) {
+  return (
+    <>
+      <h3 className="mt-4 font-display text-xl text-foreground">
+        {copy.dashboard.unavailableTitle}
+      </h3>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        {copy.dashboard.unavailableDescription}
+      </p>
+    </>
+  );
+}
+
+function ReloadAction({ copy }: { copy: AccountCopy }) {
+  return (
+    <button
+      type="button"
+      onClick={() => window.location.reload()}
+      className="focus-ring mt-5 inline-flex items-center gap-2 self-start rounded-lg text-sm font-bold text-primary"
+    >
+      {copy.dashboard.unavailableCta}
+      <ArrowRight className="size-4" aria-hidden />
+    </button>
   );
 }
 

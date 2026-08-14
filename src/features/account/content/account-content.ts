@@ -66,6 +66,10 @@ const accountFr = {
     eyebrow: "Votre espace Zoumani",
     statusTitle: "L’essentiel, aujourd’hui",
     profileCta: "Mettre à jour mon profil",
+    unavailableTitle: "Information momentanément indisponible",
+    unavailableDescription:
+      "Votre espace reste accessible. Réessayez dans un instant pour actualiser cette partie.",
+    unavailableCta: "Actualiser",
     identityTitle: "Confiance du profil",
     identityStages: {
       absent: {
@@ -120,6 +124,8 @@ const accountFr = {
     rewardsBalance: "points cumulés",
     rewardsCta: "Voir toutes les récompenses",
     rewardsTop: "Vous avez atteint le plus haut avantage Zoumani.",
+    rewardsCatalogPending:
+      "Vos points sont bien enregistrés. Le détail des récompenses arrive avec la mise à jour du programme.",
     rewardsRemaining: (points: number) =>
       `${points} point${points > 1 ? "s" : ""} avant de la débloquer`,
   },
@@ -215,6 +221,10 @@ export const accountContent = {
       eyebrow: "Your Zoumani account",
       statusTitle: "What matters today",
       profileCta: "Update my profile",
+      unavailableTitle: "Information temporarily unavailable",
+      unavailableDescription:
+        "Your account remains available. Try again shortly to refresh this section.",
+      unavailableCta: "Refresh",
       identityTitle: "Profile trust",
       identityStages: {
         absent: {
@@ -269,6 +279,8 @@ export const accountContent = {
       rewardsBalance: "points earned",
       rewardsCta: "See all rewards",
       rewardsTop: "You have reached Zoumani’s highest reward.",
+      rewardsCatalogPending:
+        "Your points are safely recorded. Reward details will appear with the programme update.",
       rewardsRemaining: (points: number) =>
         `${points} point${points > 1 ? "s" : ""} left to unlock it`,
     },

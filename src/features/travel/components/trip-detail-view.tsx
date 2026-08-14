@@ -22,7 +22,7 @@ interface TripDetailViewProps {
   trip: Trip;
   capacity: Capacity | null;
   proofs: Proof[];
-  cancellationPenalty: number;
+  cancellationPenalty: number | null;
 }
 
 /**
@@ -184,9 +184,13 @@ export function TripDetailView({
               {trip.stage !== "brouillon" && (
                 <p className="text-sm text-muted-foreground">
                   Des expéditeurs peuvent compter sur ce voyage. Une annulation après
-                  vérification retire{" "}
-                  <span className="font-medium">{cancellationPenalty} points</span> de
-                  votre programme de fidélité.
+                  vérification peut retirer des points de votre programme de fidélité
+                  {cancellationPenalty !== null ? (
+                    <>
+                      {" "}: <span className="font-medium">{cancellationPenalty} points</span>
+                    </>
+                  ) : null}
+                  .
                 </p>
               )}
               <div className="flex flex-wrap gap-2">
