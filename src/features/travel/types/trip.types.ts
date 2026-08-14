@@ -514,7 +514,7 @@ export interface ServicePoint {
 export interface CarrierQuote {
   carrier: string;
   label: string;
-  /** L'acheminement depuis le relais jusqu'au voyageur. */
+  /** Prix unique de livraison présenté au client, marge Zoumani incluse. */
   shippingMinor: number;
   priceMinor: number;
   priceMajor: string;

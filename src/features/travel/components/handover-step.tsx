@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { estimateServiceFee } from "@/features/payments/api/payment-client";
+
 import { fetchHandoverOptions } from "../api/travel-client";
 import {
   formatDistance,
@@ -20,6 +22,7 @@ interface HandoverStepProps {
   distanceMeters: number | null;
   /** Ce que le colis coûte au voyageur, en unités mineures. */
   parcelTotalMinor: number;
+  currency: string;
   /** Ce voyageur accepte-t-il aussi une remise en main propre ? */
   acceptsInPerson: boolean;
   onChange: (choice: {
@@ -58,6 +61,7 @@ export function HandoverStep({
   weightGrams,
   distanceMeters,
   parcelTotalMinor,
+  currency,
   acceptsInPerson,
   onChange,
 }: HandoverStepProps) {
@@ -72,6 +76,25 @@ export function HandoverStep({
   const [lookupFailure, setLookupFailure] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [radiusMeters, setRadiusMeters] = useState(5_000);
+  const [serviceFeeMinor, setServiceFeeMinor] = useState<number | null>(null);
+
+  useEffect(() => {
+    let vivant = true;
+    void estimateServiceFee(parcelTotalMinor, currency)
+      .then((quote) => {
+        if (vivant) {
+          setServiceFeeMinor(quote.serviceFeeMinor);
+        }
+      })
+      .catch(() => {
+        if (vivant) {
+          setServiceFeeMinor(null);
+        }
+      });
+    return () => {
+      vivant = false;
+    };
+  }, [parcelTotalMinor, currency]);
 
   useEffect(() => {
     if (!position) {
@@ -207,7 +230,7 @@ export function HandoverStep({
     );
   }
 
-  const total = parcelTotalMinor + extraMinor;
+  const total = parcelTotalMinor + extraMinor + (serviceFeeMinor ?? 0);
 
   return (
     <div className="space-y-4">
@@ -314,12 +337,25 @@ export function HandoverStep({
             <div className="flex justify-between gap-4">
               <dt className="text-muted-foreground">Livraison {quote.label}</dt>
               <dd className="tabular-nums">
-                {(quote.shippingMinor / 100).toFixed(2)} €
+                {(quote.priceMinor / 100).toFixed(2)} €
               </dd>
             </div>
           )}
+          <div className="flex items-start justify-between gap-4">
+            <dt className="text-muted-foreground">
+              <span className="block">Frais de service Zoumani</span>
+              <span className="block text-[0.68rem] leading-relaxed">
+                Paiement sécurisé, vérifications et assistance
+              </span>
+            </dt>
+            <dd className="tabular-nums">
+              {serviceFeeMinor === null
+                ? "Calcul en cours…"
+                : `${(serviceFeeMinor / 100).toFixed(2)} €`}
+            </dd>
+          </div>
           <div className="flex justify-between gap-4 border-t border-border pt-1.5 font-medium">
-            <dt>Total</dt>
+            <dt>{serviceFeeMinor === null ? "Sous-total" : "Total"}</dt>
             <dd className="tabular-nums">{(total / 100).toFixed(2)} €</dd>
           </div>
         </dl>

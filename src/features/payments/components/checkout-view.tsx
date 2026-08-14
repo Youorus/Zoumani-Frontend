@@ -181,11 +181,14 @@ export function CheckoutView({ quote, shipment, labels }: CheckoutViewProps) {
               freeLabel={shipment.handover === "in_person" ? "Gratuite" : undefined}
             />
             <PriceRow
-              label="Frais de service"
+              label="Frais de service Zoumani"
               value={quote.serviceFeeMinor}
               currency={quote.currency}
-              freeLabel={quote.serviceFeeMinor === 0 ? "Offerts" : undefined}
             />
+            <p className="-mt-1 text-[0.7rem] leading-relaxed text-muted-foreground">
+              Paiement sécurisé, vérifications du parcours et assistance Zoumani.
+              La livraison et l&apos;assurance sont exclues de leur calcul.
+            </p>
             {quote.insurance && (
               <PriceRow
                 label="Protection du colis"

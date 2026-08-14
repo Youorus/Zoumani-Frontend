@@ -5,15 +5,31 @@ import { apiClient } from "@/lib/api/api-client";
 import {
   toCheckoutQuote,
   toInsuranceOffer,
+  toServiceFeeQuote,
   type CheckoutQuote,
   type InsuranceOffer,
   type RawCheckoutQuote,
   type RawInsuranceOffer,
+  type RawServiceFeeQuote,
+  type ServiceFeeQuote,
 } from "../types/payment.types";
 
 export interface DeclaredValueInput {
   categoryCode: string;
   declaredValueMinor: number;
+}
+
+export async function estimateServiceFee(
+  travelerMinor: number,
+  currency: string,
+): Promise<ServiceFeeQuote> {
+  const raw = await apiClient.post<RawServiceFeeQuote>("/payments/service-fee/quote", {
+    body: {
+      traveler_minor: travelerMinor,
+      currency,
+    },
+  });
+  return toServiceFeeQuote(raw);
 }
 
 export async function estimateInsurance(

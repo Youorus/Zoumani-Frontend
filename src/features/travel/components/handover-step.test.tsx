@@ -5,9 +5,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HandoverStep } from "./handover-step";
 
 const fetchHandoverOptions = vi.fn();
+const estimateServiceFee = vi.fn();
 
 vi.mock("../api/travel-client", () => ({
   fetchHandoverOptions: (...args: unknown[]) => fetchHandoverOptions(...args),
+}));
+
+vi.mock("@/features/payments/api/payment-client", () => ({
+  estimateServiceFee: (...args: unknown[]) => estimateServiceFee(...args),
 }));
 
 vi.mock("./service-points-map", () => ({
@@ -21,9 +26,9 @@ const options = {
     {
       carrier: "colissimo",
       label: "Colissimo",
-      shippingMinor: 590,
-      priceMinor: 590,
-      priceMajor: "5.90",
+      shippingMinor: 780,
+      priceMinor: 780,
+      priceMajor: "7.80",
       source: "estimated" as const,
       isEstimate: true,
       quoteToken: "signed-quote-token",
@@ -51,6 +56,11 @@ describe("choix de la remise", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fetchHandoverOptions.mockResolvedValue(options);
+    estimateServiceFee.mockResolvedValue({
+      travelerMinor: 2_000,
+      serviceFeeMinor: 160,
+      currency: "EUR",
+    });
   });
 
   it("affiche les relais réels rendus par le backend puis transmet le choix", async () => {
@@ -64,6 +74,7 @@ describe("choix de la remise", () => {
         weightGrams={2_000}
         distanceMeters={42_000}
         parcelTotalMinor={2_000}
+        currency="EUR"
         acceptsInPerson={false}
         onChange={onChange}
       />,
@@ -79,13 +90,16 @@ describe("choix de la remise", () => {
     expect(fetchHandoverOptions).toHaveBeenCalledWith(
       expect.objectContaining({ latitude: 48.85, countryCode: "FR" }),
     );
+    expect(estimateServiceFee).toHaveBeenCalledWith(2_000, "EUR");
     expect(onChange).toHaveBeenLastCalledWith({
       method: "carrier",
       pointCode: "RELAY-1",
       carrierCode: "colissimo",
       quoteToken: "signed-quote-token",
-      extraMinor: 590,
+      extraMinor: 780,
     });
+    expect(await screen.findByText("1.60 €")).toBeInTheDocument();
+    expect(screen.getByText("29.40 €")).toBeInTheDocument();
   });
 
   it("propose la position du téléphone quand l'adresse historique est sans coordonnées", () => {
@@ -96,6 +110,7 @@ describe("choix de la remise", () => {
         weightGrams={2_000}
         distanceMeters={null}
         parcelTotalMinor={2_000}
+        currency="EUR"
         acceptsInPerson={false}
         onChange={vi.fn()}
       />,

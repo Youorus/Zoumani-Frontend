@@ -490,6 +490,7 @@ export function DeclareShipmentView({
             weightGrams={Math.max(100, Math.round(poidsDeclare * 1000))}
             distanceMeters={distanceMeters}
             parcelTotalMinor={totalMinor}
+            currency={capacity.currency}
             acceptsInPerson={capacity.acceptsInPerson}
             onChange={setRemise}
           />

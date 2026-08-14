@@ -24,6 +24,18 @@ export interface RawInsuranceOffer {
   disclaimer: string;
 }
 
+export interface ServiceFeeQuote {
+  travelerMinor: number;
+  serviceFeeMinor: number;
+  currency: string;
+}
+
+export interface RawServiceFeeQuote {
+  traveler_minor: number;
+  service_fee_minor: number;
+  currency: string;
+}
+
 export type PaymentMethod = "card" | "apple_pay" | "google_pay";
 
 export interface CheckoutQuote {
@@ -68,6 +80,14 @@ export function toInsuranceOffer(raw: RawInsuranceOffer): InsuranceOffer {
     rateBasisPoints: raw.rate_basis_points,
     benefits: raw.benefits,
     disclaimer: raw.disclaimer,
+  };
+}
+
+export function toServiceFeeQuote(raw: RawServiceFeeQuote): ServiceFeeQuote {
+  return {
+    travelerMinor: raw.traveler_minor,
+    serviceFeeMinor: raw.service_fee_minor,
+    currency: raw.currency,
   };
 }
 
