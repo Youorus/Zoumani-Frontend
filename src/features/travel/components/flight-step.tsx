@@ -4,261 +4,475 @@ import { useState } from "react";
 
 import { DateField } from "@/components/ui/date-field";
 
-import { lookupFlight } from "../api/travel-client";
+import { lookupFlight, type SegmentDraft } from "../api/travel-client";
 import type { Airline, Airport, FlightLookup } from "../types/travel.types";
 import { AirlineField } from "./airline-field";
 import { AirportField } from "./airport-field";
 import { WizardShell } from "./wizard-shell";
 
+export interface FlightChoice {
+  origin: Airport;
+  destination: Airport;
+  airlineCode: string;
+  flightNumber: string;
+  departureDate: string;
+  lookup: FlightLookup;
+}
+
 interface FlightStepProps {
-  onConfirmed: (input: {
-    origin: Airport;
-    destination: Airport;
-    airlineCode: string;
-    flightNumber: string;
-    departureDate: string;
-    lookup: FlightLookup;
-  }) => void;
+  onConfirmed: (flights: FlightChoice[]) => void;
+  initialFlights?: FlightChoice[];
+  onBack?: () => void;
+  title?: string;
+  hint?: string;
+  confirmedLabel?: string;
+  isSubmitting?: boolean;
+}
+
+interface FlightDraft {
+  id: string;
+  origin: Airport | null;
+  destination: Airport | null;
+  airline: Airline | null;
+  airlineFallback: string;
+  flightNumber: string;
+  departureDate: string;
+  lookup: FlightLookup | null;
+  isChecking: boolean;
+}
+
+const MAX_SEGMENTS = 3;
+
+function emptyFlight(id: string, origin: Airport | null = null): FlightDraft {
+  return {
+    id,
+    origin,
+    destination: null,
+    airline: null,
+    airlineFallback: "",
+    flightNumber: "",
+    departureDate: "",
+    lookup: null,
+    isChecking: false,
+  };
 }
 
 /**
- * La saisie du vol, et sa confrontation au programme de la compagnie.
+ * Construit un itinéraire direct ou avec correspondances.
  *
- * ═══ L'heure de départ n'est pas demandée ═══
- *
- * C'est le choix structurant de cet écran. Le voyageur annonce sa
- * compagnie, son numéro et sa date ; l'heure exacte est **lue chez la
- * compagnie**. Une classe entière d'erreurs disparaît — heure locale
- * prise pour de l'UTC, minutes inversées, fuseau du téléphone — et le
- * délai de remise se calculera sur une donnée officielle plutôt que sur
- * une déclaration.
- *
- * ═══ Trois réponses, pas deux ═══
- *
- * « Nous n'avons pas pu vérifier » n'est pas « ce vol n'existe pas ».
- * Les confondre ferait accuser d'invention un voyageur honnête un jour
- * de panne. La troisième réponse laisse donc continuer, en annonçant que
- * le dossier passera par un examen humain.
+ * Chaque tronçon est confirmé indépendamment auprès de la compagnie.
+ * L'arrivée d'un vol devient automatiquement le départ du suivant : la
+ * personne ne ressaisit rien et il est impossible de créer un itinéraire
+ * discontinu par inadvertance.
  */
-export function FlightStep({ onConfirmed }: FlightStepProps) {
-  const [origin, setOrigin] = useState<Airport | null>(null);
-  const [destination, setDestination] = useState<Airport | null>(null);
-  const [airline, setAirline] = useState<Airline | null>(null);
-  const [airlineFallback, setAirlineFallback] = useState("");
-  const [flightNumber, setFlightNumber] = useState("");
-  const [departureDate, setDepartureDate] = useState("");
-  const [lookup, setLookup] = useState<FlightLookup | null>(null);
-  const [isChecking, setIsChecking] = useState(false);
+export function FlightStep({
+  onConfirmed,
+  initialFlights = [],
+  onBack,
+  title = "Racontez-nous votre itinéraire",
+  hint = "Un vol direct ou quelques escales : Zoumani vérifie chaque tronçon, sans vous faire saisir les heures.",
+  confirmedLabel = "Continuer avec cet itinéraire",
+  isSubmitting = false,
+}: FlightStepProps) {
+  const [flights, setFlights] = useState<FlightDraft[]>(() =>
+    initialFlights.length > 0
+      ? initialFlights.map(toFlightDraft)
+      : [emptyFlight("flight-1")],
+  );
   const [failure, setFailure] = useState<string | null>(null);
 
-  // Le code retenu : celui de la compagnie choisie, ou la frappe brute
-  // quand le référentiel ne la connaît pas.
-  const codeCompagnie = (airline?.iata ?? airlineFallback).trim().toUpperCase();
+  const allComplete = flights.every(isComplete);
+  const allChecked = flights.every((flight) => flight.lookup !== null);
+  const hasMissingFlight = flights.some((flight) => flight.lookup?.outcome === "not_found");
+  const isChecking = flights.some((flight) => flight.isChecking);
 
-  const complet =
-    origin !== null &&
-    destination !== null &&
-    codeCompagnie.length >= 2 &&
-    flightNumber.trim().length >= 1 &&
-    departureDate !== "";
+  function updateFlight(id: string, update: Partial<FlightDraft>) {
+    setFlights((current) => {
+      const index = current.findIndex((flight) => flight.id === id);
+      if (index < 0) {
+        return current;
+      }
+      const next = [...current];
+      next[index] = { ...next[index], ...update, lookup: null };
 
-  const memeAeroport = origin !== null && origin.iata === destination?.iata;
+      // La route reste d'un seul tenant, même après la modification
+      // d'une escale déjà renseignée.
+      if ("destination" in update && next[index + 1]) {
+        next[index + 1] = {
+          ...next[index + 1],
+          origin: update.destination ?? null,
+          lookup: null,
+        };
+      }
+      return next;
+    });
+  }
 
-  // Une date passée est refusée **avant** d'interroger la source. Elle
-  // reviendrait « non vérifiable », ce qui est vrai mais inutile : la
-  // personne verrait un avertissement sur le vol alors que le problème
-  // est sa date, et continuerait vers un voyage que le serveur refusera
-  // à la transmission.
-  const dansLePasse =
-    departureDate !== "" && departureDate < new Date().toISOString().slice(0, 10);
-
-  async function verifier() {
-    if (!complet || !origin || !destination) {
+  async function checkFlight(flight: FlightDraft): Promise<void> {
+    if (!isComplete(flight) || !flight.origin || !flight.destination) {
       return;
     }
-    setIsChecking(true);
-    setFailure(null);
+    setFlights((current) =>
+      current.map((item) =>
+        item.id === flight.id ? { ...item, isChecking: true } : item,
+      ),
+    );
     try {
-      const resultat = await lookupFlight({
-        airlineCode: codeCompagnie,
-        flightNumber: flightNumber.trim(),
-        departureDate,
-        origin: origin.iata,
-        destination: destination.iata,
+      const result = await lookupFlight({
+        airlineCode: airlineCodeOf(flight),
+        flightNumber: flight.flightNumber.trim(),
+        departureDate: flight.departureDate,
+        origin: flight.origin.iata,
+        destination: flight.destination.iata,
       });
-      setLookup(resultat);
+      setFlights((current) =>
+        current.map((item) =>
+          item.id === flight.id ? { ...item, lookup: result, isChecking: false } : item,
+        ),
+      );
     } catch {
-      // Une panne du relais ne doit pas bloquer : on la traite comme une
-      // indisponibilité, ce qu'elle est.
-      setFailure("La vérification n'a pas pu aboutir. Vous pouvez continuer.");
-      setLookup({ outcome: "unavailable", schedule: null });
-    } finally {
-      setIsChecking(false);
+      // Une source indisponible envoie le dossier à l'examen humain ; elle
+      // ne doit jamais accuser le voyageur d'avoir inventé son vol.
+      setFlights((current) =>
+        current.map((item) =>
+          item.id === flight.id
+            ? {
+                ...item,
+                lookup: { outcome: "unavailable", schedule: null },
+                isChecking: false,
+              }
+            : item,
+        ),
+      );
+      setFailure(
+        "Une source n'a pas répondu. Ce tronçon sera contrôlé humainement.",
+      );
     }
   }
 
-  const peutContinuer = lookup !== null && lookup.outcome !== "not_found";
+  async function checkAll() {
+    setFailure(null);
+    await Promise.all(
+      flights.filter((flight) => flight.lookup === null).map(checkFlight),
+    );
+  }
 
-  function continuer() {
-    if (!origin || !destination || !lookup) {
-      return;
-    }
-    onConfirmed({
-      origin,
-      destination,
-      airlineCode: codeCompagnie,
-      flightNumber: flightNumber.trim(),
-      departureDate,
-      lookup,
+  function continueToOffer() {
+    const choices = flights.flatMap((flight) => {
+      if (!flight.origin || !flight.destination || !flight.lookup) {
+        return [];
+      }
+      return [
+        {
+          origin: flight.origin,
+          destination: flight.destination,
+          airlineCode: airlineCodeOf(flight),
+          flightNumber: flight.flightNumber.trim(),
+          departureDate: flight.departureDate,
+          lookup: flight.lookup,
+        },
+      ];
     });
+    if (choices.length === flights.length) {
+      onConfirmed(choices);
+    }
   }
 
   return (
     <WizardShell
       step={1}
       total={5}
-      title="Quel vol prenez-vous ?"
-      hint="Nous confirmons son existence et récupérons l'horaire auprès de la compagnie."
+      title={title}
+      hint={hint}
+      onBack={onBack}
       cta={{
-        label: lookup === null ? "Vérifier mon vol" : "Continuer",
-        disabled:
-          lookup === null
-            ? !complet || memeAeroport || dansLePasse || isChecking
-            : !peutContinuer,
-        busy: isChecking,
-        onClick: lookup === null ? verifier : continuer,
+        label: allChecked ? confirmedLabel : "Vérifier mes vols",
+        disabled: !allComplete || hasMissingFlight || isChecking || isSubmitting,
+        busy: isChecking || isSubmitting,
+        onClick: allChecked ? continueToOffer : checkAll,
       }}
     >
-      <div className="space-y-5">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <AirportField
-            label="Aéroport de départ"
-            placeholder="Ville, aéroport ou code (CDG)"
-            value={origin}
-            onChange={(airport) => {
-              setOrigin(airport);
-              setLookup(null);
-            }}
-          />
-          <AirportField
-            label="Aéroport d'arrivée"
-            placeholder="Ville, aéroport ou code (DLA)"
-            value={destination}
-            onChange={(airport) => {
-              setDestination(airport);
-              setLookup(null);
-            }}
-            error={memeAeroport ? "Le départ et l'arrivée sont identiques." : undefined}
-          />
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
+              {flights.length === 1 ? "Vol direct" : `${flights.length} tronçons`}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              L&apos;arrivée d&apos;un vol devient le départ du suivant.
+            </p>
+          </div>
+          {flights.length < MAX_SEGMENTS && (
+            <button
+              type="button"
+              onClick={() =>
+                setFlights((current) => [
+                  ...current,
+                  emptyFlight(
+                    `flight-${current.length + 1}`,
+                    current.at(-1)?.destination ?? null,
+                  ),
+                ])
+              }
+              disabled={!flights.at(-1)?.destination}
+              className="rounded-full border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              + Ajouter une correspondance
+            </button>
+          )}
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <AirlineField
-            value={airline}
-            onChange={(choisie) => {
-              setAirline(choisie);
-              setLookup(null);
-            }}
-            fallbackCode={airlineFallback}
-            onFallbackChange={(code) => {
-              setAirlineFallback(code);
-              setAirline(null);
-              setLookup(null);
-            }}
+        {flights.map((flight, index) => (
+          <FlightCard
+            key={flight.id}
+            flight={flight}
+            index={index}
+            canRemove={index === flights.length - 1 && flights.length > 1}
+            onChange={(update) => updateFlight(flight.id, update)}
+            onCheck={() => checkFlight(flight)}
+            onRemove={() => setFlights((current) => current.slice(0, -1))}
           />
-          <div>
-            <label className="mb-1.5 block text-sm font-medium" htmlFor="flight">
-              Numéro de vol
-            </label>
-            <input
-              id="flight"
-              value={flightNumber}
-              maxLength={5}
-              inputMode="numeric"
-              placeholder="946"
-              onChange={(event) => {
-                setFlightNumber(event.target.value.replace(/\D/g, ""));
-                setLookup(null);
-              }}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 font-mono"
-            />
-          </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-medium" htmlFor="departure-date">
-              Date de départ
-            </label>
-            <DateField
-              ariaLabel="Date de départ"
-              value={departureDate}
-              minYear={new Date().getFullYear()}
-              // Sans borne haute, le champ retombait sur l'année
-              // courante et interdisait de déclarer un vol de janvier
-              // prochain. Deux ans couvrent tout ce qu'une compagnie
-              // publie.
-              maxYear={new Date().getFullYear() + 2}
-              onChange={(valeur) => {
-                setDepartureDate(valeur);
-                setLookup(null);
-              }}
-            />
-          </div>
-        </div>
+        ))}
 
-        {dansLePasse && (
-          <p className="text-sm text-error" role="alert">
-            Cette date est passée. Choisissez la date de votre prochain vol.
-          </p>
-        )}
-
-        <p className="text-sm text-muted-foreground">
-          Pas besoin de saisir l&apos;heure : nous la récupérons auprès de la compagnie.
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Nous récupérons les horaires officiels. Si une compagnie ne répond pas,
+          l&apos;équipe Zoumani reprend simplement la vérification à la main.
         </p>
-
-        {lookup?.outcome === "confirmed" && lookup.schedule && (
-          <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-4">
-            <p className="font-medium">Vol {lookup.schedule.flightDesignator} confirmé</p>
-            <dl className="mt-2 space-y-1 text-sm">
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Départ</dt>
-                <dd>{formatUtc(lookup.schedule.departureAt)}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Arrivée</dt>
-                <dd>{formatUtc(lookup.schedule.arrivalAt)}</dd>
-              </div>
-            </dl>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Horaires publiés par la compagnie, en heure UTC.
-            </p>
-          </div>
-        )}
-
-        {lookup?.outcome === "not_found" && (
-          <div className="rounded-lg border border-error/40 bg-error/10 p-4 text-sm">
-            <p className="font-medium">Ce vol n&apos;a pas été trouvé.</p>
-            <p className="mt-1 text-muted-foreground">
-              Vérifiez la compagnie, le numéro et le sens du trajet. Un vol aller et son
-              retour portent des numéros différents.
-            </p>
-          </div>
-        )}
-
-        {lookup?.outcome === "unavailable" && (
-          <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
-            <p className="font-medium">Nous n&apos;avons pas pu vérifier ce vol.</p>
-            <p className="mt-1 text-muted-foreground">
-              Ce n&apos;est pas un refus : votre voyage sera examiné par une personne de
-              notre équipe. Vous pouvez continuer.
-            </p>
-            {failure && <p className="mt-1 text-muted-foreground">{failure}</p>}
-          </div>
+        {failure && (
+          <p className="text-sm text-warning" role="status">
+            {failure}
+          </p>
         )}
       </div>
     </WizardShell>
   );
 }
 
-/** Affiche un instant UTC sans le convertir : c'est l'heure officielle. */
+interface FlightCardProps {
+  flight: FlightDraft;
+  index: number;
+  canRemove: boolean;
+  onChange: (update: Partial<FlightDraft>) => void;
+  onCheck: () => void;
+  onRemove: () => void;
+}
+
+function FlightCard({
+  flight,
+  index,
+  canRemove,
+  onChange,
+  onCheck,
+  onRemove,
+}: FlightCardProps) {
+  const sameAirport =
+    flight.origin !== null && flight.origin.iata === flight.destination?.iata;
+  const inPast =
+    flight.departureDate !== "" &&
+    flight.departureDate < new Date().toISOString().slice(0, 10);
+
+  return (
+    <section className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+      <header className="flex items-center justify-between border-b border-border bg-muted/45 px-4 py-3">
+        <div className="flex items-center gap-3">
+          <span className="grid size-8 place-items-center rounded-full bg-inverse-surface text-sm font-bold text-primary">
+            {index + 1}
+          </span>
+          <div>
+            <p className="text-sm font-semibold">
+              {index === 0 ? "Premier vol" : `Après l'escale ${index}`}
+            </p>
+            {flight.origin && flight.destination && (
+              <p className="text-xs text-muted-foreground">
+                {flight.origin.iata} → {flight.destination.iata}
+              </p>
+            )}
+          </div>
+        </div>
+        {canRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="text-sm font-medium text-muted-foreground hover:text-foreground"
+          >
+            Retirer
+          </button>
+        )}
+      </header>
+
+      <div className="space-y-4 p-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <AirportField
+            label="Départ"
+            placeholder="Ville, aéroport ou code"
+            value={flight.origin}
+            onChange={(origin) => onChange({ origin })}
+          />
+          <AirportField
+            label={index < 2 ? "Arrivée ou escale" : "Arrivée finale"}
+            placeholder="Ville, aéroport ou code"
+            value={flight.destination}
+            onChange={(destination) => onChange({ destination })}
+            error={sameAirport ? "Le départ et l'arrivée sont identiques." : undefined}
+          />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <AirlineField
+            value={flight.airline}
+            onChange={(airline) => onChange({ airline, airlineFallback: "" })}
+            fallbackCode={flight.airlineFallback}
+            onFallbackChange={(airlineFallback) =>
+              onChange({ airlineFallback, airline: null })
+            }
+          />
+          <div>
+            <label
+              className="mb-1.5 block text-sm font-medium"
+              htmlFor={`${flight.id}-number`}
+            >
+              Numéro de vol
+            </label>
+            <input
+              id={`${flight.id}-number`}
+              value={flight.flightNumber}
+              maxLength={5}
+              inputMode="numeric"
+              placeholder="946"
+              onChange={(event) =>
+                onChange({ flightNumber: event.target.value.replace(/\D/g, "") })
+              }
+              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 font-mono"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium">Date de départ</label>
+            <DateField
+              ariaLabel={`Date de départ du vol ${index + 1}`}
+              value={flight.departureDate}
+              minYear={new Date().getFullYear()}
+              maxYear={new Date().getFullYear() + 2}
+              onChange={(departureDate) => onChange({ departureDate })}
+            />
+          </div>
+        </div>
+
+        {inPast && (
+          <p className="text-sm text-error" role="alert">
+            Cette date est passée.
+          </p>
+        )}
+
+        {flight.lookup === null ? (
+          <button
+            type="button"
+            onClick={onCheck}
+            disabled={!isComplete(flight) || flight.isChecking}
+            className="rounded-full border border-border px-4 py-2 text-sm font-semibold transition hover:border-primary hover:text-primary disabled:opacity-40"
+          >
+            {flight.isChecking ? "Vérification…" : "Vérifier ce tronçon"}
+          </button>
+        ) : (
+          <FlightVerdict lookup={flight.lookup} />
+        )}
+      </div>
+    </section>
+  );
+}
+
+function FlightVerdict({ lookup }: { lookup: FlightLookup }) {
+  if (lookup.outcome === "confirmed" && lookup.schedule) {
+    return (
+      <div className="rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm">
+        <p className="font-semibold text-success">
+          {lookup.schedule.flightDesignator} confirmé
+        </p>
+        <p className="mt-1 text-muted-foreground">
+          {formatUtc(lookup.schedule.departureAt)} → {formatUtc(lookup.schedule.arrivalAt)}
+        </p>
+      </div>
+    );
+  }
+  if (lookup.outcome === "not_found") {
+    return (
+      <div className="rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm" role="alert">
+        <p className="font-semibold text-error">Vol introuvable</p>
+        <p className="mt-1 text-muted-foreground">
+          Vérifiez la compagnie, le numéro, la date et le sens du trajet.
+        </p>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-xl border border-warning/35 bg-warning/10 px-4 py-3 text-sm">
+      <p className="font-semibold">Contrôle humain prévu</p>
+      <p className="mt-1 text-muted-foreground">
+        La source est indisponible, mais vous pouvez poursuivre normalement.
+      </p>
+    </div>
+  );
+}
+
+function airlineCodeOf(flight: FlightDraft): string {
+  return (flight.airline?.iata ?? flight.airlineFallback).trim().toUpperCase();
+}
+
+function toFlightDraft(choice: FlightChoice, index: number): FlightDraft {
+  return {
+    id: `flight-${index + 1}`,
+    origin: choice.origin,
+    destination: choice.destination,
+    airline: null,
+    airlineFallback: choice.airlineCode,
+    flightNumber: choice.flightNumber,
+    departureDate: choice.departureDate,
+    lookup: choice.lookup,
+    isChecking: false,
+  };
+}
+
+/** Traduit l'itinéraire d'écran vers le contrat unique de l'API. */
+export function toSegmentDrafts(flights: FlightChoice[]): SegmentDraft[] {
+  let previousArrival: Date | null = null;
+
+  return flights.map((flight, index) => {
+    let departureAt = flight.lookup.schedule?.departureAt;
+    let arrivalAt = flight.lookup.schedule?.arrivalAt;
+
+    if (!departureAt || !arrivalAt) {
+      let provisionalDeparture = new Date(`${flight.departureDate}T12:00:00Z`);
+      if (previousArrival && provisionalDeparture <= previousArrival) {
+        provisionalDeparture = new Date(previousArrival.getTime() + 2 * 60 * 60 * 1000);
+      }
+      departureAt = provisionalDeparture.toISOString();
+      arrivalAt = new Date(provisionalDeparture.getTime() + 4 * 60 * 60 * 1000).toISOString();
+    }
+
+    previousArrival = new Date(arrivalAt);
+    return {
+      segmentOrder: index + 1,
+      airlineCode: flight.airlineCode,
+      flightNumber: flight.flightNumber,
+      originAirportCode: flight.origin.iata,
+      destinationAirportCode: flight.destination.iata,
+      departureAt,
+      arrivalAt,
+    };
+  });
+}
+
+function isComplete(flight: FlightDraft): boolean {
+  return (
+    flight.origin !== null &&
+    flight.destination !== null &&
+    flight.origin.iata !== flight.destination.iata &&
+    airlineCodeOf(flight).length >= 2 &&
+    flight.flightNumber.trim().length > 0 &&
+    flight.departureDate !== "" &&
+    flight.departureDate >= new Date().toISOString().slice(0, 10)
+  );
+}
+
 function formatUtc(iso: string): string {
   return new Intl.DateTimeFormat("fr-FR", {
     dateStyle: "medium",

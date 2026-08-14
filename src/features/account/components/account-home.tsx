@@ -19,16 +19,11 @@ import type { AuthenticatedUser } from "@/lib/auth/auth.types";
  * grande majorité vient faire, et le poser d'emblée évite de demander à
  * quelqu'un de choisir ce qu'il est avant de pouvoir agir.
  *
- * ═══ Les résultats ne font pas changer de page ═══
+ * ═══ Les résultats gardent le contexte du compte ═══
  *
- * Ils s'ouvrent **sous** la barre, qui reste garnie. Chercher, c'est
- * essayer : on change de ville, on ajuste le poids, on recommence. Une
- * navigation à chaque essai efface le formulaire, recharge l'écran et
- * casse le fil — au point qu'on renonce à affiner.
- *
- * Le visiteur non connecté, lui, continue d'être envoyé sur `/search` :
- * il arrive sans contexte, et une page dédiée lui en donne un, avec une
- * adresse qu'il peut partager.
+ * La recherche mène à une URL partageable, puis la barre compacte reprend
+ * exactement les critères choisis. La page reconnaît la session et garde
+ * un accès direct à l'espace personnel, sans présenter un écran nu.
  *
  * ═══ Proposer un trajet vient après, et pas à côté ═══
  *

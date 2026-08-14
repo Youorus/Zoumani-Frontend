@@ -48,15 +48,11 @@ export function WizardShell({
   footnote,
 }: WizardShellProps) {
   return (
-    // Pas de hauteur imposée : l'écran vit **dans** `AccountShell`, qui
-    // porte déjà `min-h-screen`. Une seconde hauteur pleine créerait
-    // deux zones défilantes emboîtées — précisément ce que ce découpage
-    // en étapes courtes cherche à supprimer. Les marges verticales du
-    // shell parent sont annulées pour que le pied de page colle au bas.
-    <div className="-my-5 flex flex-col sm:-my-10">
-      <header className="shrink-0 px-4 pt-4 sm:px-6">
-        <div className="mx-auto w-full max-w-lg">
-          <div className="flex items-center gap-3">
+    <div className="-my-5 flex flex-col overflow-hidden sm:-my-10">
+      <header className="shrink-0 border-b border-border/70 bg-surface/80 px-4 py-4 backdrop-blur sm:px-8">
+        <div className="mx-auto w-full max-w-5xl">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
             {onBack ? (
               <button
                 type="button"
@@ -83,6 +79,10 @@ export function WizardShell({
             <span className="text-sm text-muted-foreground">
               Étape {step} sur {total}
             </span>
+            </div>
+            <span className="hidden text-xs font-bold uppercase tracking-[0.18em] text-primary sm:block">
+              De la place qui rapproche
+            </span>
           </div>
 
           {/* La progression est une barre et non des points : elle se lit
@@ -100,25 +100,71 @@ export function WizardShell({
             />
           </div>
 
-          <h1 className="mt-6 text-2xl font-semibold tracking-tight">{title}</h1>
-          {hint && <p className="mt-1.5 text-sm text-muted-foreground">{hint}</p>}
         </div>
       </header>
 
-      <main className="flex-1 px-4 py-6 sm:px-6">
-        <div className="mx-auto w-full max-w-lg">{children}</div>
+      <main className="relative flex-1 px-4 py-5 sm:px-8 sm:py-8">
+        <div className="pointer-events-none absolute -left-32 top-4 size-80 rounded-full bg-primary/10 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 bottom-0 size-72 rounded-full bg-secondary/15 blur-3xl" />
+
+        <div className="relative mx-auto grid w-full max-w-5xl overflow-hidden rounded-[1.75rem] border border-border bg-surface shadow-[0_28px_80px_-48px_rgb(43_29_23_/_0.55)] lg:grid-cols-[0.72fr_1.28fr]">
+          <aside className="relative overflow-hidden bg-inverse-surface px-6 py-6 text-inverse-foreground sm:px-8 lg:min-h-[34rem] lg:py-9">
+            <div
+              className="pointer-events-none absolute inset-0 opacity-20"
+              aria-hidden
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle at 20% 15%, var(--primary) 0 2px, transparent 3px), linear-gradient(135deg, transparent 46%, var(--primary) 47% 48%, transparent 49%)",
+                backgroundSize: "38px 38px, 76px 76px",
+              }}
+            />
+            <div className="relative flex h-full flex-col justify-between gap-8">
+              <div>
+                <span className="inline-flex size-11 items-center justify-center rounded-full border border-primary/50 bg-primary/15 font-display text-xl text-primary">
+                  {step}
+                </span>
+                <p className="mt-6 max-w-xs font-display text-2xl leading-tight sm:text-3xl">
+                  Un voyage pour vous. Une vraie différence pour une famille.
+                </p>
+                <p className="mt-3 max-w-sm text-sm leading-relaxed text-inverse-muted-foreground">
+                  Zoumani vérifie votre trajet avant toute mise en relation. Vous gardez
+                  la maîtrise de vos kilos, de ce que vous acceptez et de votre prix.
+                </p>
+              </div>
+              <div className="flex items-center gap-3 border-t border-white/10 pt-5 text-xs text-inverse-muted-foreground">
+                <span className="size-2 rounded-full bg-primary" />
+                Identité vérifiée · billet contrôlé · colis inspecté
+              </div>
+            </div>
+          </aside>
+
+          <section className="px-5 py-6 sm:px-8 sm:py-8 lg:px-10">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+              Votre prochain voyage
+            </p>
+            <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+              {title}
+            </h1>
+            {hint && (
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                {hint}
+              </p>
+            )}
+            <div className="mt-7">{children}</div>
+          </section>
+        </div>
       </main>
 
       {/* Collé au bas de la fenêtre : le bouton reste à portée de pouce
           même quand le contenu d'une étape dépasse un peu. */}
-      <footer className="sticky bottom-0 z-10 shrink-0 border-t border-border bg-background/85 px-4 py-4 backdrop-blur sm:px-6">
-        <div className="mx-auto w-full max-w-lg space-y-2">
+      <footer className="sticky bottom-0 z-10 shrink-0 border-t border-border bg-background/92 px-4 py-4 backdrop-blur sm:px-8">
+        <div className="mx-auto w-full max-w-5xl space-y-2 lg:pl-[calc(36%+2.5rem)]">
           {footnote}
           <button
             type="button"
             onClick={cta.onClick}
             disabled={cta.disabled || cta.busy}
-            className="w-full rounded-xl bg-primary px-4 py-3.5 text-base font-medium text-primary-foreground transition-opacity disabled:opacity-40"
+            className="focus-ring w-full rounded-xl bg-primary px-4 py-3.5 text-base font-bold text-primary-foreground shadow-[0_14px_30px_-18px_var(--primary)] transition-[transform,opacity] hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-40"
           >
             {cta.busy ? "…" : cta.label}
           </button>

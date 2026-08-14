@@ -23,6 +23,7 @@ interface HandoverStepProps {
   onChange: (choice: {
     method: "in_person" | "carrier";
     pointCode: string | null;
+    carrierCode: string | null;
     extraMinor: number;
   }) => void;
 }
@@ -83,6 +84,7 @@ export function HandoverStep({
           countryCode: sender.countryCode,
           weightGrams,
           distanceMeters,
+          withPickup: acceptsPickup,
         }),
       )
       .then((valeur) => {
@@ -109,7 +111,12 @@ export function HandoverStep({
   const extraMinor = method === "carrier" && quote ? quote.priceMinor : 0;
 
   useEffect(() => {
-    onChange({ method, pointCode: point?.code ?? null, extraMinor });
+    onChange({
+      method,
+      pointCode: method === "carrier" ? (point?.code ?? null) : null,
+      carrierCode: method === "carrier" ? (point?.carrier ?? null) : null,
+      extraMinor,
+    });
   }, [method, point, extraMinor, onChange]);
 
   if (!sender) {

@@ -36,6 +36,21 @@ export type VerificationStatus =
 export type VerificationStage =
   "absent" | "en_cours" | "a_corriger" | "verifie" | "refuse";
 
+/** Types de pièces tels que l'API les nomme. */
+export type IdentityDocumentType =
+  | "passport"
+  | "national_id_card"
+  | "residence_permit";
+
+export interface VerificationDocument {
+  id: string;
+  documentType: IdentityDocumentType | "selfie";
+  status: string;
+  issuingCountry: string | null;
+  expiresOn: string | null;
+  hasBackSide: boolean;
+}
+
 /** Le dossier, en `snake_case` : c'est exactement ce que rend l'API. */
 export interface RawVerification {
   id: string;

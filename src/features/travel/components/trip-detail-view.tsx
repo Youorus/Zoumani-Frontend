@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import {
   cancelTrip,
@@ -15,6 +15,7 @@ import {
 import type { Capacity } from "../types/travel.types";
 import type { Proof, ProofKind, Trip } from "../types/trip.types";
 import { AttestationField } from "./attestation-field";
+import { PROOF_KINDS, ProofPicker } from "./proof-picker";
 import { TripRoute } from "./trip-route";
 
 interface TripDetailViewProps {
@@ -349,21 +350,6 @@ function Encadre({
   );
 }
 
-const NATURES: Record<ProofKind, { libelle: string; aide: string }> = {
-  boarding_pass: {
-    libelle: "Carte d'embarquement",
-    aide: "La preuve la plus forte : elle atteste d'un enregistrement effectif.",
-  },
-  e_ticket: {
-    libelle: "Billet électronique",
-    aide: "Le document émis par la compagnie ou l'agence.",
-  },
-  booking_confirmation: {
-    libelle: "Confirmation de réservation",
-    aide: "Avant émission du billet. Vérification plus longue.",
-  },
-};
-
 function ProofsSection({
   tripId,
   proofs,
@@ -376,9 +362,9 @@ function ProofsSection({
   onUploaded: () => void;
 }) {
   const [kind, setKind] = useState<ProofKind>("boarding_pass");
+  const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
-  const input = useRef<HTMLInputElement>(null);
 
   async function deposer(file: File) {
     setBusy(true);
@@ -390,9 +376,7 @@ function ProofsSection({
       setFailure(error instanceof Error ? error.message : "L'envoi n'a pas abouti.");
     } finally {
       setBusy(false);
-      if (input.current) {
-        input.current.value = "";
-      }
+      setFile(null);
     }
   }
 
@@ -408,7 +392,7 @@ function ProofsSection({
               className="flex items-center justify-between gap-3 text-sm"
             >
               <span className="min-w-0">
-                <span className="block">{NATURES[proof.kind].libelle}</span>
+                <span className="block">{PROOF_KINDS[proof.kind].label}</span>
                 {proof.rejectionReason && (
                   <span className="block text-xs text-error">
                     {proof.rejectionReason}
@@ -425,37 +409,21 @@ function ProofsSection({
 
       {modifiable && (
         <div className="mt-4 space-y-2.5 border-t border-border pt-4">
-          <label className="block text-sm" htmlFor="proof-kind">
-            Nature du document
-          </label>
-          <select
-            id="proof-kind"
-            value={kind}
-            onChange={(event) => setKind(event.target.value as ProofKind)}
-            className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm"
-          >
-            {(Object.keys(NATURES) as ProofKind[]).map((valeur) => (
-              <option key={valeur} value={valeur}>
-                {NATURES[valeur].libelle}
-              </option>
-            ))}
-          </select>
-          <p className="text-xs text-muted-foreground">{NATURES[kind].aide}</p>
-
-          <input
-            ref={input}
-            type="file"
-            accept="image/*,application/pdf"
+          <ProofPicker
+            kind={kind}
+            file={file}
+            onKindChange={setKind}
+            onFileChange={setFile}
             disabled={busy}
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) {
-                void deposer(file);
-              }
-            }}
-            className="block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-primary file:px-3 file:py-2 file:text-sm file:font-medium file:text-primary-foreground"
           />
-          {busy && <p className="text-xs text-muted-foreground">Envoi en cours…</p>}
+          <button
+            type="button"
+            disabled={!file || busy}
+            onClick={() => file && void deposer(file)}
+            className="focus-ring w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground disabled:opacity-40"
+          >
+            {busy ? "Envoi en cours…" : "Déposer ce justificatif"}
+          </button>
           {failure && (
             <p className="text-sm text-error" role="alert">
               {failure}

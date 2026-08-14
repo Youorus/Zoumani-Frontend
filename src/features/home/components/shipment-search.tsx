@@ -56,17 +56,22 @@ interface SearchFieldProps {
   label: string;
   children: ReactNode;
   className?: string;
+  compact?: boolean;
 }
 
-function SearchField({ icon: Icon, label, children, className }: SearchFieldProps) {
+function SearchField({ icon: Icon, label, children, className, compact = false }: SearchFieldProps) {
   return (
     <div
       className={cn(
-        "flex min-h-19 items-center gap-3 rounded-xl border border-marketing-panel-border bg-marketing-panel px-4 transition-colors focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/12",
+        "flex items-center gap-3 rounded-xl border border-marketing-panel-border bg-marketing-panel px-4 transition-colors focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/12",
+        compact ? "min-h-15" : "min-h-19",
         className,
       )}
     >
-      <Icon className="size-6 shrink-0 text-primary" aria-hidden="true" />
+      <Icon
+        className={cn("shrink-0 text-primary", compact ? "size-5" : "size-6")}
+        aria-hidden="true"
+      />
       <span className="min-w-0 flex-1">
         <span className="block text-xs font-medium text-marketing-panel-muted-foreground">
           {label}
@@ -81,30 +86,43 @@ interface ShipmentSearchProps {
   className?: string;
   copy: HomeContent["search"];
   language: HomeLanguage;
-  /**
-   * Que faire de la recherche, quand la page sait déjà quoi en faire.
-   *
-   * Absent — sur la page d'accueil — la barre navigue vers `/search` : un
-   * visiteur y arrive sans contexte, et une page dédiée lui en donne un,
-   * partageable et indexable.
-   *
-   * Fourni — dans l'espace connecté — les résultats s'affichent sous la
-   * barre, sans quitter l'écran. Quelqu'un qui affine sa destination trois
-   * fois de suite ne doit pas traverser trois pages pour cela.
-   */
-  onSearch?: (filters: { from: string; to: string; weight: number }) => void;
+  /** Version resserrée pour garder les résultats visibles sous la recherche. */
+  variant?: "hero" | "compact";
+  /** Critères déjà actifs, notamment lorsqu'ils viennent de l'URL. */
+  initialFilters?: {
+    origin?: string;
+    destination?: string;
+    categories?: string[];
+  };
+}
+
+function cityValueOfAirport(code?: string): string | undefined {
+  if (!code) return undefined;
+  const normalized = code.toUpperCase();
+  return searchCities.find((city) => airportOf(city.value) === normalized)?.value;
 }
 
 export function ShipmentSearch({
   className,
   copy,
   language,
-  onSearch,
+  variant = "hero",
+  initialFilters,
 }: ShipmentSearchProps) {
   const router = useRouter();
-  const [departure, setDeparture] = useState("paris");
-  const [destination, setDestination] = useState("abidjan");
-  const [contents, setContents] = useState<string[]>([]);
+  const compact = variant === "compact";
+  const initialOrigin = initialFilters?.origin;
+  const initialDestination = initialFilters?.destination;
+  const initialCategoryKey = (initialFilters?.categories ?? []).join(",");
+  const [departure, setDeparture] = useState(
+    () => cityValueOfAirport(initialOrigin) ?? "paris",
+  );
+  const [destination, setDestination] = useState(
+    () => cityValueOfAirport(initialDestination) ?? "abidjan",
+  );
+  const [contents, setContents] = useState<string[]>(() =>
+    initialCategoryKey ? initialCategoryKey.split(",") : [],
+  );
   const [categories, setCategories] = useState<ParcelCategory[]>([]);
   const [isNavigating, startNavigation] = useTransition();
 
@@ -161,18 +179,28 @@ export function ShipmentSearch({
     >
       <form
         onSubmit={submitSearch}
-        className="overflow-hidden rounded-[1.35rem] bg-marketing-panel text-marketing-panel-foreground shadow-[0_28px_70px_-34px_rgb(13_6_2_/_0.7)] [color-scheme:light]"
+        className={cn(
+          "overflow-hidden bg-marketing-panel text-marketing-panel-foreground [color-scheme:light]",
+          compact
+            ? "rounded-[1.15rem] border border-marketing-panel-border shadow-[0_18px_45px_-32px_rgb(13_6_2_/_0.6)]"
+            : "rounded-[1.35rem] shadow-[0_28px_70px_-34px_rgb(13_6_2_/_0.7)]",
+        )}
       >
-        <div className="flex h-12 items-center border-b border-marketing-panel-border">
+        <div
+          className={cn(
+            "items-center border-b border-marketing-panel-border",
+            compact ? "sr-only" : "flex h-12",
+          )}
+        >
           <div className="flex h-full w-full items-center justify-center gap-2 px-4 text-sm font-bold text-primary sm:max-w-[255px]">
             <Package className="size-5" />
             {copy.title}
           </div>
         </div>
 
-        <div className="p-4 sm:p-5">
+        <div className={compact ? "p-3" : "p-4 sm:p-5"}>
           <div className="grid items-center gap-3 lg:grid-cols-[1.3fr_1.3fr_.72fr_1.08fr]">
-            <SearchField icon={MapPin} label={copy.departureLabel}>
+            <SearchField icon={MapPin} label={copy.departureLabel} compact={compact}>
               <Combobox
                 value={departure}
                 ariaLabel={copy.departureAriaLabel}
@@ -194,7 +222,7 @@ export function ShipmentSearch({
               >
                 <ArrowLeftRight className="size-4" />
               </button>
-              <SearchField icon={MapPin} label={copy.destinationLabel}>
+              <SearchField icon={MapPin} label={copy.destinationLabel} compact={compact}>
                 <Combobox
                   value={destination}
                   ariaLabel={copy.destinationAriaLabel}
@@ -208,7 +236,7 @@ export function ShipmentSearch({
               </SearchField>
             </div>
 
-            <SearchField icon={Package} label={copy.contentLabel}>
+            <SearchField icon={Package} label={copy.contentLabel} compact={compact}>
               {/* Le poids ne décidait de rien à ce stade : quelqu'un qui
                   veut envoyer « des vêtements et un téléphone » ne sait
                   pas encore ce que ça pèse. Ce qui filtre vraiment, c'est
@@ -227,7 +255,10 @@ export function ShipmentSearch({
             <button
               type="submit"
               disabled={isNavigating}
-              className="focus-ring inline-flex min-h-16 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 hover:bg-primary/92 lg:min-h-16"
+              className={cn(
+                "focus-ring inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 hover:bg-primary/92",
+                compact ? "min-h-14" : "min-h-16",
+              )}
             >
               {isNavigating ? (
                 <LoaderCircle className="size-5 animate-spin" />
@@ -238,7 +269,12 @@ export function ShipmentSearch({
             </button>
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-marketing-panel-muted-foreground lg:gap-x-7">
+          <div
+            className={cn(
+              "mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-marketing-panel-muted-foreground lg:gap-x-7",
+              compact && "hidden",
+            )}
+          >
             {copy.guarantees.map((label, index) => {
               const Icon = guaranteeIcons[index] ?? CircleCheck;
 

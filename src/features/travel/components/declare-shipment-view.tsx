@@ -75,9 +75,13 @@ export function DeclareShipmentView({
   const [remise, setRemise] = useState<{
     method: "in_person" | "carrier";
     pointCode: string | null;
+    carrierCode: string | null;
     extraMinor: number;
-  }>({ method: "in_person", pointCode: null, extraMinor: 0 });
+  }>({ method: "in_person", pointCode: null, carrierCode: null, extraMinor: 0 });
   const [shipmentId, setShipmentId] = useState<string | null>(null);
+  const [uploadedPhotoKeys, setUploadedPhotoKeys] = useState<Record<string, string>>(
+    {},
+  );
   const [failure, setFailure] = useState<string | null>(null);
 
   const choisies = capacity.offers.filter((offer) => lignes[offer.categoryCode]);
@@ -130,18 +134,21 @@ export function DeclareShipmentView({
     setBusy(true);
     setFailure(null);
     try {
-      const expedition = await declareShipment(
-        capacity.id,
-        choisies.map((offer) => {
+      const lines = choisies.map((offer) => {
           const valeur = Number.parseFloat(
             (lignes[offer.categoryCode]?.quantity ?? "").replace(",", "."),
           );
           return offer.perPiece
             ? { categoryCode: offer.categoryCode, pieces: Math.floor(valeur) }
             : { categoryCode: offer.categoryCode, quantityKg: valeur };
-        }),
-      );
-      setShipmentId(expedition.id);
+        });
+
+      if (shipmentId) {
+        await updateShipment(shipmentId, lines);
+      } else {
+        const expedition = await declareShipment(capacity.id, lines);
+        setShipmentId(expedition.id);
+      }
       setEtape("photos");
     } catch (error) {
       setFailure(error instanceof Error ? error.message : "La déclaration a échoué.");
@@ -164,10 +171,21 @@ export function DeclareShipmentView({
       // temps saturent une connexion mobile, et l'on ne sait plus
       // laquelle a échoué.
       const cles: Record<string, string[]> = {};
+      const dejaEnvoyees = { ...uploadedPhotoKeys };
       for (const offer of choisies) {
         cles[offer.categoryCode] = [];
-        for (const prise of photos[offer.categoryCode]?.files ?? []) {
-          cles[offer.categoryCode].push(await uploadParcelPhoto(shipmentId, prise));
+        const files = photos[offer.categoryCode]?.files ?? [];
+        for (const [index, prise] of files.entries()) {
+          const signature = photoSignature(offer.categoryCode, prise, index);
+          let key = dejaEnvoyees[signature];
+          if (!key) {
+            key = await uploadParcelPhoto(shipmentId, prise);
+            dejaEnvoyees[signature] = key;
+            // Conservé après chaque succès : si le réseau coupe sur la
+            // photo suivante, la reprise ne renvoie pas celles déjà reçues.
+            setUploadedPhotoKeys({ ...dejaEnvoyees });
+          }
+          cles[offer.categoryCode].push(key);
         }
       }
 
@@ -185,6 +203,10 @@ export function DeclareShipmentView({
             ? { ...base, categoryCode: offer.categoryCode, pieces: Math.floor(valeur) }
             : { ...base, categoryCode: offer.categoryCode, quantityKg: valeur };
         }),
+        remise.method,
+        remise.method === "carrier" && remise.pointCode && remise.carrierCode
+          ? { pointCode: remise.pointCode, carrierCode: remise.carrierCode }
+          : null,
       );
 
       await submitShipment(shipmentId);
@@ -196,31 +218,95 @@ export function DeclareShipmentView({
     }
   }
 
+  const stepNumber = etape === "saisie" ? 1 : etape === "photos" ? 2 : 3;
+
   return (
-    <div className="mx-auto w-full max-w-lg space-y-5 p-4 sm:p-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {etape === "saisie"
-            ? "Que voulez-vous envoyer ?"
-            : etape === "photos"
-              ? "Photographiez le contenu"
-              : "Comment remettre le colis ?"}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {etape === "saisie"
-            ? `Ce voyageur dispose de ${capacity.availableWeightKg} kg.`
-            : etape === "photos"
-              ? "Une photo par type de contenu. Elle protège les deux parties en cas de litige."
-              : "En main propre, ou déposé dans un point relais près de chez vous."}
-        </p>
-      </header>
+    <div className="relative mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-9">
+      <div className="pointer-events-none absolute -left-24 top-24 size-72 rounded-full bg-primary/10 blur-3xl" />
+      <section className="relative overflow-hidden rounded-[2rem] bg-inverse-surface px-6 py-7 text-inverse-foreground sm:px-9 sm:py-9">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-20"
+          aria-hidden
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 15% 30%, var(--primary) 0 2px, transparent 3px), linear-gradient(120deg, transparent 45%, var(--primary) 46% 47%, transparent 48%)",
+            backgroundSize: "42px 42px, 110px 110px",
+          }}
+        />
+        <div className="relative flex flex-col justify-between gap-7 lg:flex-row lg:items-end">
+          <div className="max-w-2xl">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+              Envoyer avec Zoumani
+            </p>
+            <h1 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
+              Un colis bien préparé voyage l&apos;esprit léger.
+            </h1>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-inverse-muted-foreground">
+              Vous choisissez ce qui part, nous gardons la trace de son état, puis le
+              voyageur effectue sa dernière vérification avant le départ.
+            </p>
+          </div>
+          <ol className="flex gap-2" aria-label="Progression de l'envoi">
+            {["Contenu", "Preuves", "Remise"].map((label, index) => {
+              const number = index + 1;
+              return (
+                <li
+                  key={label}
+                  aria-current={number === stepNumber ? "step" : undefined}
+                  className={`rounded-full px-3 py-2 text-xs font-semibold transition-colors ${
+                    number === stepNumber
+                      ? "bg-primary text-primary-foreground"
+                      : number < stepNumber
+                        ? "bg-white/15 text-white"
+                        : "border border-white/15 text-inverse-muted-foreground"
+                  }`}
+                >
+                  {number}. {label}
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </section>
 
-      {/* Rappelé à chaque étape : trois écrans séparent la première
-          quantité de la transmission, et perdre de vue avec qui l'on
-          envoie oblige à revenir en arrière pour vérifier. */}
-      <TripSummaryBanner match={match} />
+      <div className="relative mt-5 grid items-start gap-5 lg:grid-cols-[0.72fr_1.28fr]">
+        <aside className="space-y-4 lg:sticky lg:top-24">
+          {/* Le voyage choisi reste visible pendant les trois étapes. */}
+          <TripSummaryBanner match={match} />
+          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+              La chaîne de confiance
+            </p>
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+              <li>Identité et billet du voyageur contrôlés</li>
+              <li>Trois vues du contenu conservées en privé</li>
+              <li>Colis revérifié avec le voyageur avant départ</li>
+            </ul>
+          </div>
+        </aside>
 
-      {etape === "saisie" ? (
+        <main className="rounded-[1.75rem] border border-border bg-surface p-5 shadow-[0_24px_70px_-48px_rgb(43_29_23_/_0.55)] sm:p-7">
+          <header className="mb-6">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+              Étape {stepNumber} sur 3
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+              {etape === "saisie"
+                ? "Que voulez-vous envoyer ?"
+                : etape === "photos"
+                  ? "Montrez-nous le contenu"
+                  : "Comment rejoint-il le voyageur ?"}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {etape === "saisie"
+                ? `Ce voyageur dispose encore de ${capacity.availableWeightKg} kg.`
+                : etape === "photos"
+                  ? "Trois angles montrent le volume, l'état et le conditionnement : une vraie protection pour vous deux."
+                  : "En main propre ou via un relais partenaire : choisissez ce qui est simple pour vous."}
+            </p>
+          </header>
+
+          {etape === "saisie" ? (
         <>
           <ul className="space-y-2.5">
             {capacity.offers.map((offer) => {
@@ -352,18 +438,69 @@ export function DeclareShipmentView({
             {photoIndex > 0 ? "Contenu précédent" : "Revenir aux quantités"}
           </button>
         </>
-      ) : null}
+      ) : (
+        <>
+          <HandoverStep
+            sender={sender}
+            weightGrams={Math.max(100, Math.round(poidsDeclare * 1000))}
+            distanceMeters={distanceMeters}
+            parcelTotalMinor={totalMinor}
+            acceptsPickup={capacity.acceptsPickup}
+            onChange={setRemise}
+          />
 
-      {failure && (
-        <p
-          className="rounded-xl border border-error/40 bg-error/10 p-3 text-sm"
-          role="alert"
-        >
-          {failure}
-        </p>
-      )}
+          {remise.method === "carrier" && remise.pointCode === null && (
+            <p className="rounded-xl border border-warning/30 bg-warning/10 p-3 text-sm text-muted-foreground">
+              Choisissez le point où vous déposerez le colis avant de continuer.
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={transmettre}
+            disabled={
+              busy ||
+              (remise.method === "carrier" &&
+                (remise.pointCode === null || remise.carrierCode === null))
+            }
+            className="focus-ring w-full rounded-xl bg-primary px-4 py-3 font-bold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-40"
+          >
+            {busy
+              ? "Transmission…"
+              : remise.extraMinor > 0
+                ? `Confirmer · ${((totalMinor + remise.extraMinor) / 100).toFixed(2)} €`
+                : "Confirmer ma demande d'envoi"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setPhotoIndex(Math.max(0, choisies.length - 1));
+              setEtape("photos");
+            }}
+            disabled={busy}
+            className="w-full text-sm font-medium text-muted-foreground underline-offset-4 hover:underline"
+          >
+            Revenir aux photos
+          </button>
+        </>
+          )}
+
+          {failure && (
+            <p
+              className="mt-4 rounded-xl border border-error/40 bg-error/10 p-3 text-sm"
+              role="alert"
+            >
+              {failure}
+            </p>
+          )}
+        </main>
+      </div>
     </div>
   );
+}
+
+function photoSignature(categoryCode: string, file: File, index: number): string {
+  return [categoryCode, index, file.name, file.size, file.lastModified].join(":");
 }
 
 function Recapitulatif({

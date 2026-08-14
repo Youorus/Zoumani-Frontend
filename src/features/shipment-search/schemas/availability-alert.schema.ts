@@ -5,7 +5,10 @@ export const availabilityAlertSchema = z.object({
   phone: z
     .string()
     .trim()
-    .regex(/^\+?[0-9][0-9\s().-]{7,20}$/, "Saisissez un numéro de téléphone valide."),
+    .regex(
+      /^\+[1-9][0-9\s().-]{7,20}$/,
+      "Utilisez le format international, par exemple +33 6 12 34 56 78.",
+    ),
   consent: z
     .boolean()
     .refine(Boolean, "Votre accord est nécessaire pour créer l’alerte."),

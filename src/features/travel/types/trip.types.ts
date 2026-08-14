@@ -213,6 +213,8 @@ export interface Rewards {
   progress: number;
   history: PointEntry[];
   allTiers: Tier[];
+  /** Barème rendu par le serveur : aucune valeur commerciale n'est recopiée ici. */
+  earningRules: Record<string, number>;
 }
 
 export interface RawRewards {
@@ -223,6 +225,7 @@ export interface RawRewards {
   progress: number;
   history: { reason: string; amount: number; occurred_at: string; note: string | null }[];
   all_tiers: Tier[];
+  earning_rules: Record<string, number>;
 }
 
 export function toRewards(raw: RawRewards): Rewards {
@@ -239,6 +242,7 @@ export function toRewards(raw: RawRewards): Rewards {
       note: entry.note,
     })),
     allTiers: raw.all_tiers,
+    earningRules: raw.earning_rules,
   };
 }
 
@@ -248,6 +252,7 @@ export interface TravelerCard {
   /** Prénom et initiale. **Jamais** l'identité complète. */
   displayName: string;
   photoUrl: string | null;
+  rewardPoints: number;
 }
 
 export interface CapacityMatch {
@@ -273,7 +278,7 @@ export interface CapacityMatch {
 export interface RawCapacityMatch {
   capacity_id: string;
   trip_id: string;
-  traveler: { display_name: string; photo_url: string | null };
+  traveler: { display_name: string; photo_url: string | null; reward_points: number };
   origin: string;
   origin_city: string;
   origin_country: string;
@@ -295,6 +300,7 @@ export function toCapacityMatch(raw: RawCapacityMatch): CapacityMatch {
     traveler: {
       displayName: raw.traveler.display_name,
       photoUrl: raw.traveler.photo_url,
+      rewardPoints: raw.traveler.reward_points,
     },
     origin: raw.origin,
     originCity: raw.origin_city,
@@ -352,6 +358,8 @@ export interface ShipmentSummary {
   capacityId: string;
   status: ShipmentStatus;
   handover: HandoverMethod;
+  servicePointCode: string | null;
+  carrierCode: string | null;
   currency: string;
   lines: ParcelLine[];
   /** Ce qui revient au voyageur. Ni commission, ni assurance, ni transport. */
@@ -366,6 +374,8 @@ export interface RawShipment {
   capacity_id: string;
   status: ShipmentStatus;
   handover: HandoverMethod;
+  service_point_code: string | null;
+  carrier_code: string | null;
   currency: string;
   lines: {
     category_code: string;
@@ -388,6 +398,8 @@ export function toShipment(raw: RawShipment): ShipmentSummary {
     capacityId: raw.capacity_id,
     status: raw.status,
     handover: raw.handover,
+    servicePointCode: raw.service_point_code,
+    carrierCode: raw.carrier_code,
     currency: raw.currency,
     lines: raw.lines.map((line) => ({
       categoryCode: line.category_code,

@@ -14,7 +14,12 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ nouveau?: string }>;
+}) {
+  const params = await searchParams;
   const reponse = await callApi({ method: "GET", path: "/trips" });
 
   // Une liste vide et une erreur ne se confondent pas : l'écran « aucun
@@ -24,5 +29,5 @@ export default async function Page() {
   }
 
   const page = reponse.body as RawPage<RawTrip>;
-  return <MyTripsView trips={page.items.map(toTrip)} />;
+  return <MyTripsView trips={page.items.map(toTrip)} createdTripId={params.nouveau} />;
 }

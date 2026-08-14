@@ -7,7 +7,9 @@ import {
   toVerification,
   type RawVerification,
   type RawVerificationRequest,
+  type IdentityDocumentType,
   type Verification,
+  type VerificationDocument,
   type VerificationRequest,
 } from "../types/verification.types";
 
@@ -110,7 +112,7 @@ export async function saveDraft(draft: IdentityDraft): Promise<Verification> {
 
 /** Dépose une pièce d'identité. Le verso est facultatif — pas pour tous. */
 export async function uploadDocument(input: {
-  documentType: "passport" | "national_id" | "residence_permit";
+  documentType: IdentityDocumentType;
   front: File;
   back?: File | null;
   issuingCountry: string;
@@ -235,16 +237,27 @@ export async function resubmitVerification(): Promise<Verification> {
  * le selfie déjà déposé, faute de quoi on en ajouterait un second au lieu
  * de corriger le premier.
  */
-export async function fetchDocuments(): Promise<{ id: string; documentType: string }[]> {
+export async function fetchDocuments(): Promise<VerificationDocument[]> {
   const response = await fetch(`${BASE}/documents`, { cache: "no-store" });
   if (!response.ok) {
     return [];
   }
   const payload = (await response.json()) as {
-    documents: { id: string; document_type: string }[];
+    documents: {
+      id: string;
+      document_type: IdentityDocumentType | "selfie";
+      status: string;
+      issuing_country: string | null;
+      expires_on: string | null;
+      has_back_side: boolean;
+    }[];
   };
   return payload.documents.map((doc) => ({
     id: doc.id,
     documentType: doc.document_type,
+    status: doc.status,
+    issuingCountry: doc.issuing_country,
+    expiresOn: doc.expires_on,
+    hasBackSide: doc.has_back_side,
   }));
 }

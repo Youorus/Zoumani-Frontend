@@ -1,0 +1,148 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  border-radius: calc(var(--shape-radius-lg) + 0.35rem);
+  background:
+    radial-gradient(circle at 85% 12%, color-mix(in srgb, var(--secondary) 25%, transparent), transparent 14rem),
+    linear-gradient(145deg, color-mix(in srgb, var(--primary) 16%, var(--inverse-surface)), var(--inverse-surface));
+  color: var(--inverse-foreground);
+  box-shadow: var(--elevation-lifted);
+}
+
+.hero::after {
+  position: absolute;
+  right: -7rem;
+  bottom: -9rem;
+  width: 22rem;
+  height: 22rem;
+  border: 1px dashed color-mix(in srgb, var(--primary) 52%, transparent);
+  border-radius: 50%;
+  content: "";
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  width: 1.5rem;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  content: "";
+}
+
+.hero h1 {
+  position: relative;
+  z-index: 1;
+  max-width: 47rem;
+  margin-top: 0.75rem;
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  letter-spacing: -0.06em;
+  line-height: 0.94;
+}
+
+.hero p:last-child {
+  position: relative;
+  z-index: 1;
+  max-width: 42rem;
+  margin-top: 1rem;
+  color: var(--inverse-muted-foreground);
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+
+.queue,
+.detail {
+  border: 1px solid var(--border);
+  border-radius: var(--shape-radius-lg);
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  box-shadow: var(--elevation-soft);
+}
+
+.queue {
+  align-self: start;
+  padding: 0.75rem;
+}
+
+.detail {
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.profileHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.initials {
+  display: grid;
+  width: 3.6rem;
+  height: 3.6rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--primary) 9%, var(--surface));
+  color: var(--primary);
+  font-family: var(--font-display), serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.documentCard {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--shape-radius-md);
+  background: var(--surface-elevated);
+}
+
+.timeline {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline li {
+  display: grid;
+  grid-template-columns: 0.75rem 1fr;
+  gap: 0.7rem;
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.timeline li::before {
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-top: 0.28rem;
+  border: 2px solid color-mix(in srgb, var(--primary) 45%, var(--border));
+  border-radius: 50%;
+  background: var(--surface);
+  content: "";
+}
+
+@media (max-width: 48rem) {
+  .hero h1 {
+    font-size: 2.55rem;
+  }
+
+  .hero p:last-child {
+    max-width: 28rem;
+  }
+}

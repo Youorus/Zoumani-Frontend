@@ -11,17 +11,20 @@ import {
   fetchCatalog,
   fetchLastPrices,
   offerCapacity,
-  publishCapacity,
   submitTrip,
+  uploadProof,
 } from "../api/travel-client";
+import type { ProofKind } from "../types/trip.types";
 import {
   fromMinorUnits,
   toMinorUnits,
-  type Airport,
   type Catalog,
-  type FlightLookup,
 } from "../types/travel.types";
-import { FlightStep } from "./flight-step";
+import {
+  FlightStep,
+  toSegmentDrafts,
+  type FlightChoice,
+} from "./flight-step";
 import { StepCategories } from "./step-categories";
 import { StepPricing } from "./step-pricing";
 import { StepReview } from "./step-review";
@@ -30,15 +33,6 @@ import { WizardShell } from "./wizard-shell";
 
 interface CreateTripViewProps {
   stage: VerificationStage;
-}
-
-interface FlightChoice {
-  origin: Airport;
-  destination: Airport;
-  airlineCode: string;
-  flightNumber: string;
-  departureDate: string;
-  lookup: FlightLookup;
 }
 
 const TOTAL_STEPS = 5;
@@ -67,15 +61,24 @@ const POIDS_MAX = 64;
 export function CreateTripView({ stage }: CreateTripViewProps) {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [flight, setFlight] = useState<FlightChoice | null>(null);
+  const [flights, setFlights] = useState<FlightChoice[]>([]);
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [weight, setWeight] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [prices, setPrices] = useState<Record<string, string>>({});
   const [remembered, setRemembered] = useState<string[]>([]);
+  const [proof, setProof] = useState<{ kind: ProofKind; file: File | null }>({
+    kind: "boarding_pass",
+    file: null,
+  });
   const [attestation, setAttestation] = useState({ accepted: false, version: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [progress, setProgress] = useState({
+    tripId: null as string | null,
+    proofUploaded: false,
+    capacityCreated: false,
+  });
 
   useEffect(() => {
     if (stage !== "verifie") {
@@ -139,69 +142,49 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
     return trouves;
   }
 
-  async function publier() {
-    if (!flight || !catalog) {
+  async function transmettre() {
+    if (flights.length === 0 || !catalog) {
       return;
     }
     if (!attestation.accepted || !attestation.version) {
       setErrors({ attestation: "Confirmez votre engagement pour continuer." });
       return;
     }
+    if (!proof.file) {
+      setErrors({ proof: "Ajoutez votre billet ou votre carte d'embarquement." });
+      return;
+    }
 
     setIsSubmitting(true);
     setErrors({});
     try {
-      // L'heure vient de la compagnie quand elle est connue. À défaut —
-      // vérification indisponible — on retient midi UTC : une heure
-      // plausible que l'examen humain corrigera, plutôt qu'un minuit qui
-      // ferait basculer la date d'un fuseau à l'autre.
-      const depart =
-        flight.lookup.schedule?.departureAt ?? `${flight.departureDate}T12:00:00Z`;
-      const arrivee =
-        flight.lookup.schedule?.arrivalAt ?? `${flight.departureDate}T18:00:00Z`;
-
-      const trip = await declareTrip([
-        {
-          segmentOrder: 1,
-          airlineCode: flight.airlineCode,
-          flightNumber: flight.flightNumber,
-          originAirportCode: flight.origin.iata,
-          destinationAirportCode: flight.destination.iata,
-          departureAt: depart,
-          arrivalAt: arrivee,
-        },
-      ]);
-
-      const capacite = await offerCapacity(trip.id, {
-        totalWeightKg: Number.parseFloat(weight.replace(",", ".")),
-        currency: DEVISE,
-        offers: choisies.map((category) => ({
-          categoryCode: category.code,
-          priceMinor: toMinorUnits(prices[category.code] ?? "") ?? 0,
-        })),
-        notes: null,
-      });
-
-      // La transmission exige une preuve de billet, que ce parcours ne
-      // demande pas encore. Cet échec précis n'est donc pas une erreur :
-      // le voyage et l'offre sont enregistrés, il ne manque que le
-      // justificatif, et l'on emmène la personne là où elle le dépose.
-      try {
-        await submitTrip(trip.id, attestation.version);
-      } catch (error) {
-        if (!estPreuveManquante(error)) {
-          throw error;
-        }
+      let tripId = progress.tripId;
+      if (!tripId) {
+        const trip = await declareTrip(toSegmentDrafts(flights));
+        tripId = trip.id;
+        setProgress((current) => ({ ...current, tripId }));
       }
 
-      // Publier rend l'offre visible des expéditeurs, et le serveur
-      // l'exige vérifiée. Tant que le voyage attend son examen, l'échec
-      // est **attendu** : l'offre reste en brouillon, prête, et sera
-      // publiée quand le dossier sera validé. Le signaler comme une
-      // erreur ferait croire à un échec sur un parcours qui a abouti.
-      await publishCapacity(capacite.id).catch(() => undefined);
+      if (!progress.proofUploaded) {
+        await uploadProof(tripId, proof.kind, proof.file);
+        setProgress((current) => ({ ...current, proofUploaded: true }));
+      }
 
-      router.push(`/trips/${trip.id}`);
+      if (!progress.capacityCreated) {
+        await offerCapacity(tripId, {
+          totalWeightKg: Number.parseFloat(weight.replace(",", ".")),
+          currency: DEVISE,
+          offers: choisies.map((category) => ({
+            categoryCode: category.code,
+            priceMinor: toMinorUnits(prices[category.code] ?? "") ?? 0,
+          })),
+          notes: null,
+        });
+        setProgress((current) => ({ ...current, capacityCreated: true }));
+      }
+
+      await submitTrip(tripId, attestation.version);
+      router.push(`/compte/trajets?nouveau=${tripId}`);
     } catch (error) {
       setErrors({
         global:
@@ -213,13 +196,13 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
     }
   }
 
-  const retour = step > 1 ? () => setStep(step - 1) : undefined;
+  const retour = step > 1 && progress.tripId === null ? () => setStep(step - 1) : undefined;
 
-  if (step === 1 || !flight) {
+  if (step === 1 || flights.length === 0) {
     return (
       <FlightStep
-        onConfirmed={(choix) => {
-          setFlight(choix);
+        onConfirmed={(itinerary) => {
+          setFlights(itinerary);
           setStep(2);
         }}
       />
@@ -312,14 +295,14 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
     <WizardShell
       step={5}
       total={TOTAL_STEPS}
-      title="Vérifiez et publiez"
-      hint="Voici ce que verront les expéditeurs."
+      title="Confirmez votre voyage"
+      hint="Une dernière vérification avant de confier votre dossier à l'équipe Zoumani."
       onBack={retour}
       cta={{
-        label: "Publier mon voyage",
-        disabled: !attestation.accepted,
+        label: "Envoyer à la vérification",
+        disabled: !attestation.accepted || proof.file === null,
         busy: isSubmitting,
-        onClick: publier,
+        onClick: transmettre,
       }}
       footnote={
         errors.global ? (
@@ -330,34 +313,17 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
       }
     >
       <StepReview
-        origin={flight.origin}
-        destination={flight.destination}
-        airlineCode={flight.airlineCode}
-        flightNumber={flight.flightNumber}
-        lookup={flight.lookup}
+        flights={flights}
         weightKg={weight}
         categories={choisies}
         prices={prices}
+        proof={proof}
+        onProofChange={setProof}
         attestation={attestation}
         onAttestationChange={(accepted, version) => setAttestation({ accepted, version })}
-        error={errors.attestation}
+        error={errors.proof ?? errors.attestation}
       />
     </WizardShell>
-  );
-}
-
-/**
- * L'API dit-elle qu'il manque seulement le billet ?
- *
- * On teste la **raison** stable et non le message : celui-ci est rédigé
- * pour un humain et changera, quand la raison fait partie du contrat.
- */
-function estPreuveManquante(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "reason" in error &&
-    (error as { reason?: string }).reason === "trip_proof_required"
   );
 }
 

@@ -425,6 +425,7 @@ export async function updateCapacity(
         category_code: offer.categoryCode,
         price_minor: offer.priceMinor,
       })),
+      accepts_pickup: draft.acceptsPickup ?? false,
       notes: draft.notes ?? null,
     }),
   });
@@ -494,11 +495,17 @@ export async function updateShipment(
   shipmentId: string,
   lines: DeclaredLineInput[],
   handover: HandoverMethod = "in_person",
+  relay: { pointCode: string; carrierCode: string } | null = null,
 ): Promise<ShipmentSummary> {
   const response = await fetch(`${PROXY}/shipments/${shipmentId}`, {
     method: "PATCH",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ lines: lines.map(toRawLine), handover }),
+    body: JSON.stringify({
+      lines: lines.map(toRawLine),
+      handover,
+      service_point_code: relay?.pointCode ?? null,
+      carrier_code: relay?.carrierCode ?? null,
+    }),
   });
   return toShipment((await unwrap(response)) as RawShipment);
 }
@@ -515,6 +522,22 @@ export async function submitShipment(shipmentId: string): Promise<ShipmentSummar
 export async function listMyShipments(): Promise<ShipmentSummary[]> {
   const response = await fetch(`${PROXY}/shipments`, { cache: "no-store" });
   return ((await unwrap(response)) as RawShipment[]).map(toShipment);
+}
+
+/** Une expédition de l'expéditeur connecté. */
+export async function getShipment(shipmentId: string): Promise<ShipmentSummary> {
+  const response = await fetch(`${PROXY}/shipments/${shipmentId}`, {
+    cache: "no-store",
+  });
+  return toShipment((await unwrap(response)) as RawShipment);
+}
+
+/** Abandonne une demande tant qu'aucun paiement ne l'a confirmée. */
+export async function cancelShipment(shipmentId: string): Promise<ShipmentSummary> {
+  const response = await fetch(`${PROXY}/shipments/${shipmentId}/cancellation`, {
+    method: "POST",
+  });
+  return toShipment((await unwrap(response)) as RawShipment);
 }
 
 function toRawLine(line: DeclaredLineInput) {

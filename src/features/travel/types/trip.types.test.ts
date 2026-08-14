@@ -115,6 +115,13 @@ describe("le programme de fidélité", () => {
       },
     ],
     all_tiers: [],
+    earning_rules: {
+      trip_verified: 50,
+      capacity_published: 25,
+      delivery_completed: 100,
+      commitment_broken: -250,
+      manual_adjustment: 0,
+    },
   };
 
   it("garde le reste à parcourir tel que le serveur le calcule", () => {
@@ -122,6 +129,7 @@ describe("le programme de fidélité", () => {
     // Le recalculer côté client donnerait deux chiffres pour un seul fait.
     expect(toRewards(brut).pointsToNext).toBe(120);
     expect(toRewards(brut).progress).toBe(0.76);
+    expect(toRewards(brut).earningRules.delivery_completed).toBe(100);
   });
 
   it("distingue un gain d'une perte dans l'historique", () => {
@@ -145,7 +153,7 @@ describe("la recherche d'un expéditeur", () => {
   const brut: RawCapacityMatch = {
     capacity_id: "c1",
     trip_id: "t1",
-    traveler: { display_name: "Aïcha D.", photo_url: null },
+    traveler: { display_name: "Aïcha D.", photo_url: null, reward_points: 575 },
     origin: "CDG",
     origin_city: "Paris",
     origin_country: "FR",
@@ -166,7 +174,12 @@ describe("la recherche d'un expéditeur", () => {
     const match = toCapacityMatch(brut);
 
     expect(match.traveler.displayName).toBe("Aïcha D.");
-    expect(Object.keys(match.traveler)).toEqual(["displayName", "photoUrl"]);
+    expect(Object.keys(match.traveler)).toEqual([
+      "displayName",
+      "photoUrl",
+      "rewardPoints",
+    ]);
+    expect(match.traveler.rewardPoints).toBe(575);
   });
 
   it("accepte une distance absente sans se casser", () => {

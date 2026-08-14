@@ -44,11 +44,15 @@ export default async function Page({
 
   if (!origin || !destination) {
     return (
-      <SearchPageShell connected={connected}>
+      <SearchPageShell
+        connected={connected}
+        criteria={{ origin, destination, categories }}
+      >
         <SearchResultsView
           matches={[]}
           criteria={{ origin, destination, categories }}
           labels={{}}
+          connected={connected}
         />
       </SearchPageShell>
     );
@@ -75,7 +79,10 @@ export default async function Page({
   );
 
   return (
-    <SearchPageShell connected={connected}>
+    <SearchPageShell
+      connected={connected}
+      criteria={{ origin, destination, categories }}
+    >
       <SearchResultsView
         matches={
           resultats.status === 200
@@ -84,6 +91,7 @@ export default async function Page({
         }
         criteria={{ origin, destination, categories }}
         labels={labels}
+        connected={connected}
       />
     </SearchPageShell>
   );

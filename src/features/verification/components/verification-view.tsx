@@ -4,9 +4,12 @@ import {
   AlertCircle,
   ArrowRight,
   BadgeCheck,
+  CheckCircle2,
   Clock,
+  EyeOff,
   LoaderCircle,
   Lock,
+  ScanFace,
   ShieldAlert,
 } from "lucide-react";
 import type { Route } from "next";
@@ -31,6 +34,7 @@ import { CountrySelect } from "@/features/auth/components/country-select";
 
 import { CorrectionsView } from "./corrections-view";
 import { FileField } from "./file-field";
+import styles from "./verification-view.module.css";
 
 /**
  * Le parcours de vérification, en un écran qui change avec l'état.
@@ -60,16 +64,26 @@ export function VerificationView({
 }) {
   const copy = verificationContent[language];
   const stage = verification?.stage ?? "absent";
+  let content: React.ReactNode;
 
   // Avant tout le reste : c'est le seul état où le dossier est bloqué
   // **des deux côtés**, et où quelques minutes de la personne le
   // débloquent. Le montrer après l'attente ou le refus le noierait.
-  if (stage === "a_corriger" && requests.some((request) => !request.answered)) {
-    return <CorrectionsView copy={copy} requests={requests} />;
-  }
-
-  if (stage === "verifie") {
-    return (
+  if (
+    stage === "a_corriger" &&
+    verification &&
+    requests.some((request) => !request.answered)
+  ) {
+    content = (
+      <CorrectionsView
+        copy={copy}
+        requests={requests}
+        verification={verification}
+        language={language}
+      />
+    );
+  } else if (stage === "verifie") {
+    content = (
       <Etat
         icon={<BadgeCheck className="size-6" aria-hidden="true" />}
         tone="text-success bg-success/10"
@@ -78,10 +92,8 @@ export function VerificationView({
         action={{ href: "/compte" as Route, label: copy.verified.action }}
       />
     );
-  }
-
-  if (stage === "en_cours") {
-    return (
+  } else if (stage === "en_cours") {
+    content = (
       <Etat
         icon={<Clock className="size-6" aria-hidden="true" />}
         tone="text-warning bg-warning/10"
@@ -91,15 +103,42 @@ export function VerificationView({
         {verification ? <Recapitulatif copy={copy} verification={verification} /> : null}
       </Etat>
     );
+  } else {
+    content = (
+      <Formulaire
+        copy={copy}
+        verification={verification}
+        refuse={stage === "refuse"}
+        language={language}
+      />
+    );
   }
 
   return (
-    <Formulaire
-      copy={copy}
-      verification={verification}
-      refuse={stage === "refuse"}
-      language={language}
-    />
+    <div className={styles.scene}>
+      <aside className={styles.story}>
+        <div className={styles.storyContent}>
+          <p className={styles.eyebrow}>{copy.experience.eyebrow}</p>
+          <h1 className={styles.storyTitle}>{copy.experience.title}</h1>
+          <p className={styles.storyText}>{copy.experience.body}</p>
+        </div>
+        <ul className={styles.trustList}>
+          <li>
+            <EyeOff size={17} aria-hidden="true" />
+            {copy.experience.promises[0]}
+          </li>
+          <li>
+            <ScanFace size={17} aria-hidden="true" />
+            {copy.experience.promises[1]}
+          </li>
+          <li>
+            <CheckCircle2 size={17} aria-hidden="true" />
+            {copy.experience.promises[2]}
+          </li>
+        </ul>
+      </aside>
+      <div className={styles.workspace}>{content}</div>
+    </div>
   );
 }
 
@@ -185,7 +224,7 @@ function Formulaire({
   }
 
   return (
-    <form onSubmit={envoyer} noValidate className="mx-auto w-full max-w-xl">
+    <form onSubmit={envoyer} noValidate className="w-full">
       <header className="mb-3 sm:mb-4">
         <p className="text-xs font-semibold tracking-wide text-primary uppercase">
           {temps} {copy.steps.of} 2 ·{" "}
@@ -217,8 +256,13 @@ function Formulaire({
         )}
       </header>
 
+      <div className={styles.stepRail} aria-hidden="true">
+        <span className={styles.step} data-active="true" />
+        <span className={styles.step} data-active={temps === 2} />
+      </div>
+
       {temps === 1 ? (
-        <section className="panel-surface space-y-2.5 p-3 sm:p-5">
+        <section className={`${styles.formPanel} space-y-2.5`}>
           <div className="grid grid-cols-2 gap-3">
             <Champ label={copy.identity.firstName}>
               <Input
@@ -290,7 +334,7 @@ function Formulaire({
           </button>
         </section>
       ) : (
-        <section className="panel-surface space-y-2.5 p-3 sm:p-5">
+        <section className={`${styles.formPanel} space-y-2.5`}>
           <div className="grid gap-3 sm:grid-cols-2">
             <Champ label={copy.document.type}>
               <Select
@@ -442,9 +486,9 @@ function Etat({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto w-full max-w-2xl">
-      <div className="panel-surface p-6 sm:p-8">
-        <span className={`grid size-12 place-items-center rounded-xl ${tone}`}>
+    <div className="w-full">
+      <div className={styles.stateCard}>
+        <span className={`${styles.stateIcon} ${tone}`}>
           {icon}
         </span>
         <h1 className="mt-4 font-display text-2xl text-foreground sm:text-3xl">
@@ -489,7 +533,7 @@ function Recapitulatif({
   ].filter(([, valeur]) => valeur);
 
   return (
-    <section className="panel-surface mt-4 p-5">
+    <section className={`${styles.requestCard} mt-4`}>
       <h2 className="mb-3 text-sm font-bold">{copy.pending.recap}</h2>
       <dl className="space-y-2 text-sm">
         {lignes.map(([label, valeur]) => (

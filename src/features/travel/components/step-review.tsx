@@ -1,17 +1,18 @@
 "use client";
 
-import type { Airport, FlightLookup, ParcelCategory } from "../types/travel.types";
+import type { ProofKind } from "../types/trip.types";
+import type { ParcelCategory } from "../types/travel.types";
 import { AttestationField } from "./attestation-field";
+import type { FlightChoice } from "./flight-step";
+import { ProofPicker } from "./proof-picker";
 
 interface StepReviewProps {
-  origin: Airport;
-  destination: Airport;
-  airlineCode: string;
-  flightNumber: string;
-  lookup: FlightLookup;
+  flights: FlightChoice[];
   weightKg: string;
   categories: ParcelCategory[];
   prices: Record<string, string>;
+  proof: { kind: ProofKind; file: File | null };
+  onProofChange: (proof: { kind: ProofKind; file: File | null }) => void;
   attestation: { accepted: boolean; version: string };
   onAttestationChange: (accepted: boolean, version: string) => void;
   error?: string;
@@ -37,19 +38,19 @@ interface StepReviewProps {
  * allongeaient la page sans être lues.
  */
 export function StepReview({
-  origin,
-  destination,
-  airlineCode,
-  flightNumber,
-  lookup,
+  flights,
   weightKg,
   categories,
   prices,
+  proof,
+  onProofChange,
   attestation,
   onAttestationChange,
   error,
 }: StepReviewProps) {
   const engageantes = categories.filter((c) => c.requiresTravelerConsent);
+  const origin = flights[0].origin;
+  const destination = flights.at(-1)?.destination ?? flights[0].destination;
 
   return (
     <div className="space-y-4">
@@ -63,26 +64,35 @@ export function StepReview({
           {origin.city} → {destination.city}
         </p>
 
-        <dl className="mt-3 space-y-1.5 border-t border-border pt-3 text-sm">
-          <div className="flex justify-between gap-4">
-            <dt className="text-muted-foreground">Vol</dt>
-            <dd className="font-medium">
-              {lookup.schedule?.flightDesignator ?? `${airlineCode}${flightNumber}`}
-            </dd>
-          </div>
-          {lookup.schedule && (
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Départ</dt>
-              <dd className="font-medium">{formatUtc(lookup.schedule.departureAt)}</dd>
+        <dl className="mt-3 space-y-2 border-t border-border pt-3 text-sm">
+          {flights.map((flight, index) => (
+            <div
+              key={`${flight.airlineCode}-${flight.flightNumber}-${index}`}
+              className="flex items-start justify-between gap-4"
+            >
+              <dt className="text-muted-foreground">
+                {flight.origin.iata} → {flight.destination.iata}
+              </dt>
+              <dd className="text-right font-medium">
+                <span className="block">
+                  {flight.lookup.schedule?.flightDesignator ??
+                    `${flight.airlineCode}${flight.flightNumber}`}
+                </span>
+                {flight.lookup.schedule && (
+                  <span className="block text-xs font-normal text-muted-foreground">
+                    {formatUtc(flight.lookup.schedule.departureAt)}
+                  </span>
+                )}
+              </dd>
             </div>
-          )}
+          ))}
           <div className="flex justify-between gap-4">
             <dt className="text-muted-foreground">Place proposée</dt>
             <dd className="font-medium">{weightKg} kg</dd>
           </div>
         </dl>
 
-        {lookup.outcome === "unavailable" && (
+        {flights.some((flight) => flight.lookup.outcome === "unavailable") && (
           <p className="mt-3 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-muted-foreground">
             Nous n&apos;avons pas pu confirmer ce vol automatiquement. Votre voyage sera
             examiné par notre équipe — ce n&apos;est pas un refus.
@@ -120,6 +130,27 @@ export function StepReview({
           </ul>
         </section>
       )}
+
+      <section className="overflow-hidden rounded-2xl border border-border bg-surface">
+        <div className="border-b border-border bg-inverse-surface px-4 py-4 text-inverse-foreground">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
+            Passeport de confiance
+          </p>
+          <h2 className="mt-1 text-lg font-semibold">Prouvez ce voyage une seule fois</h2>
+          <p className="mt-1 text-sm leading-relaxed text-inverse-muted-foreground">
+            Votre document reste privé. Il permet à Zoumani de confirmer votre présence
+            sur le vol avant qu&apos;une famille vous confie son colis.
+          </p>
+        </div>
+        <div className="p-4">
+          <ProofPicker
+            kind={proof.kind}
+            file={proof.file}
+            onKindChange={(kind) => onProofChange({ ...proof, kind })}
+            onFileChange={(file) => onProofChange({ ...proof, file })}
+          />
+        </div>
+      </section>
 
       <AttestationField accepted={attestation.accepted} onChange={onAttestationChange} />
 

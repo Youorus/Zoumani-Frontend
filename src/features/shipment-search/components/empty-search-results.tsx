@@ -25,6 +25,7 @@ import {
   type AvailabilityAlertInput,
 } from "../schemas/availability-alert.schema";
 import type { TripSearchFilters } from "../schemas/trip-search.schema";
+import { getSearchCity } from "../data/search-cities";
 import styles from "./shipment-search.module.css";
 
 export function EmptySearchResults({
@@ -72,9 +73,17 @@ export function EmptySearchResults({
 
           <form
             className={styles.formGrid}
-            onSubmit={handleSubmit((values) =>
-              alert.mutate({ ...values, search: filters }),
-            )}
+            onSubmit={handleSubmit((values) => {
+              const origin = airportCode(filters.from);
+              const destination = airportCode(filters.to);
+              alert.mutate({
+                ...values,
+                origin,
+                destination,
+                categories: [],
+                language,
+              });
+            })}
             noValidate
           >
             <div className={styles.field}>
@@ -164,4 +173,8 @@ export function EmptySearchResults({
       </aside>
     </div>
   );
+}
+
+function airportCode(cityValue: string): string {
+  return getSearchCity(cityValue)?.airport.match(/[A-Z]{3}$/)?.[0] ?? cityValue.toUpperCase();
 }

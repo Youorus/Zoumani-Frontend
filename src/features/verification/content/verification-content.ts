@@ -21,6 +21,17 @@ const fr = {
   intro:
     "Un colis et un paiement changent de mains sur Zoumani. Savoir qui est en face est ce qui rend cela possible — pour vous comme pour la personne d'en face.",
 
+  experience: {
+    eyebrow: "Le passeport de confiance",
+    title: "La confiance commence par un visage, pas par un numéro.",
+    body: "Derrière chaque colis, il y a une mère, un frère, une amie qui attend. Votre identité vérifiée permet à chacun de savoir avec qui il avance.",
+    promises: [
+      "Documents gardés dans un espace privé",
+      "Examen humain par une équipe habilitée",
+      "Badge vérifié visible, pièces toujours invisibles",
+    ],
+  },
+
   privacy: {
     title: "Ce que devient votre document",
     points: [
@@ -60,7 +71,7 @@ const fr = {
     type: "Nature de la pièce",
     types: {
       passport: "Passeport",
-      national_id: "Carte d'identité",
+      national_id_card: "Carte d'identité",
       residence_permit: "Titre de séjour",
     },
     front: "Recto",
@@ -104,6 +115,11 @@ const fr = {
     newFile: "Le nouveau fichier",
     answer: "Votre réponse",
     answerPlaceholder: "Facultatif — précisez si besoin.",
+    answerRequired: "Cette précision est nécessaire pour poursuivre.",
+    answerOptional: "Facultatif : ajoutez un mot si cela peut aider l'équipe.",
+    item: "point à corriger",
+    items: "points à corriger",
+    kept: "Tout le reste de votre dossier est conservé.",
     submit: "Renvoyer mon dossier",
   },
 
@@ -119,6 +135,8 @@ const fr = {
     missingSelfie: "Ajoutez une photo de vous tenant votre pièce.",
     missingBack: "Le verso est nécessaire pour cette pièce.",
     missingIssuer: "Indiquez le pays qui a délivré votre pièce.",
+    missingExpiry: "Indiquez la date d'expiration de votre pièce.",
+    missingAnswer: "Ajoutez la précision demandée avant de continuer.",
     generic: "Une erreur est survenue. Réessayez.",
   },
 };
@@ -127,6 +145,17 @@ const en: typeof fr = {
   title: "Verify your identity",
   intro:
     "A parcel and a payment change hands on Zoumani. Knowing who is on the other side is what makes that possible — for you as much as for them.",
+
+  experience: {
+    eyebrow: "Your trust passport",
+    title: "Trust starts with a face, not an account number.",
+    body: "Behind every parcel is a mother, a brother or a friend waiting. A verified identity helps everyone know who they are moving forward with.",
+    promises: [
+      "Documents kept in private storage",
+      "Human review by an authorised team",
+      "A public verified badge, documents always private",
+    ],
+  },
 
   privacy: {
     title: "What happens to your document",
@@ -167,7 +196,7 @@ const en: typeof fr = {
     type: "Type of document",
     types: {
       passport: "Passport",
-      national_id: "National ID card",
+      national_id_card: "National ID card",
       residence_permit: "Residence permit",
     },
     front: "Front",
@@ -210,6 +239,11 @@ const en: typeof fr = {
     newFile: "The new file",
     answer: "Your answer",
     answerPlaceholder: "Optional — add a note if useful.",
+    answerRequired: "This detail is required before we can continue.",
+    answerOptional: "Optional: add a note if it can help our team.",
+    item: "item to update",
+    items: "items to update",
+    kept: "Everything else in your file is safely kept.",
     submit: "Send my file back",
   },
 
@@ -225,6 +259,8 @@ const en: typeof fr = {
     missingSelfie: "Add a photo of you holding your document.",
     missingBack: "The back is required for this document.",
     missingIssuer: "Tell us which country issued your document.",
+    missingExpiry: "Add the expiry date shown on your document.",
+    missingAnswer: "Add the requested information before continuing.",
     generic: "Something went wrong. Please try again.",
   },
 };

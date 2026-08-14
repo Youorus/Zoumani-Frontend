@@ -20,6 +20,21 @@ import { AuthError } from "@/lib/auth/auth-client";
 
 const BASE = "/api/proxy/admin/identity-verifications";
 
+export type AdminVerificationStatus =
+  | "submitted"
+  | "under_review"
+  | "action_required"
+  | "resubmitted"
+  | "verified"
+  | "rejected";
+
+export type AdminRequestKind =
+  | "replace_document"
+  | "add_document"
+  | "retake_selfie"
+  | "provide_information"
+  | "correct_information";
+
 async function unwrap(response: Response): Promise<unknown> {
   const payload = (await response.json().catch(() => null)) as {
     error?: { message?: string; details?: { reason?: string } };
@@ -43,12 +58,15 @@ export interface AdminDocument {
   expires_on: string | null;
   front_url: string;
   back_url: string | null;
+  rejection_reason: string | null;
+  version: number;
+  replaces_id: string | null;
 }
 
 export interface AdminVerification {
   id: string;
   user_id: string;
-  status: string;
+  status: AdminVerificationStatus;
   legal_first_name: string | null;
   legal_last_name: string | null;
   date_of_birth: string | null;
@@ -62,7 +80,27 @@ export interface AdminVerification {
 export interface AdminDetail {
   verification: AdminVerification;
   documents: AdminDocument[];
-  requests: { id: string; kind: string; message: string; responded_at: string | null }[];
+  requests: AdminRequest[];
+  events: AdminEvent[];
+}
+
+export interface AdminRequest {
+  id: string;
+  kind: AdminRequestKind;
+  status: "pending" | "answered" | "resolved" | "cancelled";
+  message: string;
+  document_id: string | null;
+  user_response: string | null;
+  created_at: string;
+  responded_at: string | null;
+}
+
+export interface AdminEvent {
+  id: string;
+  kind: string;
+  occurred_at: string;
+  previous_status: string | null;
+  new_status: string | null;
 }
 
 /** La file d'examen, filtrée par statut. */
@@ -76,9 +114,15 @@ export async function listVerifications(status?: string): Promise<AdminVerificat
 
 /** Un dossier complet : ses informations, ses pièces, ses échanges. */
 export async function getVerification(id: string): Promise<AdminDetail> {
-  return (await unwrap(
-    await fetch(`${BASE}/${id}`, { cache: "no-store" }),
-  )) as AdminDetail;
+  const [detail, events] = await Promise.all([
+    unwrap(await fetch(`${BASE}/${id}`, { cache: "no-store" })) as Promise<
+      Omit<AdminDetail, "events">
+    >,
+    unwrap(await fetch(`${BASE}/${id}/events`, { cache: "no-store" })) as Promise<
+      AdminEvent[]
+    >,
+  ]);
+  return { ...detail, events };
 }
 
 /**
@@ -132,14 +176,19 @@ export async function reject(id: string, reason: string): Promise<void> {
 /** Demande une correction précise sans refuser le dossier. */
 export async function requestAction(
   id: string,
-  kind: string,
+  kind: AdminRequestKind,
   message: string,
+  documentId?: string,
 ): Promise<void> {
   await unwrap(
     await fetch(`${BASE}/${id}/request-action`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ kind, message }),
+      body: JSON.stringify({
+        kind,
+        message,
+        ...(documentId ? { document_id: documentId } : {}),
+      }),
     }),
   );
 }

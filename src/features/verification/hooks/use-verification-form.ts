@@ -13,8 +13,9 @@ import {
   type IdentityDraft,
 } from "../api/verification-client";
 import type { Verification } from "../types/verification.types";
+import type { IdentityDocumentType } from "../types/verification.types";
 
-export type DocumentType = "passport" | "national_id" | "residence_permit";
+export type DocumentType = IdentityDocumentType;
 
 export interface VerificationFiles {
   documentType: DocumentType;

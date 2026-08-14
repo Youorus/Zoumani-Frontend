@@ -28,10 +28,13 @@ export function HomeFooter({
   copy,
   language,
   whatsapp,
+  routeHomeAnchors = false,
 }: {
   copy: HomeContent["footer"];
   language: HomeLanguage;
   whatsapp: HomeContent["whatsapp"];
+  /** Depuis une page interne, les ancres du footer visent l'accueil. */
+  routeHomeAnchors?: boolean;
 }) {
   return (
     <footer id="help" className={styles.footer} aria-labelledby="footer-title">
@@ -44,7 +47,10 @@ export function HomeFooter({
             <p className={styles.calloutDescription}>{copy.description}</p>
           </div>
           <div className={styles.actions}>
-            <Link className={`${styles.action} focus-ring`} href="#search">
+            <Link
+              className={`${styles.action} focus-ring`}
+              href={routeHomeAnchors ? "/#search" : "#search"}
+            >
               <Box size={18} aria-hidden="true" />
               {copy.senderCta}
               <ArrowRight size={18} aria-hidden="true" />
@@ -76,6 +82,8 @@ export function HomeFooter({
                       href={
                         link.href === "/signup"
                           ? buildSignupHref("traveler", language)
+                          : routeHomeAnchors && link.href.startsWith("#")
+                            ? `/${link.href}`
                           : link.href
                       }
                     >

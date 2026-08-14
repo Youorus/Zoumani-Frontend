@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LogIn } from "lucide-react";
 
 import { ZoumaniLogo } from "@/components/shared/zoumani-logo";
 
@@ -27,10 +28,10 @@ export function SiteHeader({ connected }: SiteHeaderProps) {
     <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-[1492px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-12">
         <Link href="/" aria-label="Zoumani, accueil" className="focus-ring rounded-xl">
-          <ZoumaniLogo />
+          <ZoumaniLogo className="text-[1.8rem] sm:text-[2.4rem]" />
         </Link>
 
-        <nav aria-label="Navigation" className="flex items-center gap-2">
+        <nav aria-label="Navigation" className="flex items-center gap-1.5 sm:gap-2">
           {connected ? (
             <>
               <Link
@@ -50,13 +51,14 @@ export function SiteHeader({ connected }: SiteHeaderProps) {
             <>
               <Link
                 href="/connexion"
-                className="focus-ring rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="focus-ring grid size-10 place-items-center rounded-xl text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:flex sm:size-auto sm:px-3 sm:py-2"
               >
-                Se connecter
+                <LogIn className="size-4 sm:hidden" aria-hidden />
+                <span className="sr-only sm:not-sr-only">Se connecter</span>
               </Link>
               <Link
                 href="/signup"
-                className="focus-ring rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
+                className="focus-ring whitespace-nowrap rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground sm:px-4 sm:text-sm"
               >
                 Créer un compte
               </Link>

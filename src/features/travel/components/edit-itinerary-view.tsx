@@ -3,143 +3,94 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { DateField } from "@/components/ui/date-field";
-
-import { findAirportByCode, lookupFlight, updateItinerary } from "../api/travel-client";
-import type { Airline, Airport, FlightLookup } from "../types/travel.types";
+import { findAirportByCode, updateItinerary } from "../api/travel-client";
 import type { Trip } from "../types/trip.types";
-import { AirlineField } from "./airline-field";
-import { AirportField } from "./airport-field";
+import {
+  FlightStep,
+  toSegmentDrafts,
+  type FlightChoice,
+} from "./flight-step";
 
 interface EditItineraryViewProps {
   trip: Trip;
 }
 
 /**
- * La correction d'un itinéraire déjà déclaré.
+ * Modifie l'itinéraire entier, escales comprises.
  *
- * ═══ Le vol est revérifié, toujours ═══
- *
- * Changer une date ou un numéro sans reconsulter la compagnie
- * laisserait l'ancien horaire en base : le voyage afficherait un départ
- * qui n'a plus lieu, et le délai de remise opposable à un expéditeur
- * serait faux. La confirmation est donc exigée avant l'enregistrement,
- * exactement comme à la création.
- *
- * ═══ Pourquoi l'écran n'est pas le formulaire de création ═══
- *
- * Créer, c'est répondre à des questions dans l'ordre ; corriger, c'est
- * retrouver ce qu'on a écrit et changer une chose. Un assistant en cinq
- * étapes pour modifier une date ferait retraverser quatre écrans déjà
- * remplis. Tout est donc sur un seul écran, pré-rempli.
- *
- * ═══ Vol direct seulement ═══
- *
- * L'API accepte jusqu'à six segments ; cet écran n'en modifie qu'un. Un
- * itinéraire à escales déclaré autrement reste intact — la vue prévient
- * plutôt que d'écraser ce qu'elle ne sait pas éditer.
+ * Création et correction partagent volontairement le même constructeur :
+ * mêmes suggestions Zoumani, même validation des vols et un seul contrat
+ * de traduction vers l'API. Une correction ne peut donc pas produire un
+ * voyage que l'écran de création aurait refusé.
  */
 export function EditItineraryView({ trip }: EditItineraryViewProps) {
   const router = useRouter();
-  const segment = trip.segments[0];
-
-  const [origin, setOrigin] = useState<Airport | null>(null);
-  const [destination, setDestination] = useState<Airport | null>(null);
-  const [airline, setAirline] = useState<Airline | null>(null);
-  const [airlineFallback, setAirlineFallback] = useState(segment?.airlineCode ?? "");
-  const [flightNumber, setFlightNumber] = useState(segment?.flightNumber ?? "");
-  const [departureDate, setDepartureDate] = useState(
-    segment?.departureAt.slice(0, 10) ?? "",
-  );
-  const [lookup, setLookup] = useState<FlightLookup | null>(null);
-  const [isChecking, setIsChecking] = useState(false);
+  const [initialFlights, setInitialFlights] = useState<FlightChoice[] | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
 
-  // Les aéroports arrivent en codes ; on les résout pour afficher la
-  // ville. Sans cela, l'écran de correction serait moins lisible que
-  // celui de création — on ne verrait que « CDG ».
   useEffect(() => {
-    let vivant = true;
-    if (!segment) {
+    if (!trip.isEditable) {
       return;
     }
-    void Promise.all([
-      findAirportByCode(segment.originAirportCode),
-      findAirportByCode(segment.destinationAirportCode),
-    ]).then(([depart, arrivee]) => {
-      if (!vivant) {
-        return;
-      }
-      setOrigin(depart);
-      setDestination(arrivee);
-    });
+    let active = true;
+
+    void Promise.all(
+      trip.segments.map(async (segment) => {
+        const [origin, destination] = await Promise.all([
+          findAirportByCode(segment.originAirportCode),
+          findAirportByCode(segment.destinationAirportCode),
+        ]);
+        if (!origin || !destination) {
+          throw new Error("Un aéroport de cet itinéraire n'est plus disponible.");
+        }
+        return {
+          origin,
+          destination,
+          airlineCode: segment.airlineCode,
+          flightNumber: segment.flightNumber,
+          departureDate: segment.departureAt.slice(0, 10),
+          lookup: {
+            outcome: "confirmed" as const,
+            schedule: {
+              departureAt: segment.departureAt,
+              arrivalAt: segment.arrivalAt,
+              flightDesignator: `${segment.airlineCode}${segment.flightNumber}`,
+            },
+          },
+        };
+      }),
+    )
+      .then((flights) => {
+        if (active) {
+          setInitialFlights(flights);
+        }
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setFailure(
+            error instanceof Error
+              ? error.message
+              : "L'itinéraire n'a pas pu être chargé.",
+          );
+        }
+      });
+
     return () => {
-      vivant = false;
+      active = false;
     };
-  }, [segment]);
+  }, [trip.isEditable, trip.segments]);
 
   if (!trip.isEditable) {
     return <NonModifiable />;
   }
-  if (trip.segments.length > 1) {
-    return <TropDeSegments />;
-  }
 
-  const codeCompagnie = (airline?.iata ?? airlineFallback).trim().toUpperCase();
-  const dansLePasse =
-    departureDate !== "" && departureDate < new Date().toISOString().slice(0, 10);
-  const complet =
-    origin !== null &&
-    destination !== null &&
-    codeCompagnie.length >= 2 &&
-    flightNumber.trim().length >= 1 &&
-    departureDate !== "" &&
-    !dansLePasse &&
-    origin.iata !== destination.iata;
-
-  async function verifier() {
-    if (!complet || !origin || !destination) {
-      return;
-    }
-    setIsChecking(true);
-    setFailure(null);
-    try {
-      setLookup(
-        await lookupFlight({
-          airlineCode: codeCompagnie,
-          flightNumber: flightNumber.trim(),
-          departureDate,
-          origin: origin.iata,
-          destination: destination.iata,
-        }),
-      );
-    } catch {
-      setLookup({ outcome: "unavailable", schedule: null });
-    } finally {
-      setIsChecking(false);
-    }
-  }
-
-  async function enregistrer() {
-    if (!lookup || !origin || !destination) {
-      return;
-    }
+  async function save(flights: FlightChoice[]) {
     setIsSaving(true);
     setFailure(null);
     try {
-      await updateItinerary(trip.id, [
-        {
-          segmentOrder: 1,
-          airlineCode: codeCompagnie,
-          flightNumber: flightNumber.trim(),
-          originAirportCode: origin.iata,
-          destinationAirportCode: destination.iata,
-          departureAt: lookup.schedule?.departureAt ?? `${departureDate}T12:00:00Z`,
-          arrivalAt: lookup.schedule?.arrivalAt ?? `${departureDate}T18:00:00Z`,
-        },
-      ]);
-      router.push("/compte/trajets");
+      await updateItinerary(trip.id, toSegmentDrafts(flights));
+      router.push(`/trips/${trip.id}`);
       router.refresh();
     } catch (error) {
       setFailure(
@@ -149,198 +100,75 @@ export function EditItineraryView({ trip }: EditItineraryViewProps) {
     }
   }
 
-  function invalider() {
-    // Toute modification périme la confirmation précédente : garder
-    // l'ancien verdict laisserait enregistrer un horaire qui ne
-    // correspond plus au vol saisi.
-    setLookup(null);
+  if (failure && initialFlights === null) {
+    return (
+      <div className="mx-auto max-w-xl px-5 py-16 text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
+          Itinéraire indisponible
+        </p>
+        <h1 className="mt-3 text-2xl font-semibold">Nous n&apos;avons pas pu ouvrir ce voyage</h1>
+        <p className="mt-3 text-sm text-muted-foreground">{failure}</p>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="mt-6 rounded-full bg-primary px-5 py-3 font-semibold text-primary-foreground"
+        >
+          Revenir au voyage
+        </button>
+      </div>
+    );
+  }
+
+  if (initialFlights === null) {
+    return <ItineraryLoading />;
   }
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-5 p-4 sm:p-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Modifier mon vol</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Nous reconfirmons le vol auprès de la compagnie avant d&apos;enregistrer.
-        </p>
-      </header>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <AirportField
-          label="Aéroport de départ"
-          placeholder="Ville, aéroport ou code"
-          value={origin}
-          onChange={(airport) => {
-            setOrigin(airport);
-            invalider();
-          }}
-        />
-        <AirportField
-          label="Aéroport d'arrivée"
-          placeholder="Ville, aéroport ou code"
-          value={destination}
-          onChange={(airport) => {
-            setDestination(airport);
-            invalider();
-          }}
-          error={
-            origin && origin.iata === destination?.iata
-              ? "Le départ et l'arrivée sont identiques."
-              : undefined
-          }
-        />
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <AirlineField
-          value={airline}
-          onChange={(choisie) => {
-            setAirline(choisie);
-            invalider();
-          }}
-          fallbackCode={airlineFallback}
-          onFallbackChange={(code) => {
-            setAirlineFallback(code);
-            setAirline(null);
-            invalider();
-          }}
-        />
-        <div>
-          <label className="mb-1.5 block text-sm font-medium" htmlFor="flight">
-            Numéro de vol
-          </label>
-          <input
-            id="flight"
-            value={flightNumber}
-            maxLength={5}
-            inputMode="numeric"
-            onChange={(event) => {
-              setFlightNumber(event.target.value.replace(/\D/g, ""));
-              invalider();
-            }}
-            className="w-full rounded-lg border border-border bg-background px-3 py-2.5 font-mono"
-          />
-        </div>
-        <div>
-          <label className="mb-1.5 block text-sm font-medium" htmlFor="departure-date">
-            Date de départ
-          </label>
-          <DateField
-            ariaLabel="Date de départ"
-            value={departureDate}
-            minYear={new Date().getFullYear()}
-            maxYear={new Date().getFullYear() + 2}
-            onChange={(valeur) => {
-              setDepartureDate(valeur);
-              invalider();
-            }}
-          />
-        </div>
-      </div>
-
-      {dansLePasse && (
-        <p className="text-sm text-error" role="alert">
-          Cette date est passée. Choisissez la date de votre prochain vol.
-        </p>
-      )}
-
-      {lookup === null ? (
-        <button
-          type="button"
-          onClick={verifier}
-          disabled={!complet || isChecking}
-          className="w-full rounded-xl bg-primary px-4 py-3 font-medium text-primary-foreground disabled:opacity-40"
-        >
-          {isChecking ? "Vérification…" : "Vérifier ce vol"}
-        </button>
-      ) : (
-        <>
-          <Verdict lookup={lookup} />
-          <button
-            type="button"
-            onClick={enregistrer}
-            disabled={lookup.outcome === "not_found" || isSaving}
-            className="w-full rounded-xl bg-primary px-4 py-3 font-medium text-primary-foreground disabled:opacity-40"
-          >
-            {isSaving ? "Enregistrement…" : "Enregistrer les modifications"}
-          </button>
-        </>
-      )}
-
+    <>
+      <FlightStep
+        initialFlights={initialFlights}
+        onConfirmed={(flights) => void save(flights)}
+        onBack={() => router.push(`/trips/${trip.id}`)}
+        title="Ajustez votre itinéraire"
+        hint="Modifiez seulement ce qui a changé. Chaque nouveau tronçon sera reconfirmé avant l'enregistrement."
+        confirmedLabel="Enregistrer tout l'itinéraire"
+        isSubmitting={isSaving}
+      />
       {failure && (
-        <p className="text-sm text-error" role="alert">
+        <div className="fixed inset-x-4 bottom-24 z-30 mx-auto max-w-xl rounded-xl border border-error/30 bg-surface p-3 text-sm text-error shadow-lg" role="alert">
           {failure}
-        </p>
+        </div>
       )}
-    </div>
+    </>
   );
 }
 
-function Verdict({ lookup }: { lookup: FlightLookup }) {
-  if (lookup.outcome === "confirmed" && lookup.schedule) {
-    return (
-      <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-sm">
-        <p className="font-medium">Vol {lookup.schedule.flightDesignator} confirmé</p>
-        <p className="mt-1 text-muted-foreground">
-          Départ {formatUtc(lookup.schedule.departureAt)} (UTC)
-        </p>
-      </div>
-    );
-  }
-  if (lookup.outcome === "not_found") {
-    return (
-      <div
-        className="rounded-xl border border-error/40 bg-error/10 p-4 text-sm"
-        role="alert"
-      >
-        <p className="font-medium">Ce vol n&apos;a pas été trouvé.</p>
-        <p className="mt-1 text-muted-foreground">
-          Vérifiez la compagnie, le numéro et le sens du trajet.
-        </p>
-      </div>
-    );
-  }
+function ItineraryLoading() {
   return (
-    <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
-      <p className="font-medium">Nous n&apos;avons pas pu vérifier ce vol.</p>
-      <p className="mt-1 text-muted-foreground">
-        Ce n&apos;est pas un refus : votre voyage repartira en examen. Vous pouvez
-        enregistrer.
-      </p>
+    <div className="mx-auto grid min-h-[60vh] max-w-xl place-items-center px-5 text-center">
+      <div>
+        <span className="mx-auto block size-11 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
+        <p className="mt-4 font-display text-xl">Nous retraçons votre voyage…</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Vols, escales et horaires reviennent à leur place.
+        </p>
+      </div>
     </div>
   );
 }
 
 function NonModifiable() {
   return (
-    <div className="mx-auto w-full max-w-lg space-y-3 p-6 text-center">
-      <h1 className="text-xl font-semibold">Ce voyage n&apos;est plus modifiable</h1>
-      <p className="text-sm text-muted-foreground">
-        Son dossier est en cours d&apos;examen ou déjà tranché. Pour changer de vol,
-        annulez ce voyage et déclarez-en un nouveau.
+    <div className="mx-auto w-full max-w-xl px-5 py-16 text-center">
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
+        Dossier protégé
+      </p>
+      <h1 className="mt-3 text-2xl font-semibold">Ce voyage est entre de bonnes mains</h1>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+        L&apos;équipe est en train de le contrôler ou une décision a déjà été
+        prise. Le figer garantit que personne ne vérifie des informations qui changent
+        en même temps.
       </p>
     </div>
   );
-}
-
-function TropDeSegments() {
-  return (
-    <div className="mx-auto w-full max-w-lg space-y-3 p-6 text-center">
-      <h1 className="text-xl font-semibold">Itinéraire à escales</h1>
-      <p className="text-sm text-muted-foreground">
-        Cet écran ne modifie qu&apos;un vol direct. Pour corriger un itinéraire à escales,
-        annulez ce voyage et déclarez-le à nouveau — nous préférons vous le dire plutôt
-        que d&apos;écraser vos correspondances.
-      </p>
-    </div>
-  );
-}
-
-/** Affiche un instant UTC sans le convertir : c'est l'heure officielle. */
-function formatUtc(iso: string): string {
-  return new Intl.DateTimeFormat("fr-FR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "UTC",
-  }).format(new Date(iso));
 }

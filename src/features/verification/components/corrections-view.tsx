@@ -1,11 +1,27 @@
 "use client";
 
-import { AlertCircle, Check, LoaderCircle, MessageSquare } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  Check,
+  FileCheck2,
+  LoaderCircle,
+  MessageSquare,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { DateField } from "@/components/ui/date-field";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { CountrySelect } from "@/features/auth/components/country-select";
+import type { HomeLanguage } from "@/features/home/components/home-content";
 import { AuthError } from "@/lib/auth/auth-client";
 
 import {
@@ -13,96 +29,149 @@ import {
   replaceDocument,
   respondToRequest,
   resubmitVerification,
+  saveDraft,
+  uploadDocument,
+  type IdentityDraft,
 } from "../api/verification-client";
 import type { VerificationCopy } from "../content/verification-content";
-import type { VerificationRequest } from "../types/verification.types";
+import type {
+  IdentityDocumentType,
+  Verification,
+  VerificationDocument,
+  VerificationRequest,
+} from "../types/verification.types";
 import { FileField } from "./file-field";
+import styles from "./verification-view.module.css";
 
-/**
- * Ce qu'un opérateur demande, et comment y répondre.
- *
- * ═══ Pourquoi cet écran est le plus important du parcours ═══
- *
- * Un dossier en correction est **bloqué des deux côtés** : la personne
- * croit attendre, l'opérateur attend réellement. Sans écran pour le dire,
- * rien n'avance jusqu'à ce que l'un des deux écrive au support — et
- * beaucoup abandonnent avant.
- *
- * ═══ Le message de l'opérateur est repris mot pour mot ═══
- *
- * On ne le reformule pas, on ne le résume pas. Il a été écrit pour être
- * lu par cette personne-là, à propos de ce document-là : le remplacer par
- * une phrase générique — « un document est invalide » — reviendrait à ne
- * rien dire.
- *
- * ═══ Chaque demande porte sa propre réponse ═══
- *
- * Un champ commun pour trois demandes obligerait à deviner à laquelle
- * une phrase se rapporte, côté opérateur comme côté personne.
- */
+const DOCUMENT_TYPES: IdentityDocumentType[] = [
+  "passport",
+  "national_id_card",
+  "residence_permit",
+];
+
+function hasBackSide(type: IdentityDocumentType) {
+  return type !== "passport";
+}
+
+function validationError(message: string) {
+  return new AuthError(message, "identity_verification_incomplete", 422);
+}
+
 export function CorrectionsView({
   copy,
   requests,
+  verification,
+  language,
 }: {
   copy: VerificationCopy;
   requests: VerificationRequest[];
+  verification: Verification;
+  language: HomeLanguage;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [files, setFiles] = useState<Record<string, File | null>>({});
-  const [issuingCountry, setIssuingCountry] = useState("");
-  const [pieces, setPieces] = useState<{ id: string; documentType: string }[]>([]);
+  const [frontFiles, setFrontFiles] = useState<Record<string, File | null>>({});
+  const [backFiles, setBackFiles] = useState<Record<string, File | null>>({});
+  const [documentTypes, setDocumentTypes] = useState<Record<string, IdentityDocumentType>>(
+    {},
+  );
+  const [issuingCountries, setIssuingCountries] = useState<Record<string, string>>({});
+  const [expiresOn, setExpiresOn] = useState<Record<string, string>>({});
+  const [documents, setDocuments] = useState<VerificationDocument[]>([]);
+  const [draft, setDraft] = useState<IdentityDraft>({
+    legalFirstName: verification.legalFirstName,
+    legalLastName: verification.legalLastName,
+    dateOfBirth: verification.dateOfBirth,
+    nationality: verification.nationality,
+    countryOfResidence: verification.countryOfResidence,
+    residentialAddress: verification.residentialAddress,
+  });
 
-  const enAttente = requests.filter((request) => !request.answered);
+  const pending = requests.filter((request) => !request.answered);
 
-  // Chargées au montage : une demande « reprenez votre photo » ne dit pas
-  // **quelle** pièce remplacer, et sans cette liste on ajouterait un
-  // second selfie au lieu de corriger le premier.
   useEffect(() => {
-    void fetchDocuments().then(setPieces);
-  }, []);
+    let cancelled = false;
+    void fetchDocuments()
+      .then((items) => {
+        if (!cancelled) setDocuments(items);
+      })
+      .catch(() => {
+        if (!cancelled) setError(copy.errors.generic);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [copy.errors.generic]);
 
-  async function envoyer(event: React.FormEvent) {
+  async function send(event: React.FormEvent) {
     event.preventDefault();
     setBusy(true);
     setError(null);
 
     try {
-      for (const request of enAttente) {
-        const fichier = files[request.id] ?? null;
+      for (const request of pending) {
+        const answer = answers[request.id]?.trim() ?? "";
 
-        // Le fichier d'abord : répondre à une demande la clôt côté
-        // serveur, et une pièce envoyée après ne serait plus rattachée à
-        // ce qui la justifiait.
-        //
-        // **On remplace, on n'ajoute pas.** Un dossier transmis est gelé :
-        // le serveur refuse toute pièce supplémentaire — et l'ajouter
-        // laisserait de toute façon l'ancienne en place, alors que c'est
-        // précisément elle qu'on demande de corriger.
-        if (fichier) {
-          const selfie = request.kind === "retake_selfie";
-          const cible =
-            request.documentId ??
-            pieces.find((piece) =>
-              selfie ? piece.documentType === "selfie" : piece.documentType !== "selfie",
-            )?.id;
+        if (request.kind === "provide_information" && !answer) {
+          throw validationError(copy.errors.missingAnswer);
+        }
 
-          if (cible) {
-            await replaceDocument(cible, {
-              documentType: selfie ? "selfie" : "passport",
-              front: fichier,
-              issuingCountry: selfie ? undefined : issuingCountry || undefined,
+        if (request.kind === "correct_information") {
+          await saveDraft(draft);
+        }
+
+        if (request.kind === "add_document") {
+          const type = documentTypes[request.id] ?? "passport";
+          const front = frontFiles[request.id];
+          const back = backFiles[request.id];
+          const issuer = issuingCountries[request.id] ?? "";
+          const expiry = expiresOn[request.id] ?? "";
+          if (!front) throw validationError(copy.errors.missingDocument);
+          if (hasBackSide(type) && !back) throw validationError(copy.errors.missingBack);
+          if (!issuer) throw validationError(copy.errors.missingIssuer);
+          if (!expiry) throw validationError(copy.errors.missingExpiry);
+          await uploadDocument({
+            documentType: type,
+            front,
+            back,
+            issuingCountry: issuer,
+            expiresOn: expiry,
+          });
+        }
+
+        if (request.kind === "replace_document" || request.kind === "retake_selfie") {
+          const target = documents.find((document) => document.id === request.documentId);
+          const front = frontFiles[request.id];
+          if (!target || !front) throw validationError(copy.errors.missingDocument);
+
+          if (target.documentType === "selfie") {
+            await replaceDocument(target.id, { documentType: "selfie", front });
+          } else {
+            const issuer =
+              issuingCountries[request.id] ?? target.issuingCountry ?? verification.nationality;
+            const expiry = expiresOn[request.id] ?? target.expiresOn ?? "";
+            const back = backFiles[request.id];
+            if (hasBackSide(target.documentType) && !back) {
+              throw validationError(copy.errors.missingBack);
+            }
+            if (!issuer) throw validationError(copy.errors.missingIssuer);
+            if (!expiry) throw validationError(copy.errors.missingExpiry);
+            await replaceDocument(target.id, {
+              documentType: target.documentType,
+              front,
+              back,
+              issuingCountry: issuer,
+              expiresOn: expiry,
             });
           }
         }
-        await respondToRequest(request.id, answers[request.id] ?? "");
+
+        await respondToRequest(request.id, answer);
       }
 
       await resubmitVerification();
-      // La page se recharge côté serveur : l'état, le badge de l'en-tête
-      // et le menu suivent dans le même mouvement.
       router.refresh();
     } catch (caught) {
       setError(caught instanceof AuthError ? caught.message : copy.errors.generic);
@@ -112,72 +181,172 @@ export function CorrectionsView({
   }
 
   return (
-    <form onSubmit={envoyer} noValidate className="mx-auto w-full max-w-2xl">
-      <header className="mb-6">
-        <h1 className="font-display text-2xl text-foreground sm:text-3xl">
+    <form onSubmit={send} noValidate className="w-full">
+      <header className="mb-5">
+        <p className="text-xs font-black tracking-[0.12em] text-primary uppercase">
+          {pending.length} {pending.length > 1 ? copy.corrections.items : copy.corrections.item}
+        </p>
+        <h2 className="mt-1 font-display text-2xl text-foreground sm:text-3xl">
           {copy.corrections.title}
-        </h1>
-        <p className="mt-2 leading-6 text-muted-foreground">{copy.corrections.body}</p>
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+          {copy.corrections.body}
+        </p>
       </header>
 
-      {enAttente.map((request, index) => (
-        <section key={request.id} className="panel-surface mb-4 p-5">
-          <p className="mb-3 flex items-start gap-3 text-sm leading-6">
-            <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-warning/15 text-warning">
-              <MessageSquare className="size-4" aria-hidden="true" />
-            </span>
-            <span>
-              <strong className="block">
-                {copy.corrections.kinds[request.kind]}
-                {enAttente.length > 1 ? ` (${index + 1}/${enAttente.length})` : ""}
-              </strong>
-              {/* Mot pour mot. Voir la docstring du composant. */}
-              {request.message}
-            </span>
-          </p>
+      <div className="space-y-4">
+        {pending.map((request, index) => {
+          const target = documents.find((document) => document.id === request.documentId);
+          const selectedType = documentTypes[request.id] ?? "passport";
+          const type = target?.documentType === "selfie" ? null : target?.documentType;
+          const needsDocument = [
+            "replace_document",
+            "retake_selfie",
+            "add_document",
+          ].includes(request.kind);
 
-          {request.kind !== "provide_information" &&
-          request.kind !== "correct_information" ? (
-            <FileField
-              label={copy.corrections.newFile}
-              chooseLabel={copy.document.choose}
-              accept={request.kind === "retake_selfie" ? "image/*" : undefined}
-              onChange={(file) => setFiles({ ...files, [request.id]: file })}
-            />
-          ) : null}
+          return (
+            <section key={request.id} className={styles.requestCard}>
+              <div className="mb-4 flex items-start gap-3">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <MessageSquare className="size-4" aria-hidden="true" />
+                </span>
+                <div>
+                  <p className="text-xs font-bold text-primary">
+                    {index + 1} / {pending.length}
+                  </p>
+                  <h3 className="text-base font-bold">
+                    {copy.corrections.kinds[request.kind]}
+                  </h3>
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                    {request.message}
+                  </p>
+                </div>
+              </div>
 
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium">
-              {copy.corrections.answer}
-            </span>
-            <Textarea
-              rows={2}
-              placeholder={copy.corrections.answerPlaceholder}
-              value={answers[request.id] ?? ""}
-              onChange={(e) => setAnswers({ ...answers, [request.id]: e.target.value })}
-            />
-          </label>
-        </section>
-      ))}
+              {request.kind === "correct_information" ? (
+                <IdentityCorrection
+                  copy={copy}
+                  draft={draft}
+                  language={language}
+                  onChange={setDraft}
+                />
+              ) : null}
 
-      {enAttente.some((request) => request.kind === "replace_document") ? (
-        <section className="panel-surface mb-4 p-5">
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium">
-              {copy.document.issuingCountry}
-            </span>
-            <Input
-              maxLength={2}
-              placeholder="CM"
-              value={issuingCountry}
-              onChange={(e) => setIssuingCountry(e.target.value.toUpperCase())}
-            />
-          </label>
-        </section>
-      ) : null}
+              {request.kind === "add_document" ? (
+                <div className="mb-3 grid gap-3 sm:grid-cols-2">
+                  <Field label={copy.document.type}>
+                    <Select
+                      value={selectedType}
+                      onValueChange={(value) =>
+                        setDocumentTypes({
+                          ...documentTypes,
+                          [request.id]: value as IdentityDocumentType,
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <span>{copy.document.types[selectedType]}</span>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DOCUMENT_TYPES.map((item) => (
+                          <SelectItem key={item} value={item}>
+                            {copy.document.types[item]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                </div>
+              ) : null}
+
+              {needsDocument ? (
+                <>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <FileField
+                      label={copy.corrections.newFile}
+                      chooseLabel={copy.document.choose}
+                      accept="image/*,application/pdf"
+                      onChange={(file) =>
+                        setFrontFiles({ ...frontFiles, [request.id]: file })
+                      }
+                    />
+                    {(request.kind === "add_document" && hasBackSide(selectedType)) ||
+                    (type && hasBackSide(type)) ? (
+                      <FileField
+                        label={copy.document.back}
+                        chooseLabel={copy.document.choose}
+                        onChange={(file) =>
+                          setBackFiles({ ...backFiles, [request.id]: file })
+                        }
+                      />
+                    ) : null}
+                  </div>
+
+                  {request.kind === "add_document" || type ? (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Field label={copy.document.issuingCountry}>
+                        <CountrySelect
+                          language={language}
+                          value={
+                            issuingCountries[request.id] ??
+                            target?.issuingCountry ??
+                            verification.nationality
+                          }
+                          onChange={(code) =>
+                            setIssuingCountries({
+                              ...issuingCountries,
+                              [request.id]: code,
+                            })
+                          }
+                          ariaLabel={copy.document.issuingCountry}
+                          placeholder={copy.identity.countrySearch}
+                          emptyText={copy.identity.countryEmpty}
+                        />
+                      </Field>
+                      <Field label={copy.document.expiry}>
+                        <DateField
+                          ariaLabel={copy.document.expiry}
+                          locale={language}
+                          value={expiresOn[request.id] ?? target?.expiresOn ?? ""}
+                          onChange={(value) =>
+                            setExpiresOn({ ...expiresOn, [request.id]: value })
+                          }
+                          minYear={new Date().getFullYear()}
+                          maxYear={new Date().getFullYear() + 20}
+                        />
+                      </Field>
+                    </div>
+                  ) : null}
+                </>
+              ) : null}
+
+              {request.kind !== "correct_information" ? (
+                <Field
+                  label={copy.corrections.answer}
+                  hint={
+                    request.kind === "provide_information"
+                      ? copy.corrections.answerRequired
+                      : copy.corrections.answerOptional
+                  }
+                >
+                  <Textarea
+                    rows={2}
+                    value={answers[request.id] ?? ""}
+                    placeholder={copy.corrections.answerPlaceholder}
+                    onChange={(event) =>
+                      setAnswers({ ...answers, [request.id]: event.target.value })
+                    }
+                  />
+                </Field>
+              ) : null}
+            </section>
+          );
+        })}
+      </div>
 
       {error ? (
-        <p className="mb-4 flex items-center gap-2 text-sm text-error" role="alert">
+        <p className="mt-4 flex items-center gap-2 text-sm text-error" role="alert">
           <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
           {error}
         </p>
@@ -186,7 +355,7 @@ export function CorrectionsView({
       <button
         type="submit"
         disabled={busy}
-        className="focus-ring inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 font-bold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-60 sm:w-auto"
+        className="focus-ring mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 font-black text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-60 sm:w-auto"
       >
         {busy ? (
           <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
@@ -194,7 +363,97 @@ export function CorrectionsView({
           <Check className="size-5" aria-hidden="true" />
         )}
         {busy ? copy.submitting : copy.corrections.submit}
+        {!busy ? <ArrowRight className="size-4" aria-hidden="true" /> : null}
       </button>
+
+      <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+        <FileCheck2 className="size-4 text-primary" aria-hidden="true" />
+        {copy.corrections.kept}
+      </p>
     </form>
+  );
+}
+
+function IdentityCorrection({
+  copy,
+  draft,
+  language,
+  onChange,
+}: {
+  copy: VerificationCopy;
+  draft: IdentityDraft;
+  language: HomeLanguage;
+  onChange: (draft: IdentityDraft) => void;
+}) {
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Field label={copy.identity.firstName}>
+        <Input
+          value={draft.legalFirstName}
+          onChange={(event) => onChange({ ...draft, legalFirstName: event.target.value })}
+        />
+      </Field>
+      <Field label={copy.identity.lastName}>
+        <Input
+          value={draft.legalLastName}
+          onChange={(event) => onChange({ ...draft, legalLastName: event.target.value })}
+        />
+      </Field>
+      <Field label={copy.identity.birthDate}>
+        <DateField
+          ariaLabel={copy.identity.birthDate}
+          locale={language}
+          value={draft.dateOfBirth}
+          onChange={(value) => onChange({ ...draft, dateOfBirth: value })}
+          maxYear={new Date().getFullYear()}
+        />
+      </Field>
+      <Field label={copy.identity.nationality}>
+        <CountrySelect
+          language={language}
+          value={draft.nationality}
+          onChange={(value) => onChange({ ...draft, nationality: value })}
+          ariaLabel={copy.identity.nationality}
+          placeholder={copy.identity.countrySearch}
+          emptyText={copy.identity.countryEmpty}
+        />
+      </Field>
+      <Field label={copy.identity.country}>
+        <CountrySelect
+          language={language}
+          value={draft.countryOfResidence}
+          onChange={(value) => onChange({ ...draft, countryOfResidence: value })}
+          ariaLabel={copy.identity.country}
+          placeholder={copy.identity.countrySearch}
+          emptyText={copy.identity.countryEmpty}
+        />
+      </Field>
+      <Field label={copy.identity.address}>
+        <Input
+          value={draft.residentialAddress}
+          onChange={(event) =>
+            onChange({ ...draft, residentialAddress: event.target.value })
+          }
+        />
+      </Field>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="mb-3 block">
+      <span className="mb-1.5 block text-sm font-semibold">{label}</span>
+      {hint ? <span className="mb-1.5 block text-xs text-muted-foreground">{hint}</span> : null}
+      {children}
+    </label>
   );
 }
