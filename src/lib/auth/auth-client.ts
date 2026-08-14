@@ -63,12 +63,20 @@ export async function loginWithPassword(email: string, password: string): Promis
 /** Où en est le parcours de connexion en deux étapes. */
 export interface LoginStep {
   challengeId: string;
-  step: "email_pending" | "registration_pending" | "phone_pending";
+  step: "email_pending" | "registration_pending" | "phone_pending" | "completed";
   /** Destination masquée du code envoyé — `a•••@example.com`, `…3456`. */
   sentTo: string | null;
   expiresIn: number;
   /** Champs à recueillir quand `step` vaut `registration_pending`. */
   requiredFields: string[];
+  /**
+   * Présente quand cette étape a **clos** le parcours — ce qui arrive tant
+   * que l'API n'exige pas la preuve du téléphone.
+   *
+   * Elle ne porte que les permissions : les jetons ont été retenus par la
+   * route serveur, qui les a posés en cookies `httpOnly`.
+   */
+  session?: { permissions: string[] };
 }
 
 interface RawLoginStep {
@@ -77,6 +85,7 @@ interface RawLoginStep {
   sent_to: string | null;
   expires_in: number;
   required_fields?: string[];
+  session?: { permissions: string[] };
 }
 
 function toStep(raw: RawLoginStep): LoginStep {
@@ -86,6 +95,7 @@ function toStep(raw: RawLoginStep): LoginStep {
     sentTo: raw.sent_to,
     expiresIn: raw.expires_in,
     requiredFields: raw.required_fields ?? [],
+    session: raw.session,
   };
 }
 

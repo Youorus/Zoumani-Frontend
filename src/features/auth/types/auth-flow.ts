@@ -20,10 +20,21 @@
  * Pas de mot de passe non plus : deux preuves de possession — la boîte
  * mail, le téléphone — suffisent, et il n'y a rien à mémoriser ni à
  * perdre.
+ *
+ * ═══ La preuve du téléphone est levée en ce moment ═══
+ *
+ * Le serveur le décide, pas nous. Une étape peut donc **clore** le parcours
+ * en répondant `completed` avec une session, au lieu de renvoyer vers
+ * l'écran du SMS.
+ *
+ * Rien ici ne teste un drapeau : l'interface suit `step`. C'est ce qui lui
+ * permet de fonctionner à une barrière comme à deux, et de survivre au
+ * rétablissement sans une ligne de changement.
  */
 
 /** Où en est le parcours, selon le serveur. */
-export type LoginStepName = "email_pending" | "registration_pending" | "phone_pending";
+export type LoginStepName =
+  "email_pending" | "registration_pending" | "phone_pending" | "completed";
 
 /** Réponse du serveur à chaque étape. */
 export interface LoginStep {
@@ -34,6 +45,13 @@ export interface LoginStep {
   expiresIn: number;
   /** Champs à recueillir quand `step` vaut `registration_pending`. */
   requiredFields: string[];
+  /**
+   * Présente quand cette étape a clos le parcours.
+   *
+   * Elle ne porte **que** les permissions : les jetons se sont arrêtés à la
+   * frontière du serveur, où ils sont devenus des cookies `httpOnly`.
+   */
+  session?: { permissions: string[] };
 }
 
 /** Écran affiché à un instant donné. */
@@ -54,5 +72,7 @@ export function screenFor(step: LoginStepName): AuthScreen {
       return "registration";
     case "phone_pending":
       return "phone-code";
+    case "completed":
+      return "done";
   }
 }

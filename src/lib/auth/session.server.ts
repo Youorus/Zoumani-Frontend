@@ -99,3 +99,36 @@ export async function hasRestorableSession(): Promise<boolean> {
 }
 
 export { SESSION_COOKIES } from "./session-cookies";
+
+/**
+ * Retire les jetons d'une réponse d'étape, après les avoir posés en cookie.
+ *
+ * ═══ Pourquoi cette fonction existe ═══
+ *
+ * Depuis que la preuve du téléphone est levée côté API, **trois** routes
+ * peuvent clore un parcours : l'étape de l'e-mail, celle de l'inscription
+ * et celle du téléphone. Chacune reçoit alors une `session` qu'il faut
+ * poser en cookie et **ne pas** laisser passer au navigateur.
+ *
+ * Écrite trois fois, la manœuvre finirait par diverger — et la copie
+ * oubliée renverrait les jetons dans le corps de la réponse, donc dans une
+ * variable JavaScript lisible par n'importe quel script de la page. C'est
+ * précisément ce que `httpOnly` sert à empêcher.
+ *
+ * La réponse conserve `step` et les permissions : le client en a besoin
+ * pour savoir qu'il est entré et quoi afficher. Elle perd les deux jetons.
+ */
+export async function absorbSession(body: unknown): Promise<unknown> {
+  if (typeof body !== "object" || body === null || !("session" in body)) {
+    return body;
+  }
+  const { session, ...reste } = body as {
+    session: (IssuedTokens & { permissions: string[] }) | null;
+  };
+  if (session === null) {
+    return reste;
+  }
+
+  await setSessionCookies(session);
+  return { ...reste, session: { permissions: session.permissions } };
+}

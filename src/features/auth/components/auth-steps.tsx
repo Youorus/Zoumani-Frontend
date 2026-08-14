@@ -42,20 +42,31 @@ export function AuthSteps({
   screen,
   labels,
   registering,
+  phoneFactor,
 }: {
   screen: AuthScreen;
   labels: { email: string; identity: string; phone: string };
   /** Vrai dès que le parcours mène à une création de compte. */
   registering: boolean;
+  /**
+   * L'API exige-t-elle la preuve du téléphone ?
+   *
+   * Un fil qui annonce une étape jamais atteinte est pire qu'un fil plus
+   * court : la personne attend un SMS, ne le reçoit pas, et croit que
+   * quelque chose a échoué au moment même où tout a réussi.
+   */
+  phoneFactor: boolean;
 }) {
   const steps: Step[] = [
     { key: "email", label: labels.email },
     ...(registering ? [{ key: "identity", label: labels.identity }] : []),
-    { key: "phone", label: labels.phone },
+    ...(phoneFactor ? [{ key: "phone", label: labels.phone }] : []),
   ];
 
   // Sans l'étape intermédiaire, le téléphone remonte d'un cran.
-  const current = registering ? POSITION[screen] : Math.min(POSITION[screen], 1);
+  const walked = registering ? POSITION[screen] : Math.min(POSITION[screen], 1);
+  // Et sans l'étape du téléphone, l'arrivée se fait sur la dernière du fil.
+  const current = Math.min(walked, steps.length - (screen === "done" ? 0 : 1));
 
   return (
     <ol className={styles.steps}>

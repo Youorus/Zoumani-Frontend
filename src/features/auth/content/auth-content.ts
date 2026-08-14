@@ -28,6 +28,8 @@ interface AuthContent {
     phone: string;
     /** La phrase qui explique pourquoi il y a deux vérifications. */
     explanation: string;
+    /** La même promesse, quand la preuve du téléphone n'est pas exigée. */
+    explanationWithoutPhone: string;
   };
   email: {
     eyebrow: string;
@@ -90,6 +92,8 @@ export const authContent: Record<HomeLanguage, AuthContent> = {
       phone: "Votre téléphone",
       explanation:
         "Deux vérifications : un code par e-mail, puis un code par SMS. C'est ce qui garantit qu'un colis et un paiement n'atterrissent jamais chez quelqu'un d'autre.",
+      explanationWithoutPhone:
+        "Un code par e-mail, et c'est tout. Votre numéro nous sert à vous joindre pendant un envoi — nous ne vous le faisons pas confirmer maintenant.",
     },
     email: {
       eyebrow: "Votre espace",
@@ -152,6 +156,8 @@ export const authContent: Record<HomeLanguage, AuthContent> = {
       phone: "Your phone",
       explanation:
         "Two checks: a code by email, then a code by SMS. That is what makes sure a parcel and a payment never end up with someone else.",
+      explanationWithoutPhone:
+        "One code by email, and that is all. We use your number to reach you during a delivery — we are not asking you to confirm it now.",
     },
     email: {
       eyebrow: "Your space",

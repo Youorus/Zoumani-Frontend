@@ -55,10 +55,25 @@ export function useAuthFlow() {
     }
   }, []);
 
-  const advance = useCallback((next: LoginStep) => {
-    setStep(next);
-    setScreen(screenFor(next.step));
-  }, []);
+  const advance = useCallback(
+    async (next: LoginStep) => {
+      setStep(next);
+
+      // Une étape peut **clore** le parcours : c'est le cas de l'e-mail et
+      // de l'inscription tant que l'API n'exige pas la preuve du
+      // téléphone. Les cookies sont alors déjà posés, mais l'interface
+      // ignore encore qui est connecté — d'où ce rafraîchissement avant
+      // d'afficher l'écran d'arrivée, sinon la navigation montrerait un
+      // visiteur pendant une fraction de seconde.
+      //
+      // Aucun drapeau n'est consulté : on suit ce que le serveur répond.
+      if (next.session) {
+        await refresh();
+      }
+      setScreen(screenFor(next.step));
+    },
+    [refresh],
+  );
 
   /** Écran 1 — l'adresse. Le serveur envoie un code, quoi qu'il arrive. */
   const submitEmail = useCallback(
@@ -66,7 +81,7 @@ export function useAuthFlow() {
       setEmail(value);
       const next = await run(() => startLoginRequest(value));
       if (next) {
-        advance(next);
+        await advance(next);
       }
     },
     [run, advance],
@@ -80,7 +95,7 @@ export function useAuthFlow() {
       }
       const next = await run(() => submitEmailCodeRequest(step.challengeId, code));
       if (next) {
-        advance(next);
+        await advance(next);
       }
     },
     [run, advance, step],
@@ -94,7 +109,7 @@ export function useAuthFlow() {
       }
       const next = await run(() => registerRequest(step.challengeId, input));
       if (next) {
-        advance(next);
+        await advance(next);
       }
     },
     [run, advance, step],

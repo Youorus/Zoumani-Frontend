@@ -45,10 +45,17 @@ import styles from "./auth-view.module.css";
 export function AuthView({
   language,
   redirectTo,
+  phoneFactor,
 }: {
   language: HomeLanguage;
   /** Où reprendre après la connexion — la destination voulue au départ. */
   redirectTo?: string;
+  /**
+   * L'API exige-t-elle la preuve du téléphone ? Répondu par elle, jamais
+   * supposé ici : le fil d'étapes et la phrase de réassurance décrivent le
+   * parcours, et un parcours décrit de travers inquiète plus qu'il rassure.
+   */
+  phoneFactor: boolean;
 }) {
   const router = useRouter();
   const content = authContent[language];
@@ -86,6 +93,7 @@ export function AuthView({
           screen={flow.screen}
           labels={content.steps}
           registering={flow.isRegistering}
+          phoneFactor={phoneFactor}
         />
       ) : null}
 
@@ -98,7 +106,12 @@ export function AuthView({
         ) : null}
 
         {flow.screen === "email" ? (
-          <EmailStep content={content} busy={flow.busy} onSubmit={flow.submitEmail} />
+          <EmailStep
+            content={content}
+            busy={flow.busy}
+            onSubmit={flow.submitEmail}
+            phoneFactor={phoneFactor}
+          />
         ) : null}
 
         {flow.screen === "email-code" ? (
@@ -166,10 +179,13 @@ function EmailStep({
   content,
   busy,
   onSubmit,
+  phoneFactor,
 }: {
   content: (typeof authContent)["fr"];
   busy: boolean;
   onSubmit: (email: string) => Promise<void>;
+  /** Décide de la promesse affichée — voir l'explication plus bas. */
+  phoneFactor: boolean;
 }) {
   const form = useForm<EmailInput>({ resolver: zodResolver(emailSchema) });
 
@@ -200,7 +216,11 @@ function EmailStep({
           écran où l'on ignore encore ce qui va se passer. La répéter aux
           étapes suivantes reviendrait à expliquer ce que la personne est
           déjà en train de faire. */}
-      <p className={styles.explanation}>{content.steps.explanation}</p>
+      {/* Ce qu'on promet doit être ce qui va se passer. Annoncer un SMS
+          qui ne partira pas fait attendre, puis douter. */}
+      <p className={styles.explanation}>
+        {phoneFactor ? content.steps.explanation : content.steps.explanationWithoutPhone}
+      </p>
       <p className={styles.reassurance}>{content.email.reassurance}</p>
     </form>
   );
