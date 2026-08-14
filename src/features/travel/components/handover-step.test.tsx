@@ -10,6 +10,10 @@ vi.mock("../api/travel-client", () => ({
   fetchHandoverOptions: (...args: unknown[]) => fetchHandoverOptions(...args),
 }));
 
+vi.mock("./service-points-map", () => ({
+  ServicePointsMap: () => <div>Carte interactive des relais</div>,
+}));
+
 const options = {
   advice: "carrier_required" as const,
   distanceMeters: 42_000,

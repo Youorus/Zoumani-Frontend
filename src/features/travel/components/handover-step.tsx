@@ -298,6 +298,7 @@ export function HandoverStep({
       {method === "carrier" && options && options.servicePoints.length > 0 && (
         <ServicePointSelector
           points={options.servicePoints}
+          center={position}
           selected={point}
           onSelect={setPoint}
         />

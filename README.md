@@ -35,6 +35,8 @@ Voir `.env.example` :
 | `NEXT_PUBLIC_SEO_INDEXABLE` | `true` pour autoriser l'indexation. Absent ou `false` ⇒ `noindex` + robots.txt bloquant |
 | `NEXT_PUBLIC_API_URL` | URL de l'API (par défaut, l'API mock locale) |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | Numéro WhatsApp au format international |
+| `NEXT_PUBLIC_MAP_TILE_URL` | Modèle d'URL des tuiles de la carte des points relais |
+| `NEXT_PUBLIC_MAP_ATTRIBUTION` | Attribution légale affichée sur la carte |
 | `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Code Google Search Console (optionnel) |
 | `NEXT_PUBLIC_BING_SITE_VERIFICATION` | Code Bing Webmaster Tools (optionnel) |
 | `NEXT_PUBLIC_YANDEX_VERIFICATION` | Code Yandex Webmaster (optionnel) |

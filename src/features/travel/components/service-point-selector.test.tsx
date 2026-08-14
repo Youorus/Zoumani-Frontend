@@ -5,6 +5,16 @@ import { describe, expect, it, vi } from "vitest";
 import type { ServicePoint } from "../types/trip.types";
 import { ServicePointSelector } from "./service-point-selector";
 
+vi.mock("./service-points-map", () => ({
+  ServicePointsMap: ({ isVisible }: { isVisible: boolean }) => (
+    <div data-testid="service-points-map" data-visible={String(isVisible)}>
+      Carte interactive
+    </div>
+  ),
+}));
+
+const center = { latitude: 48.8566, longitude: 2.3522 };
+
 const nearPoint: ServicePoint = {
   code: "NEAR-1",
   name: "Pickup République",
@@ -41,6 +51,7 @@ describe("sélecteur de point relais", () => {
     render(
       <ServicePointSelector
         points={[farPoint, nearPoint]}
+        center={center}
         selected={null}
         onSelect={onSelect}
       />,
@@ -49,7 +60,7 @@ describe("sélecteur de point relais", () => {
     const list = screen.getByRole("list", { name: "Points relais disponibles" });
     const choices = within(list).getAllByRole("button");
     expect(choices[0]).toHaveAccessibleName("Choisir Pickup République");
-    expect(screen.getAllByText("Le plus proche")).toHaveLength(2);
+    expect(screen.getByText("Le plus proche")).toBeInTheDocument();
 
     await user.click(choices[0]);
     expect(onSelect).toHaveBeenCalledWith(nearPoint);
@@ -61,6 +72,7 @@ describe("sélecteur de point relais", () => {
     render(
       <ServicePointSelector
         points={[nearPoint, farPoint]}
+        center={center}
         selected={null}
         onSelect={vi.fn()}
       />,
@@ -80,6 +92,7 @@ describe("sélecteur de point relais", () => {
     render(
       <ServicePointSelector
         points={[nearPoint]}
+        center={center}
         selected={nearPoint}
         onSelect={vi.fn()}
       />,
@@ -87,9 +100,49 @@ describe("sélecteur de point relais", () => {
 
     expect(screen.getByText("Votre point de dépôt")).toBeInTheDocument();
     expect(screen.getAllByText("08:00 - 20:00")).toHaveLength(2);
-    expect(screen.getByRole("link", { name: /Ouvrir l'itinéraire/ })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /Voir l'itinéraire/ })).toHaveAttribute(
       "href",
       "https://www.google.com/maps/dir/?api=1&destination=48.867%2C2.364",
     );
+  });
+
+  it("bascule entre la liste et la carte sur un petit écran", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ServicePointSelector
+        points={[nearPoint]}
+        center={center}
+        selected={null}
+        onSelect={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByTestId("service-points-map")).toHaveAttribute(
+      "data-visible",
+      "false",
+    );
+    await user.click(screen.getByRole("button", { name: "Carte" }));
+    expect(screen.getByTestId("service-points-map")).toHaveAttribute(
+      "data-visible",
+      "true",
+    );
+  });
+
+  it("annule un choix devenu invisible après un filtre", async () => {
+    const onSelect = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <ServicePointSelector
+        points={[nearPoint, farPoint]}
+        center={center}
+        selected={farPoint}
+        onSelect={onSelect}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Colissimo" }));
+    expect(onSelect).toHaveBeenLastCalledWith(null);
   });
 });
