@@ -58,7 +58,7 @@ describe("choix de la remise", () => {
     fetchHandoverOptions.mockResolvedValue(options);
     estimateServiceFee.mockResolvedValue({
       travelerMinor: 2_000,
-      serviceFeeMinor: 160,
+      serviceFeeMinor: 249,
       currency: "EUR",
     });
   });
@@ -98,8 +98,8 @@ describe("choix de la remise", () => {
       quoteToken: "signed-quote-token",
       extraMinor: 780,
     });
-    expect(await screen.findByText("1.60 €")).toBeInTheDocument();
-    expect(screen.getByText("29.40 €")).toBeInTheDocument();
+    expect(await screen.findByText("2.49 €")).toBeInTheDocument();
+    expect(screen.getByText("30.29 €")).toBeInTheDocument();
   });
 
   it("propose la position du téléphone quand l'adresse historique est sans coordonnées", () => {

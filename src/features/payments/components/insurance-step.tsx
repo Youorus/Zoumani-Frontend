@@ -137,6 +137,9 @@ export function InsuranceStep({
                       <p className="mt-1 text-sm text-inverse-muted-foreground">
                         Jusqu&apos;à {(currentOffer.coverageMinor / 100).toFixed(2)} € déclarés
                       </p>
+                      <p className="mt-1 text-[0.7rem] text-inverse-muted-foreground">
+                        Protection partenaire et gestion Zoumani incluses
+                      </p>
                     </div>
                     <p className="text-2xl font-semibold tabular-nums">
                       {(currentOffer.premiumMinor / 100).toFixed(2)} €

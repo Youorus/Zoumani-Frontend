@@ -186,8 +186,8 @@ export function CheckoutView({ quote, shipment, labels }: CheckoutViewProps) {
               currency={quote.currency}
             />
             <p className="-mt-1 text-[0.7rem] leading-relaxed text-muted-foreground">
-              Paiement sécurisé, vérifications du parcours et assistance Zoumani.
-              La livraison et l&apos;assurance sont exclues de leur calcul.
+              Forfait fixe pour le paiement sécurisé, les vérifications du parcours
+              et l&apos;assistance Zoumani.
             </p>
             {quote.insurance && (
               <PriceRow
