@@ -12,6 +12,7 @@ import { TripRoute } from "./trip-route";
 interface MyTripsViewProps {
   trips: Trip[];
   createdTripId?: string;
+  cancellationPenalty: number;
 }
 
 /**
@@ -35,7 +36,11 @@ interface MyTripsViewProps {
  * Le mot employé suit cette différence. Proposer « supprimer » sur un
  * voyage vérifié laisserait croire qu'il n'en restera rien.
  */
-export function MyTripsView({ trips, createdTripId }: MyTripsViewProps) {
+export function MyTripsView({
+  trips,
+  createdTripId,
+  cancellationPenalty,
+}: MyTripsViewProps) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<string | null>(null);
@@ -232,7 +237,8 @@ export function MyTripsView({ trips, createdTripId }: MyTripsViewProps) {
             {confirming === trip.id && trip.stage !== "brouillon" && (
               <p className="mt-2.5 text-xs text-muted-foreground">
                 Des expéditeurs peuvent compter sur ce voyage. Une annulation après
-                vérification retire <span className="font-medium">250 points</span> de
+                vérification retire{" "}
+                <span className="font-medium">{cancellationPenalty} points</span> de
                 votre programme de fidélité.
               </p>
             )}

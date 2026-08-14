@@ -116,12 +116,27 @@ describe("le programme de fidélité", () => {
     ],
     all_tiers: [],
     earning_rules: {
-      trip_verified: 50,
-      capacity_published: 25,
+      trip_verified: 20,
+      capacity_published: 10,
       delivery_completed: 100,
-      commitment_broken: -250,
+      commitment_broken: -300,
       manual_adjustment: 0,
     },
+    rewards: [
+      {
+        code: "hotel_night",
+        title: "Une nuit d'hôtel",
+        description: "Une nuit pour souffler.",
+        points_required: 1000,
+        points_remaining: 620,
+        progress: 0.38,
+        value_label: "Jusqu'à 90 €",
+        icon: "hotel",
+        terms: "Selon disponibilité.",
+        annual_limit: 1,
+        unlocked: false,
+      },
+    ],
   };
 
   it("garde le reste à parcourir tel que le serveur le calcule", () => {
@@ -130,6 +145,7 @@ describe("le programme de fidélité", () => {
     expect(toRewards(brut).pointsToNext).toBe(120);
     expect(toRewards(brut).progress).toBe(0.76);
     expect(toRewards(brut).earningRules.delivery_completed).toBe(100);
+    expect(toRewards(brut).rewardCatalog[0].pointsRemaining).toBe(620);
   });
 
   it("distingue un gain d'une perte dans l'historique", () => {

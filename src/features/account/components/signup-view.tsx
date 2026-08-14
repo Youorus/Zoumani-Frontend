@@ -21,8 +21,6 @@ import { Controller, useForm } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import type { HomeLanguage } from "@/features/home/components/home-content";
-import { formatSearchCity } from "@/features/shipment-search/data/search-cities";
-import type { TripSearchFilters } from "@/features/shipment-search/schemas/trip-search.schema";
 
 import { signupContent } from "../content/signup-content";
 import { useCreateAccount } from "../hooks/use-create-account";
@@ -45,7 +43,11 @@ export function SignupView({
 }: {
   initialRole: AccountRole;
   language: HomeLanguage;
-  searchContext?: TripSearchFilters;
+  searchContext?: {
+    from: string;
+    to: string;
+    weight: number;
+  };
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -151,8 +153,8 @@ export function SignupView({
                   <span>
                     <small>{copy.routeLabel}</small>
                     <strong>
-                      {formatSearchCity(searchContext.from)} →{" "}
-                      {formatSearchCity(searchContext.to)} · {searchContext.weight} kg
+                      {searchContext.from.toUpperCase()} →{" "}
+                      {searchContext.to.toUpperCase()} · {searchContext.weight} kg
                     </strong>
                   </span>
                 </div>

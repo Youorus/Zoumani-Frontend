@@ -3,7 +3,6 @@ import { MapPin, PackageCheck, Route, ShieldCheck } from "lucide-react";
 import type { HomeLanguage } from "@/features/home/components/home-content";
 
 import { shipmentSearchContent } from "../content/search-content";
-import type { TripSearchFilters } from "../schemas/trip-search.schema";
 import styles from "./shipment-search.module.css";
 
 const stageIcons = [Route, PackageCheck, ShieldCheck] as const;
@@ -12,7 +11,7 @@ export function SearchLoading({
   filters,
   language,
 }: {
-  filters?: TripSearchFilters;
+  filters?: { from: string; to: string; weight: number };
   language: HomeLanguage;
 }) {
   const copy = shipmentSearchContent[language].loading;

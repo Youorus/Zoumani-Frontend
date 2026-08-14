@@ -14,7 +14,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAccountCopy } from "@/features/account/components/account-copy-provider";
+import { UserAvatar } from "@/features/account/components/user-avatar";
 import { VerificationBadge } from "@/features/verification/components/verification-badge";
 import { VerificationMenuEntry } from "@/features/verification/components/verification-menu-entry";
 import type { VerificationStage } from "@/features/verification/types/verification.types";
@@ -85,12 +85,12 @@ export function AccountMenu({
           aria-label={`${menu.label} — ${user.firstName} ${user.lastName}`}
         >
           <span className="relative inline-flex">
-            <Avatar className="size-10">
-              {user.profilePictureUrl ? (
-                <AvatarImage src={user.profilePictureUrl} alt="" />
-              ) : null}
-              <AvatarFallback>{initials(user)}</AvatarFallback>
-            </Avatar>
+            <UserAvatar
+              firstName={user.firstName}
+              lastName={user.lastName}
+              imageUrl={user.profilePictureUrl}
+              className="size-10"
+            />
             {/* En bas à droite, là où tout le monde a appris à la
                 chercher : c'est la position qu'emploient les réseaux
                 sociaux depuis quinze ans. */}
@@ -166,11 +166,4 @@ export function AccountMenu({
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
-
-/** Deux lettres pour se reconnaître. */
-function initials(user: AuthenticatedUser): string {
-  const first = user.firstName.trim().charAt(0);
-  const last = user.lastName.trim().charAt(0);
-  return `${first}${last}`.toUpperCase() || "?";
 }

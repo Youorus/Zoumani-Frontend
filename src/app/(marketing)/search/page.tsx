@@ -92,6 +92,7 @@ export default async function Page({
         criteria={{ origin, destination, categories }}
         labels={labels}
         connected={connected}
+        failed={resultats.status !== 200}
       />
     </SearchPageShell>
   );

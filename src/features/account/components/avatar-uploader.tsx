@@ -2,10 +2,11 @@
 
 import { useRef, useState } from "react";
 import { Camera, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AuthenticatedUser } from "@/lib/auth/auth.types";
 
+import { UserAvatar } from "./user-avatar";
 import {
   ACCEPTED_PHOTO_TYPES,
   MAX_PHOTO_BYTES,
@@ -40,6 +41,7 @@ interface AvatarUploaderProps {
  * pour s'entendre dire non.
  */
 export function AvatarUploader({ user }: AvatarUploaderProps) {
+  const router = useRouter();
   const [photoUrl, setPhotoUrl] = useState(user.profilePictureUrl);
   const [apercu, setApercu] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -69,6 +71,11 @@ export function AvatarUploader({ user }: AvatarUploaderProps) {
     try {
       const compte = await uploadProfilePhoto(file);
       setPhotoUrl(compte.profilePictureUrl);
+      setApercu(null);
+      // Le layout relit `/auth/me` et transmet la même URL signée à
+      // tous les avatars. Une seule invalidation remplace plusieurs
+      // états locaux qui finiraient nécessairement par diverger.
+      router.refresh();
     } catch (error) {
       setApercu(null);
       setFailure(error instanceof Error ? error.message : "L'envoi n'a pas abouti.");
@@ -88,6 +95,7 @@ export function AvatarUploader({ user }: AvatarUploaderProps) {
       const compte = await removeProfilePhoto();
       setPhotoUrl(compte.profilePictureUrl);
       setApercu(null);
+      router.refresh();
     } catch (error) {
       setFailure(error instanceof Error ? error.message : "Le retrait n'a pas abouti.");
     } finally {
@@ -96,8 +104,6 @@ export function AvatarUploader({ user }: AvatarUploaderProps) {
   }
 
   const affichee = apercu ?? photoUrl;
-  const initiales = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`.toUpperCase();
-
   return (
     <section className="rounded-2xl border border-border p-5">
       <h2 className="font-display text-lg text-foreground">Votre photo</h2>
@@ -108,12 +114,14 @@ export function AvatarUploader({ user }: AvatarUploaderProps) {
 
       <div className="mt-4 flex items-center gap-4">
         <div className="relative">
-          <Avatar className="size-20">
-            {affichee ? (
-              <AvatarImage src={affichee} alt="" className="object-cover" />
-            ) : null}
-            <AvatarFallback className="text-lg font-bold">{initiales}</AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            firstName={user.firstName}
+            lastName={user.lastName}
+            imageUrl={affichee}
+            imageAlt={user.fullName}
+            className="size-20"
+            fallbackClassName="text-lg"
+          />
           {busy && (
             <span
               aria-hidden

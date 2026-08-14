@@ -5,9 +5,11 @@ import { TripDetailView } from "@/features/travel/components/trip-detail-view";
 import { toCapacity, type RawCapacity } from "@/features/travel/types/travel.types";
 import {
   toProof,
+  toRewards,
   toTrip,
   type RawPage,
   type RawProof,
+  type RawRewards,
   type RawTrip,
 } from "@/features/travel/types/trip.types";
 import { callApi } from "@/lib/api/upstream.server";
@@ -24,10 +26,11 @@ export default async function Page({ params }: { params: Promise<{ tripId: strin
   // Les trois appels partent ensemble : ils ne dépendent pas les uns des
   // autres, et les enchaîner tripleraient l'attente avant le premier
   // pixel sur une page qui en a besoin de trois.
-  const [voyage, offre, preuves] = await Promise.all([
+  const [voyage, offre, preuves, rewardsResponse] = await Promise.all([
     callApi({ method: "GET", path: `/trips/${tripId}` }),
     callApi({ method: "GET", path: `/trips/${tripId}/capacity` }),
     callApi({ method: "GET", path: `/trips/${tripId}/proofs` }),
+    callApi({ method: "GET", path: "/rewards/me" }),
   ]);
 
   // L'API rend le même 404 pour un voyage inexistant et pour celui d'un
@@ -38,6 +41,13 @@ export default async function Page({ params }: { params: Promise<{ tripId: strin
   if (voyage.status !== 200) {
     throw new Error(`L'API a répondu ${voyage.status} sur /trips/${tripId}.`);
   }
+  if (rewardsResponse.status !== 200) {
+    throw new Error(
+      `L'API a répondu ${rewardsResponse.status} sur /rewards/me.`,
+    );
+  }
+
+  const rewards = toRewards(rewardsResponse.body as RawRewards);
 
   return (
     <TripDetailView
@@ -49,6 +59,7 @@ export default async function Page({ params }: { params: Promise<{ tripId: strin
           ? (preuves.body as RawPage<RawProof>).items.map(toProof)
           : []
       }
+      cancellationPenalty={Math.abs(rewards.earningRules.commitment_broken ?? 0)}
     />
   );
 }

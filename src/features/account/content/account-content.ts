@@ -62,6 +62,68 @@ const accountFr = {
     cta: "Vérifier mon identité",
   },
 
+  dashboard: {
+    eyebrow: "Votre espace Zoumani",
+    statusTitle: "L’essentiel, aujourd’hui",
+    profileCta: "Mettre à jour mon profil",
+    identityTitle: "Confiance du profil",
+    identityStages: {
+      absent: {
+        title: "Votre profil attend sa vérification",
+        description:
+          "Faites-la maintenant pour pouvoir publier un voyage et rassurer les familles qui vous confient un colis.",
+        cta: "Commencer la vérification",
+      },
+      en_cours: {
+        title: "Votre dossier est entre nos mains",
+        description:
+          "Notre équipe vérifie vos informations. Vous n’avez rien à faire pour le moment.",
+        cta: "Voir mon dossier",
+      },
+      a_corriger: {
+        title: "Une précision débloquera votre profil",
+        description:
+          "Une information ou un document doit être corrigé avant que nous puissions vous vérifier.",
+        cta: "Répondre maintenant",
+      },
+      verifie: {
+        title: "Votre identité inspire confiance",
+        description:
+          "Votre profil est vérifié. Vous pouvez proposer un voyage et recevoir des colis.",
+        cta: "Voir mon profil",
+      },
+      refuse: {
+        title: "Votre dossier doit être repris",
+        description:
+          "Consultez le motif reçu, puis transmettez les bons éléments pour repartir sur une base claire.",
+        cta: "Reprendre mon dossier",
+      },
+    },
+    tripTitle: "Votre prochain voyage",
+    tripEmptyTitle: "Aucun départ programmé",
+    tripEmptyDescription:
+      "Votre prochaine place libre peut aider une famille et financer une partie de votre billet.",
+    tripCreateCta: "Proposer un voyage",
+    tripManageCta: "Gérer mes voyages",
+    tripStatus: {
+      draft: "Brouillon à terminer",
+      pending_automatic_verification: "Contrôle en cours",
+      pending_manual_review: "Examen en cours",
+      action_required: "Action demandée",
+      verified: "Voyage validé",
+      rejected: "Voyage non validé",
+      cancelled: "Voyage annulé",
+      expired: "Voyage expiré",
+      completed: "Voyage accompli",
+    },
+    rewardsTitle: "Votre prochaine récompense",
+    rewardsBalance: "points cumulés",
+    rewardsCta: "Voir toutes les récompenses",
+    rewardsTop: "Vous avez atteint le plus haut avantage Zoumani.",
+    rewardsRemaining: (points: number) =>
+      `${points} point${points > 1 ? "s" : ""} avant de la débloquer`,
+  },
+
   verification: {
     absent: "Identité non vérifiée",
     absentAction: "Vérifier mon identité",
@@ -147,6 +209,68 @@ export const accountContent = {
       verified: "Your identity is verified",
       verifiedDescription: "You can post a trip and accept parcels with confidence.",
       cta: "Verify my identity",
+    },
+
+    dashboard: {
+      eyebrow: "Your Zoumani account",
+      statusTitle: "What matters today",
+      profileCta: "Update my profile",
+      identityTitle: "Profile trust",
+      identityStages: {
+        absent: {
+          title: "Your profile is waiting to be verified",
+          description:
+            "Do it now so you can post a trip and reassure families trusting you with a parcel.",
+          cta: "Start verification",
+        },
+        en_cours: {
+          title: "Your file is in our hands",
+          description:
+            "Our team is checking your details. There is nothing you need to do right now.",
+          cta: "View my file",
+        },
+        a_corriger: {
+          title: "One detail will unlock your profile",
+          description:
+            "Some information or a document needs correcting before we can verify you.",
+          cta: "Respond now",
+        },
+        verifie: {
+          title: "Your identity inspires trust",
+          description:
+            "Your profile is verified. You can post a trip and receive parcels.",
+          cta: "View my profile",
+        },
+        refuse: {
+          title: "Your file needs to be reopened",
+          description:
+            "Read the reason you received, then send the right details to start again clearly.",
+          cta: "Reopen my file",
+        },
+      },
+      tripTitle: "Your next trip",
+      tripEmptyTitle: "No departure scheduled",
+      tripEmptyDescription:
+        "Your next spare space can help a family and contribute towards your ticket.",
+      tripCreateCta: "Post a trip",
+      tripManageCta: "Manage my trips",
+      tripStatus: {
+        draft: "Draft to finish",
+        pending_automatic_verification: "Checks in progress",
+        pending_manual_review: "Under review",
+        action_required: "Action needed",
+        verified: "Trip approved",
+        rejected: "Trip not approved",
+        cancelled: "Trip cancelled",
+        expired: "Trip expired",
+        completed: "Trip completed",
+      },
+      rewardsTitle: "Your next reward",
+      rewardsBalance: "points earned",
+      rewardsCta: "See all rewards",
+      rewardsTop: "You have reached Zoumani’s highest reward.",
+      rewardsRemaining: (points: number) =>
+        `${points} point${points > 1 ? "s" : ""} left to unlock it`,
     },
 
     verification: {

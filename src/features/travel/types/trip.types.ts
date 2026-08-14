@@ -215,6 +215,22 @@ export interface Rewards {
   allTiers: Tier[];
   /** Barème rendu par le serveur : aucune valeur commerciale n'est recopiée ici. */
   earningRules: Record<string, number>;
+  /** Catalogue de récompenses et progression calculés par le serveur. */
+  rewardCatalog: RewardCatalogItem[];
+}
+
+export interface RewardCatalogItem {
+  code: string;
+  title: string;
+  description: string;
+  pointsRequired: number;
+  pointsRemaining: number;
+  progress: number;
+  valueLabel: string;
+  icon: "transfer" | "hotel" | "car" | "stay" | "flight" | string;
+  terms: string;
+  annualLimit: number | null;
+  unlocked: boolean;
 }
 
 export interface RawRewards {
@@ -226,6 +242,19 @@ export interface RawRewards {
   history: { reason: string; amount: number; occurred_at: string; note: string | null }[];
   all_tiers: Tier[];
   earning_rules: Record<string, number>;
+  rewards: {
+    code: string;
+    title: string;
+    description: string;
+    points_required: number;
+    points_remaining: number;
+    progress: number;
+    value_label: string;
+    icon: string;
+    terms: string;
+    annual_limit: number | null;
+    unlocked: boolean;
+  }[];
 }
 
 export function toRewards(raw: RawRewards): Rewards {
@@ -243,6 +272,19 @@ export function toRewards(raw: RawRewards): Rewards {
     })),
     allTiers: raw.all_tiers,
     earningRules: raw.earning_rules,
+    rewardCatalog: raw.rewards.map((reward) => ({
+      code: reward.code,
+      title: reward.title,
+      description: reward.description,
+      pointsRequired: reward.points_required,
+      pointsRemaining: reward.points_remaining,
+      progress: reward.progress,
+      valueLabel: reward.value_label,
+      icon: reward.icon,
+      terms: reward.terms,
+      annualLimit: reward.annual_limit,
+      unlocked: reward.unlocked,
+    })),
   };
 }
 

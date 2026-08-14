@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { fetchHandoverOptions, updateShipment } from "./travel-client";
+import {
+  fetchHandoverOptions,
+  findAirportByCode,
+  searchAirports,
+  updateShipment,
+} from "./travel-client";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -69,5 +74,45 @@ describe("contrat d'une expédition", () => {
     });
 
     expect(fetchMock.mock.calls[0][0]).toContain("with_pickup=true");
+  });
+});
+
+describe("référentiel d'aéroports", () => {
+  it("n'interroge pas le backend avant deux caractères", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(searchAirports("D")).resolves.toEqual([]);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("résout un code IATA depuis le backend sans base locale", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify([
+          {
+            iata: "DLA",
+            icao: "FKKD",
+            name: "Douala International Airport",
+            city: "Douala",
+            country: "CM",
+            latitude: 4.006,
+            longitude: 9.719,
+            label: "Douala (DLA)",
+          },
+        ]),
+        { status: 200, headers: { "content-type": "application/json" } },
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(findAirportByCode("dla")).resolves.toMatchObject({
+      iata: "DLA",
+      city: "Douala",
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/proxy/airports?q=dla",
+      expect.objectContaining({ signal: undefined }),
+    );
   });
 });

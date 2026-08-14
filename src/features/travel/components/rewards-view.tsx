@@ -1,19 +1,29 @@
 "use client";
 
+import Link from "next/link";
 import {
   ArrowRight,
   Award,
+  BedDouble,
+  CarFront,
   Check,
   Gift,
   Hotel,
+  LockKeyhole,
+  MapPinned,
   PackageCheck,
+  Plane,
   PlaneTakeoff,
   Sparkles,
   Trophy,
 } from "lucide-react";
-import Link from "next/link";
 
-import type { PointEntry, Rewards, Tier } from "../types/trip.types";
+import type {
+  PointEntry,
+  RewardCatalogItem,
+  Rewards,
+  Tier,
+} from "../types/trip.types";
 
 interface RewardsViewProps {
   rewards: Rewards;
@@ -22,168 +32,261 @@ interface RewardsViewProps {
 /** Le programme de fidélité comme une envie de repartir, jamais comme une banque. */
 export function RewardsView({ rewards }: RewardsViewProps) {
   const inDebt = rewards.balance < 0;
-  const progress = Math.round(rewards.progress * 100);
+  const nextReward =
+    rewards.rewardCatalog.find((reward) => !reward.unlocked) ??
+    rewards.rewardCatalog.at(-1) ??
+    null;
 
   return (
     <main className="mx-auto w-full max-w-6xl space-y-6 px-4 py-6 sm:px-6 sm:py-10">
-      <header className="relative overflow-hidden rounded-[2rem] bg-inverse-surface text-inverse-foreground">
-        <div className="pointer-events-none absolute -right-12 -top-24 size-80 rounded-full border-[4rem] border-primary/15" />
-        <div className="pointer-events-none absolute -bottom-32 left-1/3 size-72 rounded-full bg-primary/10 blur-3xl" />
-
-        <div className="relative grid gap-8 px-6 py-8 sm:px-9 sm:py-10 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">
-              Cercle Zoumani · {rewards.tier.name}
-            </p>
-            <h1 className="mt-3 max-w-2xl text-3xl font-semibold leading-tight sm:text-5xl">
-              Chaque voyage accompli vous emmène un peu plus loin.
-            </h1>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-inverse-muted-foreground sm:text-base">
-              Vous rendez service à une famille, vous êtes rémunéré pour vos kilos et
-              votre régularité ouvre des nuits, des trajets et des attentions réservées
-              aux voyageurs qui tiennent parole.
-            </p>
-          </div>
-
-          <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm sm:p-6">
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.16em] text-inverse-muted-foreground">
-                  Votre élan
-                </p>
-                <p className="mt-1 flex items-baseline gap-2">
-                  <span className="font-display text-5xl font-semibold tabular-nums text-primary sm:text-6xl">
-                    {rewards.balance.toLocaleString("fr-FR")}
-                  </span>
-                  <span className="text-sm font-bold">points</span>
-                </p>
-              </div>
-              <span className="grid size-12 place-items-center rounded-full bg-primary text-primary-foreground">
-                <Award className="size-6" aria-hidden />
-              </span>
-            </div>
-
-            {rewards.nextTier && rewards.pointsToNext !== null ? (
-              <div className="mt-6">
-                <div className="flex justify-between gap-4 text-xs">
-                  <span>{rewards.tier.name}</span>
-                  <span className="font-bold text-primary">{rewards.nextTier.name}</span>
-                </div>
-                <div
-                  className="mt-2 h-2 overflow-hidden rounded-full bg-white/10"
-                  role="progressbar"
-                  aria-valuenow={progress}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label={`Progression vers ${rewards.nextTier.name}`}
-                >
-                  <div
-                    className="h-full rounded-full bg-primary transition-[width] duration-700 ease-out"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                <p className="mt-3 text-sm text-inverse-muted-foreground">
-                  Encore <strong className="text-inverse-foreground">{rewards.pointsToNext} points</strong>{" "}
-                  avant d&apos;ouvrir le palier {rewards.nextTier.name}.
-                </p>
-              </div>
-            ) : (
-              <p className="mt-5 text-sm text-inverse-muted-foreground">
-                Vous êtes au sommet du cercle. Merci pour chaque histoire menée à bon port.
-              </p>
-            )}
-          </div>
-        </div>
-      </header>
+      <RewardsHero rewards={rewards} nextReward={nextReward} />
 
       {inDebt && (
         <section className="rounded-2xl border border-warning/30 bg-warning/10 px-5 py-4 text-sm">
           <strong>Votre histoire peut repartir.</strong>{" "}
           <span className="text-muted-foreground">
-            Un engagement non tenu a placé le solde sous zéro. Un prochain transport mené
-            à terme vous remettra progressivement à flot.
+            Un engagement non tenu a placé le solde sous zéro. Les prochains transports
+            menés à terme vous remettront progressivement à flot.
           </span>
         </section>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-        <NextReward rewards={rewards} />
+      <RewardCatalog rewards={rewards.rewardCatalog} />
 
-        <section className="rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
-            Vos gestes comptent
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold">La confiance se construit en route</h2>
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <GainCard
-              icon={PlaneTakeoff}
-              points={rewards.earningRules.trip_verified}
-              title="Voyage vérifié"
-              copy="Votre billet confirme une route réelle."
-            />
-            <GainCard
-              icon={Sparkles}
-              points={rewards.earningRules.capacity_published}
-              title="Place publiée"
-              copy="Vos kilos deviennent visibles des familles."
-            />
-            <GainCard
-              icon={PackageCheck}
-              points={rewards.earningRules.delivery_completed}
-              title="Colis arrivé"
-              copy="Une promesse est tenue jusqu'au destinataire."
-            />
-          </div>
-          <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-            Un voyage vérifié annulé alors que des expéditeurs peuvent compter dessus retire{" "}
-            <strong>{Math.abs(rewards.earningRules.commitment_broken ?? 0)} points</strong>.
-            Un brouillon abandonné n&apos;est jamais pénalisé.
-          </p>
-        </section>
+      <div className="grid gap-6 lg:grid-cols-[0.72fr_1.28fr]">
+        <StatusCard rewards={rewards} />
+        <EarningRules rewards={rewards} />
       </div>
 
-      <section className="rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
-              Le chemin complet
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold">Du premier trajet à la Légende</h2>
-          </div>
-          <Link href="/trips/nouveau" className="focus-ring inline-flex items-center gap-2 text-sm font-bold text-primary">
-            Proposer un voyage <ArrowRight className="size-4" aria-hidden />
-          </Link>
-        </div>
-        <ol className="relative mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {rewards.allTiers.map((tier, index) => (
-            <TierCard
-              key={tier.code}
-              tier={tier}
-              index={index + 1}
-              reached={rewards.balance >= tier.threshold}
-              current={tier.code === rewards.tier.code}
-            />
-          ))}
-        </ol>
-      </section>
-
+      <TierJourney rewards={rewards} />
       <History history={rewards.history} />
     </main>
   );
 }
 
-function NextReward({ rewards }: { rewards: Rewards }) {
-  const tier = rewards.nextTier ?? rewards.tier;
+function RewardsHero({
+  rewards,
+  nextReward,
+}: {
+  rewards: Rewards;
+  nextReward: RewardCatalogItem | null;
+}) {
+  const progress = nextReward ? Math.round(nextReward.progress * 100) : 100;
+
+  return (
+    <header className="relative overflow-hidden rounded-[2rem] bg-inverse-surface text-inverse-foreground">
+      <div className="pointer-events-none absolute -right-12 -top-24 size-80 rounded-full border-[4rem] border-primary/15" />
+      <div className="pointer-events-none absolute -bottom-32 left-1/3 size-72 rounded-full bg-primary/10 blur-3xl" />
+
+      <div className="relative grid gap-8 px-6 py-8 sm:px-9 sm:py-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">
+            Cercle Zoumani · {rewards.tier.name}
+          </p>
+          <h1 className="mt-3 max-w-2xl text-3xl font-semibold leading-tight sm:text-5xl">
+            Vos voyages utiles ouvrent de vrais horizons.
+          </h1>
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-inverse-muted-foreground sm:text-base">
+            Vous êtes rémunéré pour vos kilos. En plus, chaque engagement réellement tenu
+            rapproche d&apos;une nuit, d&apos;une voiture et, au sommet, d&apos;un billet offert.
+          </p>
+        </div>
+
+        <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm sm:p-6">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.16em] text-inverse-muted-foreground">
+                Votre élan
+              </p>
+              <p className="mt-1 flex items-baseline gap-2">
+                <span className="font-display text-5xl font-semibold tabular-nums text-primary sm:text-6xl">
+                  {rewards.balance.toLocaleString("fr-FR")}
+                </span>
+                <span className="text-sm font-bold">points</span>
+              </p>
+            </div>
+            <span className="grid size-12 place-items-center rounded-full bg-primary text-primary-foreground">
+              <Award className="size-6" aria-hidden />
+            </span>
+          </div>
+
+          {nextReward && !nextReward.unlocked ? (
+            <div className="mt-6">
+              <div className="flex justify-between gap-4 text-xs">
+                <span>Prochaine récompense</span>
+                <span className="font-bold text-primary">{nextReward.title}</span>
+              </div>
+              <div
+                className="mt-2 h-2 overflow-hidden rounded-full bg-white/10"
+                role="progressbar"
+                aria-valuenow={progress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={`Progression vers ${nextReward.title}`}
+              >
+                <div
+                  className="h-full rounded-full bg-primary transition-[width] duration-700 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="mt-3 text-sm text-inverse-muted-foreground">
+                Encore{" "}
+                <strong className="text-inverse-foreground">
+                  {nextReward.pointsRemaining.toLocaleString("fr-FR")} points
+                </strong>{" "}
+                pour {nextReward.title.toLocaleLowerCase("fr-FR")}.
+              </p>
+            </div>
+          ) : (
+            <p className="mt-5 text-sm text-inverse-muted-foreground">
+              Toutes les récompenses sont ouvertes. Vous avez atteint le sommet Zoumani.
+            </p>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function RewardCatalog({ rewards }: { rewards: RewardCatalogItem[] }) {
+  return (
+    <section className="rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
+            Les récompenses du voyage
+          </p>
+          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
+            Une raison concrète de continuer
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Chaque seuil, chaque plafond et chaque condition viennent du programme Zoumani.
+            Rien n&apos;est inventé dans cet écran.
+          </p>
+        </div>
+        <Link
+          href="/trips/nouveau"
+          className="focus-ring inline-flex items-center gap-2 text-sm font-bold text-primary"
+        >
+          Proposer un voyage <ArrowRight className="size-4" aria-hidden />
+        </Link>
+      </div>
+
+      <ol className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {rewards.map((reward, index) => (
+          <RewardCard
+            key={reward.code}
+            reward={reward}
+            featured={index === rewards.length - 1}
+          />
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+const REWARD_ICONS = {
+  transfer: MapPinned,
+  hotel: Hotel,
+  car: CarFront,
+  stay: BedDouble,
+  flight: Plane,
+} as const;
+
+function RewardCard({
+  reward,
+  featured,
+}: {
+  reward: RewardCatalogItem;
+  featured: boolean;
+}) {
+  const Icon = REWARD_ICONS[reward.icon as keyof typeof REWARD_ICONS] ?? Gift;
+  const percent = Math.round(reward.progress * 100);
+
+  return (
+    <li
+      className={`relative overflow-hidden rounded-2xl border p-5 ${
+        featured
+          ? "border-primary bg-inverse-surface text-inverse-foreground md:col-span-2 xl:col-span-4"
+          : reward.unlocked
+            ? "border-success/30 bg-success/5"
+            : "border-border bg-background"
+      }`}
+    >
+      {featured && (
+        <span
+          className="pointer-events-none absolute -right-12 -top-16 size-52 rounded-full border-[2.5rem] border-primary/15"
+          aria-hidden
+        />
+      )}
+      <div className={featured ? "relative grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center" : ""}>
+        <span
+          className={`grid size-11 place-items-center rounded-xl ${
+            featured
+              ? "bg-primary text-primary-foreground"
+              : "bg-inverse-surface text-primary"
+          }`}
+        >
+          <Icon className="size-5" aria-hidden />
+        </span>
+
+        <div className={featured ? "" : "mt-5"}>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-xl font-semibold">{reward.title}</h3>
+            {reward.unlocked && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-1 text-[0.68rem] font-bold text-success">
+                <Check className="size-3" aria-hidden /> Débloquée
+              </span>
+            )}
+          </div>
+          <p
+            className={`mt-2 text-sm leading-relaxed ${
+              featured ? "text-inverse-muted-foreground" : "text-muted-foreground"
+            }`}
+          >
+            {reward.description}
+          </p>
+          <p className="mt-3 text-xs font-medium text-primary">{reward.valueLabel}</p>
+        </div>
+
+        <div className={featured ? "min-w-56" : "mt-5"}>
+          <div className="flex items-center justify-between gap-3 text-xs">
+            <span className={featured ? "text-inverse-muted-foreground" : "text-muted-foreground"}>
+              {reward.unlocked ? "Seuil atteint" : `${reward.pointsRemaining.toLocaleString("fr-FR")} pts restants`}
+            </span>
+            <strong>{reward.pointsRequired.toLocaleString("fr-FR")} pts</strong>
+          </div>
+          <div className={`mt-2 h-1.5 overflow-hidden rounded-full ${featured ? "bg-white/10" : "bg-muted"}`}>
+            <div className="h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
+          </div>
+          <p
+            className={`mt-3 flex items-start gap-1.5 text-[0.68rem] leading-relaxed ${
+              featured ? "text-inverse-muted-foreground" : "text-muted-foreground"
+            }`}
+          >
+            {reward.unlocked ? (
+              <Check className="mt-0.5 size-3 shrink-0 text-success" aria-hidden />
+            ) : (
+              <LockKeyhole className="mt-0.5 size-3 shrink-0" aria-hidden />
+            )}
+            {reward.terms}
+          </p>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+function StatusCard({ rewards }: { rewards: Rewards }) {
   return (
     <section className="relative overflow-hidden rounded-[1.75rem] bg-primary p-6 text-primary-foreground sm:p-8">
-      <div className="pointer-events-none absolute -bottom-14 -right-10 size-44 rounded-full border-[2.5rem] border-primary-foreground/10" />
-      <Gift className="size-8" aria-hidden />
+      <Trophy className="size-8" aria-hidden />
       <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] opacity-75">
-        {rewards.nextTier ? `À ouvrir en ${tier.name}` : "Vos privilèges actuels"}
+        Votre statut
       </p>
-      <h2 className="mt-2 text-3xl font-semibold">Ce qui vous attend</h2>
+      <h2 className="mt-2 text-3xl font-semibold">{rewards.tier.name}</h2>
       <ul className="relative mt-5 space-y-3">
-        {tier.perks.map((perk) => (
+        {rewards.tier.perks.map((perk) => (
           <li key={perk} className="flex items-start gap-3 text-sm leading-relaxed">
             <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-primary-foreground/15">
               <Check className="size-3" aria-hidden />
@@ -192,10 +295,42 @@ function NextReward({ rewards }: { rewards: Rewards }) {
           </li>
         ))}
       </ul>
-      <div className="relative mt-7 flex items-center gap-3 border-t border-primary-foreground/15 pt-5 text-xs opacity-80">
-        <Hotel className="size-4" aria-hidden />
-        Des récompenses concrètes, activées avec nos partenaires.
+    </section>
+  );
+}
+
+function EarningRules({ rewards }: { rewards: Rewards }) {
+  return (
+    <section className="rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8">
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
+        Ce qui fait vraiment avancer
+      </p>
+      <h2 className="mt-2 text-2xl font-semibold">La livraison compte plus que l&apos;annonce</h2>
+      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        <GainCard
+          icon={PlaneTakeoff}
+          points={rewards.earningRules.trip_verified}
+          title="Voyage vérifié"
+          copy="Votre billet confirme une route réelle."
+        />
+        <GainCard
+          icon={Sparkles}
+          points={rewards.earningRules.capacity_published}
+          title="Place publiée"
+          copy="Vos kilos deviennent visibles des familles."
+        />
+        <GainCard
+          icon={PackageCheck}
+          points={rewards.earningRules.delivery_completed}
+          title="Colis arrivé"
+          copy="C'est l'engagement qui rapporte le plus."
+        />
       </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        Un voyage vérifié annulé alors que des expéditeurs peuvent compter dessus retire{" "}
+        <strong>{Math.abs(rewards.earningRules.commitment_broken ?? 0)} points</strong>.
+        Un brouillon abandonné n&apos;est jamais pénalisé.
+      </p>
     </section>
   );
 }
@@ -222,6 +357,28 @@ function GainCard({
       <h3 className="mt-4 text-base font-semibold">{title}</h3>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{copy}</p>
     </article>
+  );
+}
+
+function TierJourney({ rewards }: { rewards: Rewards }) {
+  return (
+    <section className="rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8">
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
+        Votre réputation de voyageur
+      </p>
+      <h2 className="mt-2 text-2xl font-semibold">Du premier trajet à la Légende</h2>
+      <ol className="relative mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {rewards.allTiers.map((tier, index) => (
+          <TierCard
+            key={tier.code}
+            tier={tier}
+            index={index + 1}
+            reached={rewards.balance >= tier.threshold}
+            current={tier.code === rewards.tier.code}
+          />
+        ))}
+      </ol>
+    </section>
   );
 }
 
@@ -258,7 +415,11 @@ function TierCard({
       <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
         {tier.perks[0]}
       </p>
-      {current && <span className="mt-3 inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-[0.68rem] font-bold text-primary">Votre palier</span>}
+      {current && (
+        <span className="mt-3 inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-[0.68rem] font-bold text-primary">
+          Votre palier
+        </span>
+      )}
     </li>
   );
 }
@@ -286,20 +447,34 @@ function History({ history }: { history: PointEntry[] }) {
 
   return (
     <section className="rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8">
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Votre histoire</p>
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
+        Votre histoire
+      </p>
       <h2 className="mt-2 text-2xl font-semibold">Les gestes déjà accomplis</h2>
       <ul className="mt-5 divide-y divide-border">
         {history.map((entry, index) => (
-          <li key={`${entry.occurredAt}-${index}`} className="flex items-center justify-between gap-4 py-3.5">
+          <li
+            key={`${entry.occurredAt}-${index}`}
+            className="flex items-center justify-between gap-4 py-3.5"
+          >
             <span className="min-w-0">
-              <span className="block text-sm font-medium">{REASONS[entry.reason] ?? entry.reason}</span>
+              <span className="block text-sm font-medium">
+                {REASONS[entry.reason] ?? entry.reason}
+              </span>
               <span className="mt-0.5 block text-xs text-muted-foreground">
-                {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(entry.occurredAt))}
+                {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(
+                  new Date(entry.occurredAt),
+                )}
                 {entry.note ? ` · ${entry.note}` : ""}
               </span>
             </span>
-            <span className={`shrink-0 font-bold tabular-nums ${entry.amount >= 0 ? "text-primary" : "text-error"}`}>
-              {entry.amount > 0 ? "+" : ""}{entry.amount}
+            <span
+              className={`shrink-0 font-bold tabular-nums ${
+                entry.amount >= 0 ? "text-primary" : "text-error"
+              }`}
+            >
+              {entry.amount > 0 ? "+" : ""}
+              {entry.amount}
             </span>
           </li>
         ))}

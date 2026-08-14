@@ -22,6 +22,7 @@ interface TripDetailViewProps {
   trip: Trip;
   capacity: Capacity | null;
   proofs: Proof[];
+  cancellationPenalty: number;
 }
 
 /**
@@ -43,7 +44,12 @@ interface TripDetailViewProps {
  *
  * Proposer tout en permanence obligerait à deviner laquelle compte.
  */
-export function TripDetailView({ trip, capacity, proofs }: TripDetailViewProps) {
+export function TripDetailView({
+  trip,
+  capacity,
+  proofs,
+  cancellationPenalty,
+}: TripDetailViewProps) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
@@ -178,7 +184,8 @@ export function TripDetailView({ trip, capacity, proofs }: TripDetailViewProps) 
               {trip.stage !== "brouillon" && (
                 <p className="text-sm text-muted-foreground">
                   Des expéditeurs peuvent compter sur ce voyage. Une annulation après
-                  vérification retire <span className="font-medium">250 points</span> de
+                  vérification retire{" "}
+                  <span className="font-medium">{cancellationPenalty} points</span> de
                   votre programme de fidélité.
                 </p>
               )}

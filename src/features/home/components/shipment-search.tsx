@@ -23,33 +23,14 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { searchCities } from "@/features/shipment-search/data/search-cities";
-import { fetchCatalog } from "@/features/travel/api/travel-client";
-import type { ParcelCategory } from "@/features/travel/types/travel.types";
+import { findAirportByCode, fetchCatalog } from "@/features/travel/api/travel-client";
+import { useAirportSearch } from "@/features/travel/hooks/use-airport-search";
+import type { Airport, ParcelCategory } from "@/features/travel/types/travel.types";
 import { cn } from "@/lib/utils/cn";
 
 import type { HomeContent, HomeLanguage } from "./home-content";
 
 const guaranteeIcons = [CircleCheck, ShieldCheck, ShieldCheck, CircleCheck] as const;
-
-/**
- * Le code IATA d'une ville du sélecteur.
- *
- * Les entrées portent leur aéroport sous la forme « Nom · CODE » : on en
- * extrait le code, qui est ce que l'API attend. Le résoudre ici évite un
- * aller-retour de plus avant d'afficher les résultats.
- */
-function airportOf(cityValue: string): string {
-  const ville = searchCities.find((candidate) => candidate.value === cityValue);
-  const fragment = ville?.airport.split("·").pop()?.trim();
-  return fragment ?? "";
-}
-
-const cityOptions: readonly ComboboxOption[] = searchCities.map((city) => ({
-  value: city.value,
-  label: `${city.city}, ${city.country}`,
-  description: city.airport,
-}));
 
 interface SearchFieldProps {
   icon: typeof MapPin;
@@ -96,12 +77,6 @@ interface ShipmentSearchProps {
   };
 }
 
-function cityValueOfAirport(code?: string): string | undefined {
-  if (!code) return undefined;
-  const normalized = code.toUpperCase();
-  return searchCities.find((city) => airportOf(city.value) === normalized)?.value;
-}
-
 export function ShipmentSearch({
   className,
   copy,
@@ -114,17 +89,50 @@ export function ShipmentSearch({
   const initialOrigin = initialFilters?.origin;
   const initialDestination = initialFilters?.destination;
   const initialCategoryKey = (initialFilters?.categories ?? []).join(",");
-  const [departure, setDeparture] = useState(
-    () => cityValueOfAirport(initialOrigin) ?? "paris",
-  );
-  const [destination, setDestination] = useState(
-    () => cityValueOfAirport(initialDestination) ?? "abidjan",
-  );
+  const [departure, setDeparture] = useState<Airport | null>(null);
+  const [destination, setDestination] = useState<Airport | null>(null);
   const [contents, setContents] = useState<string[]>(() =>
     initialCategoryKey ? initialCategoryKey.split(",") : [],
   );
   const [categories, setCategories] = useState<ParcelCategory[]>([]);
+  const [isLoadingRoute, setIsLoadingRoute] = useState(true);
+  const [routeError, setRouteError] = useState("");
   const [isNavigating, startNavigation] = useTransition();
+
+  // Les codes présents dans l'URL sont résolus par le même référentiel
+  // backend que l'autocomplétion. La barre n'entretient ainsi aucune
+  // seconde base de villes susceptible de diverger de l'API.
+  useEffect(() => {
+    let active = true;
+    const originCode = initialOrigin?.toUpperCase() || "CDG";
+    const destinationCode = initialDestination?.toUpperCase() || "ABJ";
+
+    void Promise.all([
+      findAirportByCode(originCode),
+      findAirportByCode(destinationCode),
+    ])
+      .then(([originAirport, destinationAirport]) => {
+        if (!active) return;
+        setDeparture(originAirport);
+        setDestination(destinationAirport);
+      })
+      .catch(() => {
+        if (active) {
+          setRouteError(
+            language === "fr"
+              ? "Impossible de charger les aéroports pour le moment."
+              : "Airports could not be loaded right now.",
+          );
+        }
+      })
+      .finally(() => {
+        if (active) setIsLoadingRoute(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [initialDestination, initialOrigin, language]);
 
   // Le catalogue vient du serveur : une liste figée dans le code
   // divergerait de ce que les voyageurs peuvent réellement accepter.
@@ -149,16 +157,25 @@ export function ShipmentSearch({
   function swapLocations() {
     setDeparture(destination);
     setDestination(departure);
+    setRouteError("");
   }
 
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    // Les villes portent leur code IATA : c'est lui que l'API attend, et
-    // le résoudre ici évite un aller-retour de plus avant les résultats.
+    if (!departure || !destination) {
+      setRouteError(
+        language === "fr"
+          ? "Choisissez un aéroport de départ et un aéroport d’arrivée."
+          : "Choose a departure and an arrival airport.",
+      );
+      return;
+    }
+
+    setRouteError("");
     const params = new URLSearchParams({
-      origin: airportOf(departure),
-      destination: airportOf(destination),
+      origin: departure.iata,
+      destination: destination.iata,
     });
     for (const code of contents) {
       params.append("categories", code);
@@ -201,13 +218,16 @@ export function ShipmentSearch({
         <div className={compact ? "p-3" : "p-4 sm:p-5"}>
           <div className="grid items-center gap-3 lg:grid-cols-[1.3fr_1.3fr_.72fr_1.08fr]">
             <SearchField icon={MapPin} label={copy.departureLabel} compact={compact}>
-              <Combobox
+              <AirportCombobox
                 value={departure}
                 ariaLabel={copy.departureAriaLabel}
                 emptyText={copy.cityEmptyText}
                 groupLabel={copy.citySuggestionsLabel}
-                onValueChange={setDeparture}
-                options={cityOptions}
+                language={language}
+                onValueChange={(airport) => {
+                  setDeparture(airport);
+                  setRouteError("");
+                }}
                 placeholder={copy.cityPlaceholder}
                 searchPlaceholder={copy.citySearchPlaceholder}
               />
@@ -223,13 +243,16 @@ export function ShipmentSearch({
                 <ArrowLeftRight className="size-4" />
               </button>
               <SearchField icon={MapPin} label={copy.destinationLabel} compact={compact}>
-                <Combobox
+                <AirportCombobox
                   value={destination}
                   ariaLabel={copy.destinationAriaLabel}
                   emptyText={copy.cityEmptyText}
                   groupLabel={copy.citySuggestionsLabel}
-                  onValueChange={setDestination}
-                  options={cityOptions}
+                  language={language}
+                  onValueChange={(airport) => {
+                    setDestination(airport);
+                    setRouteError("");
+                  }}
                   placeholder={copy.cityPlaceholder}
                   searchPlaceholder={copy.citySearchPlaceholder}
                 />
@@ -254,13 +277,13 @@ export function ShipmentSearch({
 
             <button
               type="submit"
-              disabled={isNavigating}
+              disabled={isNavigating || isLoadingRoute}
               className={cn(
                 "focus-ring inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 hover:bg-primary/92",
                 compact ? "min-h-14" : "min-h-16",
               )}
             >
-              {isNavigating ? (
+              {isNavigating || isLoadingRoute ? (
                 <LoaderCircle className="size-5 animate-spin" />
               ) : (
                 <Search className="size-5" />
@@ -268,6 +291,12 @@ export function ShipmentSearch({
               {copy.submitLabel}
             </button>
           </div>
+
+          {routeError ? (
+            <p className="mt-3 text-center text-xs font-semibold text-destructive" role="alert">
+              {routeError}
+            </p>
+          ) : null}
 
           <div
             className={cn(
@@ -297,6 +326,71 @@ export function ShipmentSearch({
         </div>
       </form>
     </div>
+  );
+}
+
+interface AirportComboboxProps {
+  value: Airport | null;
+  onValueChange: (airport: Airport) => void;
+  ariaLabel: string;
+  emptyText: string;
+  groupLabel: string;
+  placeholder: string;
+  searchPlaceholder: string;
+  language: HomeLanguage;
+}
+
+function AirportCombobox({
+  value,
+  onValueChange,
+  ariaLabel,
+  emptyText,
+  groupLabel,
+  placeholder,
+  searchPlaceholder,
+  language,
+}: AirportComboboxProps) {
+  const [query, setQuery] = useState("");
+  const { results, isSearching } = useAirportSearch(query);
+  const airports = value && !results.some((airport) => airport.iata === value.iata)
+    ? [value, ...results]
+    : results;
+  const regionNames = new Intl.DisplayNames([language], { type: "region" });
+
+  const options: ComboboxOption[] = airports.map((airport) => ({
+    value: airport.iata,
+    label: `${airport.city} · ${airport.iata}`,
+    description: `${airport.name} · ${regionNames.of(airport.country) ?? airport.country}`,
+    keywords: [airport.city, airport.country, airport.name, airport.icao],
+    icon: <span className="text-[0.65rem] font-black tracking-wide">{airport.iata}</span>,
+  }));
+
+  const contextualEmptyText =
+    query.trim().length < 2
+      ? language === "fr"
+        ? "Saisissez au moins deux lettres."
+        : "Enter at least two letters."
+      : isSearching
+        ? language === "fr"
+          ? "Recherche dans le référentiel Zoumani…"
+          : "Searching the Zoumani directory…"
+        : emptyText;
+
+  return (
+    <Combobox
+      value={value?.iata}
+      ariaLabel={ariaLabel}
+      emptyText={contextualEmptyText}
+      groupLabel={groupLabel}
+      onSearchValueChange={setQuery}
+      onValueChange={(iata) => {
+        const airport = airports.find((candidate) => candidate.iata === iata);
+        if (airport) onValueChange(airport);
+      }}
+      options={options}
+      placeholder={placeholder}
+      searchPlaceholder={searchPlaceholder}
+    />
   );
 }
 

@@ -5,6 +5,7 @@ import {
   ArrowRight,
   Check,
   PackageCheck,
+  RefreshCw,
   SearchX,
   ShieldCheck,
   SlidersHorizontal,
@@ -22,6 +23,8 @@ interface SearchResultsViewProps {
   /** Libellés des catégories, résolus côté serveur. */
   labels: Record<string, string>;
   connected: boolean;
+  /** Une panne API n'est jamais présentée comme un vrai résultat vide. */
+  failed?: boolean;
 }
 
 /**
@@ -32,7 +35,13 @@ interface SearchResultsViewProps {
  * il n'y en a aucun, l'écran propose quelque chose plutôt que de
  * constater un vide.
  */
-export function SearchResultsView({ matches, criteria, labels, connected }: SearchResultsViewProps) {
+export function SearchResultsView({
+  matches,
+  criteria,
+  labels,
+  connected,
+  failed = false,
+}: SearchResultsViewProps) {
   const hasRoute = Boolean(criteria.origin && criteria.destination);
   const trajet =
     matches[0] !== undefined
@@ -45,6 +54,8 @@ export function SearchResultsView({ matches, criteria, labels, connected }: Sear
     >
       {!hasRoute ? (
         <SearchInvitation />
+      ) : failed ? (
+        <SearchFailure />
       ) : (
         <>
           <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
@@ -116,6 +127,34 @@ export function SearchResultsView({ matches, criteria, labels, connected }: Sear
         </>
       )}
     </div>
+  );
+}
+
+function SearchFailure() {
+  return (
+    <section className="mx-auto max-w-3xl rounded-[1.75rem] border border-warning/25 bg-warning/8 px-6 py-10 text-center sm:px-10">
+      <span className="mx-auto grid size-12 place-items-center rounded-full bg-warning text-warning-foreground">
+        <RefreshCw className="size-5" aria-hidden />
+      </span>
+      <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-warning">
+        La recherche a été interrompue
+      </p>
+      <h1 className="mt-2 font-display text-3xl text-foreground">
+        Nous ne pouvons pas vérifier les places maintenant.
+      </h1>
+      <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+        Votre trajet est conservé. Aucun faux résultat ne vous est présenté : relancez
+        simplement la recherche dans quelques instants.
+      </p>
+      <button
+        type="button"
+        onClick={() => window.location.reload()}
+        className="focus-ring mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground"
+      >
+        <RefreshCw className="size-4" aria-hidden />
+        Relancer la recherche
+      </button>
+    </section>
   );
 }
 
