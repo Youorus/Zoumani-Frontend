@@ -18,12 +18,7 @@ import {
   Trophy,
 } from "lucide-react";
 
-import type {
-  PointEntry,
-  RewardCatalogItem,
-  Rewards,
-  Tier,
-} from "../types/trip.types";
+import type { PointEntry, RewardCatalogItem, Rewards, Tier } from "../types/trip.types";
 
 interface RewardsViewProps {
   rewards: Rewards;
@@ -115,7 +110,8 @@ function RewardsHero({
           </h1>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-inverse-muted-foreground sm:text-base">
             Vous êtes rémunéré pour vos kilos. En plus, chaque engagement réellement tenu
-            rapproche d&apos;une nuit, d&apos;une voiture et, au sommet, d&apos;un billet offert.
+            rapproche d&apos;une nuit, d&apos;une voiture et, au sommet, d&apos;un billet
+            offert.
           </p>
           <a
             href="#recompenses"
@@ -177,8 +173,8 @@ function RewardsHero({
             </p>
           ) : (
             <p className="mt-5 text-sm text-inverse-muted-foreground">
-              Vos points sont bien enregistrés. Le détail des avantages apparaîtra dès
-              que la mise à jour du programme sera disponible.
+              Vos points sont bien enregistrés. Le détail des avantages apparaîtra dès que
+              la mise à jour du programme sera disponible.
             </p>
           )}
         </div>
@@ -218,8 +214,8 @@ function RewardCatalog({ rewards }: { rewards: RewardCatalogItem[] }) {
             Une raison concrète de continuer
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Chaque seuil, chaque plafond et chaque condition viennent du programme Zoumani.
-            Rien n&apos;est inventé dans cet écran.
+            Chaque seuil, chaque plafond et chaque condition viennent du programme
+            Zoumani. Rien n&apos;est inventé dans cet écran.
           </p>
         </div>
         <Link
@@ -277,7 +273,13 @@ function RewardCard({
           aria-hidden
         />
       )}
-      <div className={featured ? "relative grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center" : ""}>
+      <div
+        className={
+          featured
+            ? "relative grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center"
+            : ""
+        }
+      >
         <span
           className={`grid size-11 place-items-center rounded-xl ${
             featured
@@ -309,13 +311,24 @@ function RewardCard({
 
         <div className={featured ? "min-w-56" : "mt-5"}>
           <div className="flex items-center justify-between gap-3 text-xs">
-            <span className={featured ? "text-inverse-muted-foreground" : "text-muted-foreground"}>
-              {reward.unlocked ? "Seuil atteint" : `${reward.pointsRemaining.toLocaleString("fr-FR")} pts restants`}
+            <span
+              className={
+                featured ? "text-inverse-muted-foreground" : "text-muted-foreground"
+              }
+            >
+              {reward.unlocked
+                ? "Seuil atteint"
+                : `${reward.pointsRemaining.toLocaleString("fr-FR")} pts restants`}
             </span>
             <strong>{reward.pointsRequired.toLocaleString("fr-FR")} pts</strong>
           </div>
-          <div className={`mt-2 h-1.5 overflow-hidden rounded-full ${featured ? "bg-white/10" : "bg-muted"}`}>
-            <div className="h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
+          <div
+            className={`mt-2 h-1.5 overflow-hidden rounded-full ${featured ? "bg-white/10" : "bg-muted"}`}
+          >
+            <div
+              className="h-full rounded-full bg-primary"
+              style={{ width: `${percent}%` }}
+            />
           </div>
           <p
             className={`mt-3 flex items-start gap-1.5 text-[0.68rem] leading-relaxed ${
@@ -363,7 +376,9 @@ function EarningRules({ rewards }: { rewards: Rewards }) {
       <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
         Ce qui fait vraiment avancer
       </p>
-      <h2 className="mt-2 text-2xl font-semibold">La livraison compte plus que l&apos;annonce</h2>
+      <h2 className="mt-2 text-2xl font-semibold">
+        La livraison compte plus que l&apos;annonce
+      </h2>
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
         <GainCard
           icon={PlaneTakeoff}
@@ -460,7 +475,9 @@ function TierCard({
       <div className="flex items-center justify-between gap-3">
         <span
           className={`grid size-9 place-items-center rounded-full text-sm font-bold ${
-            reached ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+            reached
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground"
           }`}
         >
           {reached ? <Check className="size-4" aria-hidden /> : index}
@@ -495,7 +512,9 @@ function History({ history }: { history: PointEntry[] }) {
     return (
       <section className="rounded-[1.75rem] border border-dashed border-primary/30 bg-primary/5 px-6 py-10 text-center">
         <Trophy className="mx-auto size-7 text-primary" aria-hidden />
-        <h2 className="mt-4 text-xl font-semibold">Votre première trace s&apos;écrira ici</h2>
+        <h2 className="mt-4 text-xl font-semibold">
+          Votre première trace s&apos;écrira ici
+        </h2>
         <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
           Vérifiez un voyage, proposez vos kilos et voyez chaque engagement récompensé.
         </p>

@@ -37,10 +37,7 @@ export type VerificationStage =
   "absent" | "en_cours" | "a_corriger" | "verifie" | "refuse";
 
 /** Types de pièces tels que l'API les nomme. */
-export type IdentityDocumentType =
-  | "passport"
-  | "national_id_card"
-  | "residence_permit";
+export type IdentityDocumentType = "passport" | "national_id_card" | "residence_permit";
 
 export interface VerificationDocument {
   id: string;

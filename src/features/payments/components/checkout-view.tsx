@@ -13,10 +13,7 @@ import type { Route } from "next";
 import { useEffect, useRef, useState } from "react";
 
 import { TripSummaryBanner } from "@/features/travel/components/trip-summary-banner";
-import type {
-  CapacityMatch,
-  ShipmentSummary,
-} from "@/features/travel/types/trip.types";
+import type { CapacityMatch, ShipmentSummary } from "@/features/travel/types/trip.types";
 import { ApiError } from "@/lib/api/api-errors";
 
 import { openPayment } from "../api/payment-client";
@@ -36,12 +33,7 @@ interface StartFailure {
   backToShipment: boolean;
 }
 
-export function CheckoutView({
-  quote,
-  shipment,
-  match,
-  labels,
-}: CheckoutViewProps) {
+export function CheckoutView({ quote, shipment, match, labels }: CheckoutViewProps) {
   const errorRef = useRef<HTMLDivElement>(null);
   const [opening, setOpening] = useState(false);
   const [payment, setPayment] = useState<OpenPayment | null>(null);
@@ -166,7 +158,10 @@ export function CheckoutView({
               >
                 {opening ? (
                   <>
-                    <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />
+                    <LoaderCircle
+                      className="size-4 animate-spin motion-reduce:animate-none"
+                      aria-hidden
+                    />
                     Ouverture sécurisée…
                   </>
                 ) : quote.canPay ? (
@@ -283,13 +278,15 @@ function startFailureOf(error: unknown): StartFailure {
   const reason = paymentReasonOf(error);
   if (reason === "checkout_not_found") {
     return {
-      message: "Le récapitulatif n'est plus disponible. Reprenez l'étape précédente pour le préparer à nouveau.",
+      message:
+        "Le récapitulatif n'est plus disponible. Reprenez l'étape précédente pour le préparer à nouveau.",
       backToShipment: true,
     };
   }
   if (reason === "payment_provider_unavailable") {
     return {
-      message: "Le service de paiement ne répond pas pour le moment. Réessayez dans un instant : rien n'a été débité.",
+      message:
+        "Le service de paiement ne répond pas pour le moment. Réessayez dans un instant : rien n'a été débité.",
       backToShipment: false,
     };
   }
@@ -297,13 +294,18 @@ function startFailureOf(error: unknown): StartFailure {
     console.error("Payment amount mismatch while opening checkout");
   }
   return {
-    message: "Le paiement ne peut pas être ouvert pour le moment. Réessayez dans un instant.",
+    message:
+      "Le paiement ne peut pas être ouvert pour le moment. Réessayez dans un instant.",
     backToShipment: false,
   };
 }
 
 function paymentReasonOf(error: unknown): string | null {
-  if (!(error instanceof ApiError) || typeof error.details !== "object" || !error.details) {
+  if (
+    !(error instanceof ApiError) ||
+    typeof error.details !== "object" ||
+    !error.details
+  ) {
     return null;
   }
   if (!("reason" in error.details) || typeof error.details.reason !== "string") {

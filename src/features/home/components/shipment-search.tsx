@@ -40,7 +40,13 @@ interface SearchFieldProps {
   compact?: boolean;
 }
 
-function SearchField({ icon: Icon, label, children, className, compact = false }: SearchFieldProps) {
+function SearchField({
+  icon: Icon,
+  label,
+  children,
+  className,
+  compact = false,
+}: SearchFieldProps) {
   return (
     <div
       className={cn(
@@ -107,10 +113,7 @@ export function ShipmentSearch({
     const originCode = initialOrigin?.toUpperCase() || "CDG";
     const destinationCode = initialDestination?.toUpperCase() || "ABJ";
 
-    void Promise.all([
-      findAirportByCode(originCode),
-      findAirportByCode(destinationCode),
-    ])
+    void Promise.all([findAirportByCode(originCode), findAirportByCode(destinationCode)])
       .then(([originAirport, destinationAirport]) => {
         if (!active) return;
         setDeparture(originAirport);
@@ -293,7 +296,10 @@ export function ShipmentSearch({
           </div>
 
           {routeError ? (
-            <p className="mt-3 text-center text-xs font-semibold text-destructive" role="alert">
+            <p
+              className="mt-3 text-center text-xs font-semibold text-destructive"
+              role="alert"
+            >
               {routeError}
             </p>
           ) : null}
@@ -352,9 +358,10 @@ function AirportCombobox({
 }: AirportComboboxProps) {
   const [query, setQuery] = useState("");
   const { results, isSearching } = useAirportSearch(query);
-  const airports = value && !results.some((airport) => airport.iata === value.iata)
-    ? [value, ...results]
-    : results;
+  const airports =
+    value && !results.some((airport) => airport.iata === value.iata)
+      ? [value, ...results]
+      : results;
   const regionNames = new Intl.DisplayNames([language], { type: "region" });
 
   const options: ComboboxOption[] = airports.map((airport) => ({

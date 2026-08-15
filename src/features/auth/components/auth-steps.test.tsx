@@ -20,7 +20,12 @@ const LABELS = {
 describe("AuthSteps", () => {
   it("masque l'étape du téléphone quand l'API ne l'exige pas", () => {
     render(
-      <AuthSteps screen="email" labels={LABELS} registering={false} phoneFactor={false} />,
+      <AuthSteps
+        screen="email"
+        labels={LABELS}
+        registering={false}
+        phoneFactor={false}
+      />,
     );
 
     expect(screen.getByText(LABELS.email)).toBeInTheDocument();

@@ -118,7 +118,8 @@ export function ServicePointSelector({
               Choisissez votre point relais
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              {points.length} {points.length > 1 ? "adresses trouvées" : "adresse trouvée"},
+              {points.length}{" "}
+              {points.length > 1 ? "adresses trouvées" : "adresse trouvée"},
               {points.length > 1 ? " classées" : " classée"} de la plus proche à la plus
               éloignée.
             </p>
@@ -154,7 +155,10 @@ export function ServicePointSelector({
         </div>
 
         {carriers.length > 1 && (
-          <div className="mt-4 flex gap-2 overflow-x-auto pb-1" aria-label="Filtrer par transporteur">
+          <div
+            className="mt-4 flex gap-2 overflow-x-auto pb-1"
+            aria-label="Filtrer par transporteur"
+          >
             <FilterButton
               active={carrier === ALL_CARRIERS}
               onClick={() => updateCarrier(ALL_CARRIERS)}
@@ -215,7 +219,8 @@ export function ServicePointSelector({
                   (point) => servicePointKey(point) === servicePointKey(candidate),
                 );
                 const isSelected =
-                  selected !== null && servicePointKey(candidate) === servicePointKey(selected);
+                  selected !== null &&
+                  servicePointKey(candidate) === servicePointKey(selected);
                 const isNearest = globalRank === 0 && candidate.distanceMeters !== null;
 
                 return (
@@ -270,7 +275,10 @@ export function ServicePointSelector({
 
                       <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-[1fr_auto] sm:items-end">
                         <div className="flex min-w-0 items-start gap-2">
-                          <MapPin className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                          <MapPin
+                            className="mt-0.5 size-4 shrink-0 text-primary"
+                            aria-hidden
+                          />
                           <span className="leading-relaxed">
                             {candidate.street}
                             <br />
@@ -307,7 +315,9 @@ export function ServicePointSelector({
                 <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary">
                   <Search className="size-5" aria-hidden />
                 </span>
-                <p className="mt-3 font-bold text-foreground">Aucun relais dans ce filtre</p>
+                <p className="mt-3 font-bold text-foreground">
+                  Aucun relais dans ce filtre
+                </p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Les relais sont bien disponibles. Modifiez simplement votre recherche.
                 </p>

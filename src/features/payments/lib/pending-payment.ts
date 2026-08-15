@@ -41,11 +41,7 @@ function storageSnapshot(): string | null {
 
 /** Lit le stockage après l'hydratation, sans provoquer de rendu en cascade. */
 export function usePendingPaymentReference(): PendingPaymentReference | null {
-  const snapshot = useSyncExternalStore(
-    noSubscription,
-    storageSnapshot,
-    serverSnapshot,
-  );
+  const snapshot = useSyncExternalStore(noSubscription, storageSnapshot, serverSnapshot);
   if (!snapshot) {
     return null;
   }

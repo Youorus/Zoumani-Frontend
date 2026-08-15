@@ -47,11 +47,13 @@ export function AvailabilityAlertCard({
         <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-success">
           Recherche gardée
         </p>
-        <h2 className="mt-2 text-2xl font-semibold">On garde les yeux sur cette route.</h2>
+        <h2 className="mt-2 text-2xl font-semibold">
+          On garde les yeux sur cette route.
+        </h2>
         <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
-          Dès qu&apos;une place vérifiée correspond à {origin} → {destination}, nous
-          vous prévenons par e-mail et SMS. Cette alerte s&apos;arrêtera après le
-          premier signal utile.
+          Dès qu&apos;une place vérifiée correspond à {origin} → {destination}, nous vous
+          prévenons par e-mail et SMS. Cette alerte s&apos;arrêtera après le premier
+          signal utile.
         </p>
       </section>
     );
@@ -65,10 +67,12 @@ export function AvailabilityAlertCard({
       <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-primary">
         Info rapide · sans compte
       </p>
-      <h2 className="mt-2 text-2xl font-semibold">Prévenez-moi dès qu&apos;une place apparaît</h2>
+      <h2 className="mt-2 text-2xl font-semibold">
+        Prévenez-moi dès qu&apos;une place apparaît
+      </h2>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-        Nous retenons uniquement ce trajet et vos coordonnées. Pas de faux résultat,
-        pas de message inutile.
+        Nous retenons uniquement ce trajet et vos coordonnées. Pas de faux résultat, pas
+        de message inutile.
       </p>
 
       <form
@@ -122,12 +126,16 @@ export function AvailabilityAlertCard({
               m&apos;informer de ce trajet.
             </label>
           </div>
-          {errors.consent && <p className="mt-1.5 text-xs text-error">{errors.consent.message}</p>}
+          {errors.consent && (
+            <p className="mt-1.5 text-xs text-error">{errors.consent.message}</p>
+          )}
         </div>
 
         {alert.isError && (
           <p className="sm:col-span-2 text-sm text-error" role="alert">
-            {alert.error instanceof Error ? alert.error.message : "L’alerte n’a pas pu être créée."}
+            {alert.error instanceof Error
+              ? alert.error.message
+              : "L’alerte n’a pas pu être créée."}
           </p>
         )}
 
@@ -165,7 +173,9 @@ function Field({
     <label className="block text-sm font-medium">
       {label}
       <span className="mt-2 block">{children}</span>
-      {error && <span className="mt-1.5 block text-xs font-normal text-error">{error}</span>}
+      {error && (
+        <span className="mt-1.5 block text-xs font-normal text-error">{error}</span>
+      )}
     </label>
   );
 }

@@ -10,28 +10,29 @@ interface MyShipmentsViewProps {
   labels: Record<string, string>;
 }
 
-const ETATS: Record<ShipmentStatus, { label: string; className: string; copy: string }> = {
-  draft: {
-    label: "Brouillon",
-    className: "bg-muted text-muted-foreground",
-    copy: "Votre demande peut encore être ajustée.",
-  },
-  pending_payment: {
-    label: "Prêt à payer",
-    className: "bg-warning/15 text-warning",
-    copy: "Le contenu est complet. Le paiement sécurisé sera la prochaine étape.",
-  },
-  confirmed: {
-    label: "Confirmé",
-    className: "bg-success/15 text-success",
-    copy: "La place est réservée auprès du voyageur.",
-  },
-  cancelled: {
-    label: "Annulé",
-    className: "bg-muted text-muted-foreground",
-    copy: "Cette demande a été refermée avant son départ.",
-  },
-};
+const ETATS: Record<ShipmentStatus, { label: string; className: string; copy: string }> =
+  {
+    draft: {
+      label: "Brouillon",
+      className: "bg-muted text-muted-foreground",
+      copy: "Votre demande peut encore être ajustée.",
+    },
+    pending_payment: {
+      label: "Prêt à payer",
+      className: "bg-warning/15 text-warning",
+      copy: "Le contenu est complet. Le paiement sécurisé sera la prochaine étape.",
+    },
+    confirmed: {
+      label: "Confirmé",
+      className: "bg-success/15 text-success",
+      copy: "La place est réservée auprès du voyageur.",
+    },
+    cancelled: {
+      label: "Annulé",
+      className: "bg-muted text-muted-foreground",
+      copy: "Cette demande a été refermée avant son départ.",
+    },
+  };
 
 /** Le carnet des colis confiés à la communauté Zoumani. */
 export function MyShipmentsView({ shipments, labels }: MyShipmentsViewProps) {
@@ -48,8 +49,8 @@ export function MyShipmentsView({ shipments, labels }: MyShipmentsViewProps) {
               Chaque colis garde son histoire.
             </h1>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-inverse-muted-foreground">
-              De vos mains à celles du voyageur, retrouvez les contenus déclarés,
-              leur protection et la prochaine action utile.
+              De vos mains à celles du voyageur, retrouvez les contenus déclarés, leur
+              protection et la prochaine action utile.
             </p>
           </div>
           <Link
@@ -85,7 +86,9 @@ export function MyShipmentsView({ shipments, labels }: MyShipmentsViewProps) {
                         </p>
                       </div>
                     </div>
-                    <span className={`rounded-full px-3 py-1 text-xs font-bold ${state.className}`}>
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-bold ${state.className}`}
+                    >
                       {state.label}
                     </span>
                   </div>
@@ -94,23 +97,31 @@ export function MyShipmentsView({ shipments, labels }: MyShipmentsViewProps) {
                     <div className="flex items-start justify-between gap-5">
                       <div>
                         <p className="text-2xl font-semibold tabular-nums">
-                          {shipment.totalMajor} {shipment.currency === "EUR" ? "€" : shipment.currency}
+                          {shipment.totalMajor}{" "}
+                          {shipment.currency === "EUR" ? "€" : shipment.currency}
                         </p>
                         <p className="mt-1 text-xs text-muted-foreground">
                           montant pour le voyageur, hors protection et service
                         </p>
                       </div>
-                      <p className="shrink-0 text-sm font-semibold">{shipment.weightKg} kg</p>
+                      <p className="shrink-0 text-sm font-semibold">
+                        {shipment.weightKg} kg
+                      </p>
                     </div>
 
                     <ul className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
                       {shipment.lines.map((line) => (
-                        <li key={line.categoryCode} className="flex justify-between gap-4">
+                        <li
+                          key={line.categoryCode}
+                          className="flex justify-between gap-4"
+                        >
                           <span className="text-muted-foreground">
                             {labels[line.categoryCode] ?? line.categoryCode}
                           </span>
                           <span>
-                            {line.perPiece ? `${line.pieces} pièce(s)` : `${line.quantityKg?.toFixed(1)} kg`}
+                            {line.perPiece
+                              ? `${line.pieces} pièce(s)`
+                              : `${line.quantityKg?.toFixed(1)} kg`}
                           </span>
                         </li>
                       ))}
@@ -123,9 +134,14 @@ export function MyShipmentsView({ shipments, labels }: MyShipmentsViewProps) {
                         ) : (
                           <ShieldCheck className="size-4 text-primary" aria-hidden />
                         )}
-                        {shipment.handover === "carrier" ? "Dépôt en relais" : "Remise en main propre"}
+                        {shipment.handover === "carrier"
+                          ? "Dépôt en relais"
+                          : "Remise en main propre"}
                       </span>
-                      <ArrowRight className="size-4 text-primary transition-transform group-hover:translate-x-1" aria-hidden />
+                      <ArrowRight
+                        className="size-4 text-primary transition-transform group-hover:translate-x-1"
+                        aria-hidden
+                      />
                     </div>
                     <p className="mt-3 text-xs text-muted-foreground">{state.copy}</p>
                   </div>
@@ -145,7 +161,9 @@ function EmptyShipments() {
       <span className="mx-auto grid size-14 place-items-center rounded-full bg-inverse-surface text-primary">
         <PackageCheck className="size-7" aria-hidden />
       </span>
-      <h2 className="mt-5 text-2xl font-semibold">Votre premier colis attend son voyage</h2>
+      <h2 className="mt-5 text-2xl font-semibold">
+        Votre premier colis attend son voyage
+      </h2>
       <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">
         Choisissez une destination, comparez les places disponibles puis confiez votre
         envoi à une personne dont l&apos;identité et le billet ont été contrôlés.

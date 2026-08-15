@@ -488,9 +488,7 @@ function Etat({
   return (
     <div className="w-full">
       <div className={styles.stateCard}>
-        <span className={`${styles.stateIcon} ${tone}`}>
-          {icon}
-        </span>
+        <span className={`${styles.stateIcon} ${tone}`}>{icon}</span>
         <h1 className="mt-4 font-display text-2xl text-foreground sm:text-3xl">
           {title}
         </h1>

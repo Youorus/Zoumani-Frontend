@@ -243,7 +243,9 @@ export function EditCapacityView({ tripId, capacity }: EditCapacityViewProps) {
       <section>
         <h2 className="mb-3 text-sm font-medium">Comment recevoir les colis</h2>
         <div className="mb-2.5 rounded-xl border border-primary/20 bg-primary/5 p-3.5">
-          <span className="block text-sm font-medium">Livraison à votre domicile incluse</span>
+          <span className="block text-sm font-medium">
+            Livraison à votre domicile incluse
+          </span>
           <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
             Chaque expéditeur peut déposer son colis chez un partenaire. Il vous sera
             acheminé à l&apos;adresse vérifiée de votre profil, sans déplacement imposé.

@@ -53,32 +53,32 @@ export function WizardShell({
         <div className="mx-auto w-full max-w-5xl">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-            {onBack ? (
-              <button
-                type="button"
-                onClick={onBack}
-                aria-label="Étape précédente"
-                className="-ml-2 flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="size-5"
-                  aria-hidden
+              {onBack ? (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  aria-label="Étape précédente"
+                  className="-ml-2 flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
-                  <path d="m15 18-6-6 6-6" />
-                </svg>
-              </button>
-            ) : (
-              <span className="size-9" aria-hidden />
-            )}
-            <span className="text-sm text-muted-foreground">
-              Étape {step} sur {total}
-            </span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="size-5"
+                    aria-hidden
+                  >
+                    <path d="m15 18-6-6 6-6" />
+                  </svg>
+                </button>
+              ) : (
+                <span className="size-9" aria-hidden />
+              )}
+              <span className="text-sm text-muted-foreground">
+                Étape {step} sur {total}
+              </span>
             </div>
             <span className="hidden text-xs font-bold uppercase tracking-[0.18em] text-primary sm:block">
               De la place qui rapproche
@@ -99,7 +99,6 @@ export function WizardShell({
               style={{ width: `${(step / total) * 100}%` }}
             />
           </div>
-
         </div>
       </header>
 

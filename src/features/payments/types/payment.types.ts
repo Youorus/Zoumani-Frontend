@@ -38,12 +38,7 @@ export interface RawServiceFeeQuote {
 
 export type PaymentMethod = "card" | "apple_pay" | "google_pay";
 
-export type PaymentStatus =
-  | "pending"
-  | "succeeded"
-  | "failed"
-  | "expired"
-  | "refunded";
+export type PaymentStatus = "pending" | "succeeded" | "failed" | "expired" | "refunded";
 
 export interface CheckoutQuote {
   id: string;
@@ -97,6 +92,8 @@ export interface RawOpenPayment {
 
 export interface PaymentState {
   paymentId: string;
+  /** L'expédition réglée — pour conduire au suivi une fois confirmé. */
+  shipmentId: string;
   status: PaymentStatus;
   isPaid: boolean;
   amountMinor: number;
@@ -107,6 +104,7 @@ export interface PaymentState {
 
 export interface RawPaymentState {
   payment_id: string;
+  shipment_id: string;
   status: PaymentStatus;
   is_paid: boolean;
   amount_minor: number;
@@ -170,6 +168,7 @@ export function toOpenPayment(raw: RawOpenPayment): OpenPayment {
 export function toPaymentState(raw: RawPaymentState): PaymentState {
   return {
     paymentId: raw.payment_id,
+    shipmentId: raw.shipment_id,
     status: raw.status,
     isPaid: raw.is_paid,
     amountMinor: raw.amount_minor,

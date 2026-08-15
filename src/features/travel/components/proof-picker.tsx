@@ -95,7 +95,9 @@ export function ProofPicker({
           </span>
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-semibold">{file.name}</span>
-            <span className="block text-xs text-muted-foreground">{formatFileSize(file.size)}</span>
+            <span className="block text-xs text-muted-foreground">
+              {formatFileSize(file.size)}
+            </span>
           </span>
           <button
             type="button"

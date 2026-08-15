@@ -13,12 +13,7 @@ import { useEffect, useState } from "react";
 
 import { DateField } from "@/components/ui/date-field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { CountrySelect } from "@/features/auth/components/country-select";
 import type { HomeLanguage } from "@/features/home/components/home-content";
@@ -74,9 +69,9 @@ export function CorrectionsView({
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [frontFiles, setFrontFiles] = useState<Record<string, File | null>>({});
   const [backFiles, setBackFiles] = useState<Record<string, File | null>>({});
-  const [documentTypes, setDocumentTypes] = useState<Record<string, IdentityDocumentType>>(
-    {},
-  );
+  const [documentTypes, setDocumentTypes] = useState<
+    Record<string, IdentityDocumentType>
+  >({});
   const [issuingCountries, setIssuingCountries] = useState<Record<string, string>>({});
   const [expiresOn, setExpiresOn] = useState<Record<string, string>>({});
   const [documents, setDocuments] = useState<VerificationDocument[]>([]);
@@ -150,7 +145,9 @@ export function CorrectionsView({
             await replaceDocument(target.id, { documentType: "selfie", front });
           } else {
             const issuer =
-              issuingCountries[request.id] ?? target.issuingCountry ?? verification.nationality;
+              issuingCountries[request.id] ??
+              target.issuingCountry ??
+              verification.nationality;
             const expiry = expiresOn[request.id] ?? target.expiresOn ?? "";
             const back = backFiles[request.id];
             if (hasBackSide(target.documentType) && !back) {
@@ -184,7 +181,8 @@ export function CorrectionsView({
     <form onSubmit={send} noValidate className="w-full">
       <header className="mb-5">
         <p className="text-xs font-black tracking-[0.12em] text-primary uppercase">
-          {pending.length} {pending.length > 1 ? copy.corrections.items : copy.corrections.item}
+          {pending.length}{" "}
+          {pending.length > 1 ? copy.corrections.items : copy.corrections.item}
         </p>
         <h2 className="mt-1 font-display text-2xl text-foreground sm:text-3xl">
           {copy.corrections.title}
@@ -452,7 +450,9 @@ function Field({
   return (
     <label className="mb-3 block">
       <span className="mb-1.5 block text-sm font-semibold">{label}</span>
-      {hint ? <span className="mb-1.5 block text-xs text-muted-foreground">{hint}</span> : null}
+      {hint ? (
+        <span className="mb-1.5 block text-xs text-muted-foreground">{hint}</span>
+      ) : null}
       {children}
     </label>
   );

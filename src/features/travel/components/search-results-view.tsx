@@ -49,9 +49,7 @@ export function SearchResultsView({
       : `${criteria.origin} → ${criteria.destination}`;
 
   return (
-    <div
-      className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6"
-    >
+    <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
       {!hasRoute ? (
         <SearchInvitation />
       ) : failed ? (
@@ -61,7 +59,9 @@ export function SearchResultsView({
           <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
-                {matches.length === 0 ? "Recherche gardée ouverte" : "Places réellement disponibles"}
+                {matches.length === 0
+                  ? "Recherche gardée ouverte"
+                  : "Places réellement disponibles"}
               </p>
               <h1 className="mt-2 font-display text-3xl text-foreground sm:text-4xl">
                 {matches.length === 0
@@ -101,7 +101,9 @@ export function SearchResultsView({
                 <p className="mt-5 text-xs font-bold uppercase tracking-[0.15em] text-primary">
                   Choisir sans deviner
                 </p>
-                <h2 className="mt-2 text-xl font-semibold">Chaque carte dit l&apos;essentiel.</h2>
+                <h2 className="mt-2 text-xl font-semibold">
+                  Chaque carte dit l&apos;essentiel.
+                </h2>
                 <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
                   {[
                     "Le voyage est contrôlé avant publication",
@@ -118,8 +120,12 @@ export function SearchResultsView({
                   ))}
                 </ul>
                 <p className="mt-5 flex items-start gap-2 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
-                  <PackageCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-                  Les coordonnées personnelles restent masquées jusqu&apos;au parcours sécurisé.
+                  <PackageCheck
+                    className="mt-0.5 size-4 shrink-0 text-primary"
+                    aria-hidden
+                  />
+                  Les coordonnées personnelles restent masquées jusqu&apos;au parcours
+                  sécurisé.
                 </p>
               </aside>
             </div>
@@ -206,8 +212,9 @@ function AucunResultat({
             Le bon voyageur n&apos;a pas encore annoncé sa place.
           </h2>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-inverse-muted-foreground sm:text-base">
-            Les départs se publient au fil des billets confirmés. Gardez ce trajet vivant :
-            nous vous préviendrons dès qu&apos;une place vérifiée pourra porter votre colis.
+            Les départs se publient au fil des billets confirmés. Gardez ce trajet vivant
+            : nous vous préviendrons dès qu&apos;une place vérifiée pourra porter votre
+            colis.
           </p>
         </div>
       </section>
@@ -225,7 +232,9 @@ function AucunResultat({
             {connected ? "Votre espace" : "Pour aller plus loin"}
           </p>
           <h2 className="mt-2 text-2xl font-semibold">
-            {connected ? "Retrouvez tout au même endroit." : "Préparez l’envoi sans repartir de zéro."}
+            {connected
+              ? "Retrouvez tout au même endroit."
+              : "Préparez l’envoi sans repartir de zéro."}
           </h2>
           <p className="mt-3 text-sm leading-relaxed opacity-85">
             {connected
@@ -233,14 +242,16 @@ function AucunResultat({
               : "Un compte mémorise vos recherches, sécurise votre identité et rassemble le suivi de toute la famille."}
           </p>
           <ul className="mt-5 space-y-3 text-sm">
-            {["Recherche mémorisée", "Suivi du colis", "Échanges protégés"].map((benefit) => (
-              <li key={benefit} className="flex items-center gap-2">
-                <span className="grid size-5 place-items-center rounded-full bg-primary-foreground/15">
-                  <Check className="size-3" aria-hidden />
-                </span>
-                {benefit}
-              </li>
-            ))}
+            {["Recherche mémorisée", "Suivi du colis", "Échanges protégés"].map(
+              (benefit) => (
+                <li key={benefit} className="flex items-center gap-2">
+                  <span className="grid size-5 place-items-center rounded-full bg-primary-foreground/15">
+                    <Check className="size-3" aria-hidden />
+                  </span>
+                  {benefit}
+                </li>
+              ),
+            )}
           </ul>
           <Link
             href={connected ? "/compte/envois" : signupHref}

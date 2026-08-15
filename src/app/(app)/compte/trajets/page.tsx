@@ -29,9 +29,13 @@ export default async function Page({
   searchParams: Promise<{ nouveau?: string }>;
 }) {
   const params = await searchParams;
-  const [reponse, rewardsResponse] = await Promise.all([
+  const [reponse, rewardsResponse, colisResponse] = await Promise.all([
     callApi({ method: "GET", path: "/trips" }),
     callApi({ method: "GET", path: "/rewards/me" }),
+    // Le décompte des colis par voyage, pour la pastille. En parallèle :
+    // il n'ajoute rien au temps d'affichage, et son absence ne doit pas
+    // empêcher la liste des trajets de s'afficher.
+    callApi({ method: "GET", path: "/journeys/counts-by-trip" }),
   ]);
 
   // Une liste vide et une erreur ne se confondent pas : l'écran « aucun
@@ -41,17 +45,16 @@ export default async function Page({
   }
   const page = reponse.body as RawPage<RawTrip>;
   const rewards =
-    rewardsResponse.status === 200
-      ? toRewards(rewardsResponse.body as RawRewards)
-      : null;
+    rewardsResponse.status === 200 ? toRewards(rewardsResponse.body as RawRewards) : null;
   return (
     <MyTripsView
       trips={page.items.map(toTrip)}
       createdTripId={params.nouveau}
+      parcelCounts={
+        colisResponse.status === 200 ? (colisResponse.body as Record<string, number>) : {}
+      }
       cancellationPenalty={
-        rewards
-          ? Math.abs(rewards.earningRules.commitment_broken ?? 0)
-          : null
+        rewards ? Math.abs(rewards.earningRules.commitment_broken ?? 0) : null
       }
     />
   );

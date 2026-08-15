@@ -4,8 +4,16 @@
   padding: clamp(1.5rem, 4vw, 3.5rem);
   border-radius: calc(var(--shape-radius-lg) + 0.35rem);
   background:
-    radial-gradient(circle at 85% 12%, color-mix(in srgb, var(--secondary) 25%, transparent), transparent 14rem),
-    linear-gradient(145deg, color-mix(in srgb, var(--primary) 16%, var(--inverse-surface)), var(--inverse-surface));
+    radial-gradient(
+      circle at 85% 12%,
+      color-mix(in srgb, var(--secondary) 25%, transparent),
+      transparent 14rem
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--primary) 16%, var(--inverse-surface)),
+      var(--inverse-surface)
+    );
   color: var(--inverse-foreground);
   box-shadow: var(--elevation-lifted);
 }

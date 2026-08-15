@@ -84,7 +84,7 @@ export function HomeFooter({
                           ? buildSignupHref("traveler", language)
                           : routeHomeAnchors && link.href.startsWith("#")
                             ? `/${link.href}`
-                          : link.href
+                            : link.href
                       }
                     >
                       {link.label}

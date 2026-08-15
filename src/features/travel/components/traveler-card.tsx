@@ -76,8 +76,17 @@ export function TravelerCard({ match, labels }: TravelerCardProps) {
       <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_15.5rem]">
         <div>
           <dl className="grid gap-3 sm:grid-cols-3">
-            <Fact icon={CalendarDays} label="Départ" value={formatDeparture(match.departureAt)} />
-            <Fact icon={Weight} label="Place libre" value={`${match.availableWeightKg} kg`} strong />
+            <Fact
+              icon={CalendarDays}
+              label="Départ"
+              value={formatDeparture(match.departureAt)}
+            />
+            <Fact
+              icon={Weight}
+              label="Place libre"
+              value={`${match.availableWeightKg} kg`}
+              strong
+            />
             <Fact
               icon={match.acceptsInPerson ? Handshake : Store}
               label="Remise du colis"
@@ -128,8 +137,8 @@ export function TravelerCard({ match, labels }: TravelerCardProps) {
 
           {match.distanceMeters !== null ? (
             <p className="mt-3 flex items-center gap-2 text-xs leading-relaxed text-muted-foreground">
-              <MapPin className="size-4 shrink-0 text-primary" aria-hidden />
-              À {formatDistance(match.distanceMeters)} de votre adresse vérifiée
+              <MapPin className="size-4 shrink-0 text-primary" aria-hidden />À{" "}
+              {formatDistance(match.distanceMeters)} de votre adresse vérifiée
             </p>
           ) : (
             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
@@ -167,7 +176,9 @@ function Fact({
       <dt className="flex items-center gap-1.5 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-muted-foreground">
         <Icon className="size-3.5 text-primary" aria-hidden /> {label}
       </dt>
-      <dd className={`mt-2 leading-tight ${strong ? "text-xl font-semibold" : "text-sm font-semibold"}`}>
+      <dd
+        className={`mt-2 leading-tight ${strong ? "text-xl font-semibold" : "text-sm font-semibold"}`}
+      >
         {value}
       </dd>
     </div>

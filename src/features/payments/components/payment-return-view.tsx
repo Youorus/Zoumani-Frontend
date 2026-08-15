@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ApiError } from "@/lib/api/api-errors";
@@ -55,6 +56,7 @@ export function PaymentReturnView({
   const clientReady = useClientReady();
   const paymentId = paymentIdFromUrl ?? pending?.paymentId ?? null;
   const shipmentId = shipmentIdFromUrl ?? pending?.shipmentId ?? null;
+  const router = useRouter();
   const [settledPhase, setSettledPhase] = useState<ReturnPhase | null>(null);
   const [payment, setPayment] = useState<PaymentState | null>(null);
   const phase: ReturnPhase =
@@ -91,6 +93,16 @@ export function PaymentReturnView({
           clearTimeout(deadline);
           forgetPendingPayment();
           setSettledPhase("paid");
+          // On emmène au suivi plutôt que de laisser sur un écran
+          // « c'est bon ». La personne vient de payer pour un colis qui
+          // doit **partir** : ce qu'elle a besoin de savoir maintenant,
+          // c'est le geste suivant — imprimer l'étiquette, déposer.
+          //
+          // `replace` et non `push` : un retour arrière ramènerait sur
+          // une page de confirmation de paiement sans objet.
+          router.replace(
+            `/compte/envois/suivi/par-expedition/${current.shipmentId}` as Route,
+          );
           return;
         }
         if (current.status === "failed" || current.status === "expired") {

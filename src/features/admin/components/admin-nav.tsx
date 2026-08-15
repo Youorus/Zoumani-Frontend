@@ -10,7 +10,9 @@ export function AdminNav({ current }: { current: "identity" | "travel" }) {
         href="/admin"
         aria-current={current === "identity" ? "page" : undefined}
         className={`focus-ring rounded-full px-4 py-2 text-sm font-bold transition-colors ${
-          current === "identity" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+          current === "identity"
+            ? "bg-primary text-primary-foreground"
+            : "text-muted-foreground"
         }`}
       >
         Identités
@@ -19,7 +21,9 @@ export function AdminNav({ current }: { current: "identity" | "travel" }) {
         href="/admin/voyages"
         aria-current={current === "travel" ? "page" : undefined}
         className={`focus-ring rounded-full px-4 py-2 text-sm font-bold transition-colors ${
-          current === "travel" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+          current === "travel"
+            ? "bg-primary text-primary-foreground"
+            : "text-muted-foreground"
         }`}
       >
         Voyages

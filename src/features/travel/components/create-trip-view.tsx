@@ -19,16 +19,8 @@ import {
   type TripSubmissionPhase,
 } from "../lib/trip-submission-error";
 import type { ProofKind } from "../types/trip.types";
-import {
-  fromMinorUnits,
-  toMinorUnits,
-  type Catalog,
-} from "../types/travel.types";
-import {
-  FlightStep,
-  toSegmentDrafts,
-  type FlightChoice,
-} from "./flight-step";
+import { fromMinorUnits, toMinorUnits, type Catalog } from "../types/travel.types";
+import { FlightStep, toSegmentDrafts, type FlightChoice } from "./flight-step";
 import { StepCategories } from "./step-categories";
 import { StepPricing } from "./step-pricing";
 import { StepReview } from "./step-review";
@@ -201,7 +193,8 @@ export function CreateTripView({ stage }: CreateTripViewProps) {
     }
   }
 
-  const retour = step > 1 && progress.tripId === null ? () => setStep(step - 1) : undefined;
+  const retour =
+    step > 1 && progress.tripId === null ? () => setStep(step - 1) : undefined;
 
   if (step === 1 || flights.length === 0) {
     return (

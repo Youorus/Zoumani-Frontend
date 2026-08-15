@@ -231,7 +231,11 @@ function TripCard({
       <div>
         <div className="flex items-center justify-between gap-3">
           <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
-            {trip ? <CalendarDays className="size-5" /> : <CircleDashed className="size-5" />}
+            {trip ? (
+              <CalendarDays className="size-5" />
+            ) : (
+              <CircleDashed className="size-5" />
+            )}
           </span>
           <span className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-muted-foreground">
             {copy.dashboard.tripTitle}
@@ -290,7 +294,10 @@ function RewardCard({ copy, rewards }: { copy: AccountCopy; rewards: Rewards | n
 
   return (
     <article className="relative flex min-h-64 flex-col justify-between overflow-hidden rounded-[1.35rem] border border-warning/25 bg-[linear-gradient(145deg,color-mix(in_srgb,var(--warning)_14%,var(--surface)),var(--surface)_72%)] p-5 shadow-soft">
-      <Gift className="absolute -right-5 -bottom-7 size-32 rotate-[-10deg] text-warning/10" aria-hidden />
+      <Gift
+        className="absolute -right-5 -bottom-7 size-32 rotate-[-10deg] text-warning/10"
+        aria-hidden
+      />
       <div className="relative">
         <div className="flex items-center justify-between gap-3">
           <span className="grid size-11 place-items-center rounded-xl bg-warning text-warning-foreground">

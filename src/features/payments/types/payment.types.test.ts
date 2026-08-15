@@ -29,6 +29,7 @@ describe("contrat d'encaissement", () => {
     expect(
       toPaymentState({
         payment_id: "payment-1",
+        shipment_id: "shipment-1",
         status: "refunded",
         is_paid: false,
         amount_minor: 2_190,

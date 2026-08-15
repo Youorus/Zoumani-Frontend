@@ -187,7 +187,8 @@ export function TripDetailView({
                   vérification peut retirer des points de votre programme de fidélité
                   {cancellationPenalty !== null ? (
                     <>
-                      {" "}: <span className="font-medium">{cancellationPenalty} points</span>
+                      {" "}
+                      : <span className="font-medium">{cancellationPenalty} points</span>
                     </>
                   ) : null}
                   .

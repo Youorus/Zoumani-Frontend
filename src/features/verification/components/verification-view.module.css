@@ -17,8 +17,16 @@
   overflow: hidden;
   padding: clamp(2rem, 4vw, 4rem);
   background:
-    radial-gradient(circle at 82% 12%, color-mix(in srgb, var(--secondary) 28%, transparent), transparent 13rem),
-    linear-gradient(150deg, color-mix(in srgb, var(--primary) 18%, var(--inverse-surface)), var(--inverse-surface));
+    radial-gradient(
+      circle at 82% 12%,
+      color-mix(in srgb, var(--secondary) 28%, transparent),
+      transparent 13rem
+    ),
+    linear-gradient(
+      150deg,
+      color-mix(in srgb, var(--primary) 18%, var(--inverse-surface)),
+      var(--inverse-surface)
+    );
   color: var(--inverse-foreground);
 }
 
@@ -115,7 +123,11 @@
   align-items: center;
   padding: clamp(1.25rem, 4vw, 3.8rem);
   background:
-    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--secondary) 16%, transparent), transparent 18rem),
+    radial-gradient(
+      circle at 100% 0,
+      color-mix(in srgb, var(--secondary) 16%, transparent),
+      transparent 18rem
+    ),
     var(--surface);
 }
 

@@ -2,7 +2,11 @@
 
 import { AuthError } from "@/lib/auth/auth-client";
 
-import type { ProofKind, ProofStatus, TripStatus } from "@/features/travel/types/trip.types";
+import type {
+  ProofKind,
+  ProofStatus,
+  TripStatus,
+} from "@/features/travel/types/trip.types";
 
 const BASE = "/api/proxy/admin/trips";
 

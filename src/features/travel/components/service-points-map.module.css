@@ -9,8 +9,7 @@
   width: 100%;
   height: 34rem;
   background:
-    linear-gradient(rgb(255 248 240 / 0.72), rgb(255 248 240 / 0.72)),
-    var(--muted);
+    linear-gradient(rgb(255 248 240 / 0.72), rgb(255 248 240 / 0.72)), var(--muted);
 }
 
 .loading,

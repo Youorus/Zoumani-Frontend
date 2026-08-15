@@ -5,11 +5,7 @@ import { useEffect, useState } from "react";
 
 import { findAirportByCode, updateItinerary } from "../api/travel-client";
 import type { Trip } from "../types/trip.types";
-import {
-  FlightStep,
-  toSegmentDrafts,
-  type FlightChoice,
-} from "./flight-step";
+import { FlightStep, toSegmentDrafts, type FlightChoice } from "./flight-step";
 
 interface EditItineraryViewProps {
   trip: Trip;
@@ -106,7 +102,9 @@ export function EditItineraryView({ trip }: EditItineraryViewProps) {
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
           Itinéraire indisponible
         </p>
-        <h1 className="mt-3 text-2xl font-semibold">Nous n&apos;avons pas pu ouvrir ce voyage</h1>
+        <h1 className="mt-3 text-2xl font-semibold">
+          Nous n&apos;avons pas pu ouvrir ce voyage
+        </h1>
         <p className="mt-3 text-sm text-muted-foreground">{failure}</p>
         <button
           type="button"
@@ -135,7 +133,10 @@ export function EditItineraryView({ trip }: EditItineraryViewProps) {
         isSubmitting={isSaving}
       />
       {failure && (
-        <div className="fixed inset-x-4 bottom-24 z-30 mx-auto max-w-xl rounded-xl border border-error/30 bg-surface p-3 text-sm text-error shadow-lg" role="alert">
+        <div
+          className="fixed inset-x-4 bottom-24 z-30 mx-auto max-w-xl rounded-xl border border-error/30 bg-surface p-3 text-sm text-error shadow-lg"
+          role="alert"
+        >
           {failure}
         </div>
       )}
@@ -165,9 +166,9 @@ function NonModifiable() {
       </p>
       <h1 className="mt-3 text-2xl font-semibold">Ce voyage est entre de bonnes mains</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        L&apos;équipe est en train de le contrôler ou une décision a déjà été
-        prise. Le figer garantit que personne ne vérifie des informations qui changent
-        en même temps.
+        L&apos;équipe est en train de le contrôler ou une décision a déjà été prise. Le
+        figer garantit que personne ne vérifie des informations qui changent en même
+        temps.
       </p>
     </div>
   );

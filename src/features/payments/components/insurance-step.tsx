@@ -126,7 +126,9 @@ export function InsuranceStep({
           {(loading || currentOffer) && (
             <div className="rounded-xl bg-inverse-surface p-4 text-inverse-foreground">
               {loading && !currentOffer ? (
-                <p className="text-sm text-inverse-muted-foreground">Calcul de la protection…</p>
+                <p className="text-sm text-inverse-muted-foreground">
+                  Calcul de la protection…
+                </p>
               ) : currentOffer ? (
                 <>
                   <div className="flex items-end justify-between gap-4">
@@ -135,7 +137,8 @@ export function InsuranceStep({
                         Prime simulée
                       </p>
                       <p className="mt-1 text-sm text-inverse-muted-foreground">
-                        Jusqu&apos;à {(currentOffer.coverageMinor / 100).toFixed(2)} € déclarés
+                        Jusqu&apos;à {(currentOffer.coverageMinor / 100).toFixed(2)} €
+                        déclarés
                       </p>
                       <p className="mt-1 text-[0.7rem] text-inverse-muted-foreground">
                         Protection partenaire et gestion Zoumani incluses
@@ -147,8 +150,14 @@ export function InsuranceStep({
                   </div>
                   <ul className="mt-4 space-y-2">
                     {currentOffer.benefits.map((benefit) => (
-                      <li key={benefit} className="flex gap-2 text-xs text-inverse-muted-foreground">
-                        <Check className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
+                      <li
+                        key={benefit}
+                        className="flex gap-2 text-xs text-inverse-muted-foreground"
+                      >
+                        <Check
+                          className="mt-0.5 size-3.5 shrink-0 text-primary"
+                          aria-hidden
+                        />
                         {benefit}
                       </li>
                     ))}

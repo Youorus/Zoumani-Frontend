@@ -21,8 +21,8 @@ export function UserAvatar({
   fallbackClassName,
   ...props
 }: UserAvatarProps) {
-  const initials = `${firstName.trim().charAt(0)}${lastName.trim().charAt(0)}`
-    .toUpperCase() || "?";
+  const initials =
+    `${firstName.trim().charAt(0)}${lastName.trim().charAt(0)}`.toUpperCase() || "?";
 
   return (
     <Avatar className={className} {...props}>

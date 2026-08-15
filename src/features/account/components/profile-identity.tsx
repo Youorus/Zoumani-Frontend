@@ -17,8 +17,7 @@ export function ProfileIdentity() {
         {user.phone && <Row label="Téléphone">{user.phone}</Row>}
       </dl>
       <p className="mt-3 text-xs text-muted-foreground">
-        Votre identité légale a été vérifiée sur pièce. Pour la corriger,
-        contactez-nous.
+        Votre identité légale a été vérifiée sur pièce. Pour la corriger, contactez-nous.
       </p>
     </section>
   );

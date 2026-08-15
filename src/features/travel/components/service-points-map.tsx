@@ -99,7 +99,8 @@ export function ServicePointsMap({
 
     markerLayer.clearLayers();
     points.forEach((point, index) => {
-      const isSelected = selected !== null && servicePointKey(point) === servicePointKey(selected);
+      const isSelected =
+        selected !== null && servicePointKey(point) === servicePointKey(selected);
       const icon = leaflet.divIcon({
         className: styles.markerHost,
         html: `<span class="${styles.markerPin} ${isSelected ? styles.markerPinSelected : ""}"><span>${isSelected ? "✓" : index + 1}</span></span>`,
@@ -172,7 +173,9 @@ export function ServicePointsMap({
     if (!isVisible || !mapRef.current) {
       return;
     }
-    const frame = window.requestAnimationFrame(() => mapRef.current?.invalidateSize(false));
+    const frame = window.requestAnimationFrame(() =>
+      mapRef.current?.invalidateSize(false),
+    );
     return () => window.cancelAnimationFrame(frame);
   }, [isVisible]);
 
@@ -189,7 +192,9 @@ export function ServicePointsMap({
           <div className={styles.loadingCard}>
             <MapPinned className="mx-auto size-5 text-primary" aria-hidden />
             <p className="mt-2 text-sm font-bold text-foreground">La carte arrive…</p>
-            <p className="mt-1 text-xs">Nous plaçons les relais autour de votre adresse.</p>
+            <p className="mt-1 text-xs">
+              Nous plaçons les relais autour de votre adresse.
+            </p>
             <div className={styles.loadingBar} aria-hidden />
           </div>
         </div>
@@ -197,7 +202,9 @@ export function ServicePointsMap({
       {(loadFailure || tilesUnavailable) && (
         <div className={styles.error} role="status">
           <div className={styles.loadingCard}>
-            <p className="text-sm font-bold text-foreground">Fond de carte indisponible</p>
+            <p className="text-sm font-bold text-foreground">
+              Fond de carte indisponible
+            </p>
             <p className="mt-1 text-xs">
               La liste, les distances et la sélection restent entièrement disponibles.
             </p>

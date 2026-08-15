@@ -118,7 +118,9 @@ export function TripReviewQueue() {
       })
       .catch((caught: unknown) => {
         if (!cancelled) {
-          setError(caught instanceof AuthError ? caught.message : "Chargement impossible.");
+          setError(
+            caught instanceof AuthError ? caught.message : "Chargement impossible.",
+          );
         }
       })
       .finally(() => {
@@ -195,7 +197,10 @@ export function TripReviewQueue() {
       </div>
 
       {error ? (
-        <p className="mb-4 flex items-center gap-2 rounded-xl bg-error/10 p-3 text-sm text-error" role="alert">
+        <p
+          className="mb-4 flex items-center gap-2 rounded-xl bg-error/10 p-3 text-sm text-error"
+          role="alert"
+        >
           <AlertCircle className="size-4 shrink-0" aria-hidden />
           {error}
         </p>
@@ -238,7 +243,10 @@ export function TripReviewQueue() {
                           {formatDateTime(trip.departure_at)}
                         </span>
                       </span>
-                      <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
+                      <ArrowRight
+                        className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                        aria-hidden
+                      />
                     </span>
                   </button>
                 </li>
@@ -250,7 +258,9 @@ export function TripReviewQueue() {
         {opened ? (
           <TripDossier key={opened.trip.id} detail={opened} onAct={act} />
         ) : (
-          <section className={`${styles.detail} grid min-h-96 place-items-center text-center`}>
+          <section
+            className={`${styles.detail} grid min-h-96 place-items-center text-center`}
+          >
             <div>
               <Route className="mx-auto size-9 text-primary" aria-hidden />
               <h2 className="mt-3 font-display text-2xl">Ouvrez un voyage</h2>
@@ -300,7 +310,8 @@ function TripDossier({
             {trip.origin_airport_code} → {trip.destination_airport_code}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Départ {formatDateTime(trip.departure_at)} · voyageur {trip.traveler_user_id.slice(0, 8)}
+            Départ {formatDateTime(trip.departure_at)} · voyageur{" "}
+            {trip.traveler_user_id.slice(0, 8)}
           </p>
         </div>
         <StatusPill status={trip.status} />
@@ -314,13 +325,16 @@ function TripDossier({
               {trip.segments.map((segment) => (
                 <li key={segment.id} className="rounded-2xl bg-muted/55 p-4">
                   <div className="flex items-center justify-between gap-4">
-                    <strong>{segment.origin_airport_code} → {segment.destination_airport_code}</strong>
+                    <strong>
+                      {segment.origin_airport_code} → {segment.destination_airport_code}
+                    </strong>
                     <span className="rounded-full bg-surface px-2.5 py-1 font-mono text-xs font-bold">
                       {segment.flight_designator}
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {formatDateTime(segment.departure_at)} → {formatDateTime(segment.arrival_at)}
+                    {formatDateTime(segment.departure_at)} →{" "}
+                    {formatDateTime(segment.arrival_at)}
                   </p>
                 </li>
               ))}
@@ -366,18 +380,27 @@ function TripDossier({
               </label>
 
               <div className="mt-4">
-                <span className="mb-1.5 block text-sm font-semibold">Fondement de la validation</span>
-                <Select value={method} onValueChange={(value) => setMethod(value as TripVerificationMethod)}>
+                <span className="mb-1.5 block text-sm font-semibold">
+                  Fondement de la validation
+                </span>
+                <Select
+                  value={method}
+                  onValueChange={(value) => setMethod(value as TripVerificationMethod)}
+                >
                   <SelectTrigger aria-label="Méthode de vérification">
                     <span>{METHODS[method].label}</span>
                   </SelectTrigger>
                   <SelectContent>
                     {(Object.keys(METHODS) as TripVerificationMethod[]).map((value) => (
-                      <SelectItem key={value} value={value}>{METHODS[value].label}</SelectItem>
+                      <SelectItem key={value} value={value}>
+                        {METHODS[value].label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="mt-1.5 text-xs leading-5 text-muted-foreground">{METHODS[method].help}</p>
+                <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
+                  {METHODS[method].help}
+                </p>
               </div>
 
               <div className="mt-5 flex flex-wrap gap-2">
@@ -385,7 +408,9 @@ function TripDossier({
                   type="button"
                   disabled={busy || !canVerify}
                   onClick={() => void run(() => verifyAdminTrip(trip.id, method))}
-                  title={canVerify ? undefined : "Acceptez d'abord la preuve correspondante"}
+                  title={
+                    canVerify ? undefined : "Acceptez d'abord la preuve correspondante"
+                  }
                   className="focus-ring inline-flex items-center gap-2 rounded-full bg-success px-5 py-2.5 text-sm font-black text-white disabled:opacity-35"
                 >
                   <Check className="size-4" aria-hidden /> Valider le voyage
@@ -415,7 +440,11 @@ function TripDossier({
               onClick={() => void run(() => takeTripForReview(trip.id))}
               className="focus-ring inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-black text-primary-foreground disabled:opacity-50"
             >
-              {busy ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <FileSearch className="size-4" aria-hidden />}
+              {busy ? (
+                <LoaderCircle className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <FileSearch className="size-4" aria-hidden />
+              )}
               Prendre en charge ce voyage
             </button>
           ) : null}
@@ -423,7 +452,9 @@ function TripDossier({
 
         <aside className="space-y-4">
           <section className="rounded-2xl bg-inverse-surface p-4 text-inverse-foreground">
-            <p className="text-xs font-black uppercase tracking-[0.14em] text-primary">Règle de confiance</p>
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-primary">
+              Règle de confiance
+            </p>
             <p className="mt-2 font-display text-xl">Deux histoires doivent coïncider.</p>
             <p className="mt-2 text-xs leading-5 text-inverse-muted-foreground">
               Le nom du voyageur, le numéro de vol, les aéroports et les dates doivent
@@ -431,10 +462,23 @@ function TripDossier({
             </p>
           </section>
           <dl className="rounded-2xl border border-border p-4 text-sm">
-            <Data label="Transmis" value={trip.submitted_at ? formatDateTime(trip.submitted_at) : "—"} />
-            <Data label="Pris en charge" value={trip.review_started_at ? formatDateTime(trip.review_started_at) : "—"} />
+            <Data
+              label="Transmis"
+              value={trip.submitted_at ? formatDateTime(trip.submitted_at) : "—"}
+            />
+            <Data
+              label="Pris en charge"
+              value={
+                trip.review_started_at ? formatDateTime(trip.review_started_at) : "—"
+              }
+            />
             <Data label="Assigné à" value={trip.assigned_to?.slice(0, 8) ?? "Personne"} />
-            <Data label="Méthode finale" value={trip.verification_method ? METHODS[trip.verification_method].label : "—"} />
+            <Data
+              label="Méthode finale"
+              value={
+                trip.verification_method ? METHODS[trip.verification_method].label : "—"
+              }
+            />
           </dl>
         </aside>
       </div>
@@ -477,15 +521,23 @@ function ProofCard({
   }
 
   return (
-    <article className={`rounded-2xl border border-border p-4 ${proof.status === "replaced" ? "opacity-60" : ""}`}>
+    <article
+      className={`rounded-2xl border border-border p-4 ${proof.status === "replaced" ? "opacity-60" : ""}`}
+    >
       <div className="flex items-start gap-3">
         <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
           <FileCheck2 className="size-4" aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
-          <h4 className="font-bold">{PROOF_KINDS[proof.kind].label} · v{proof.version}</h4>
-          <p className="text-xs text-muted-foreground">{proofStatus(proof.status)} · {formatSize(proof.size_bytes)}</p>
-          {proof.rejection_reason ? <p className="mt-1 text-xs leading-5 text-error">{proof.rejection_reason}</p> : null}
+          <h4 className="font-bold">
+            {PROOF_KINDS[proof.kind].label} · v{proof.version}
+          </h4>
+          <p className="text-xs text-muted-foreground">
+            {proofStatus(proof.status)} · {formatSize(proof.size_bytes)}
+          </p>
+          {proof.rejection_reason ? (
+            <p className="mt-1 text-xs leading-5 text-error">{proof.rejection_reason}</p>
+          ) : null}
         </div>
       </div>
       <button
@@ -494,16 +546,30 @@ function ProofCard({
         onClick={() => void openProof()}
         className="focus-ring mt-3 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-bold"
       >
-        {opening ? <LoaderCircle className="size-3 animate-spin" aria-hidden /> : <ExternalLink className="size-3" aria-hidden />}
+        {opening ? (
+          <LoaderCircle className="size-3 animate-spin" aria-hidden />
+        ) : (
+          <ExternalLink className="size-3" aria-hidden />
+        )}
         Consulter la preuve
       </button>
       {openError ? <p className="mt-2 text-xs text-error">{openError}</p> : null}
       {actionable ? (
         <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-3">
-          <button type="button" disabled={busy} onClick={() => void onAccept()} className="focus-ring rounded-full bg-success px-3 py-1.5 text-xs font-black text-white disabled:opacity-50">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void onAccept()}
+            className="focus-ring rounded-full bg-success px-3 py-1.5 text-xs font-black text-white disabled:opacity-50"
+          >
             Accepter
           </button>
-          <button type="button" disabled={busy || !reason.trim()} onClick={() => void onReject()} className="focus-ring rounded-full border border-error px-3 py-1.5 text-xs font-black text-error disabled:opacity-35">
+          <button
+            type="button"
+            disabled={busy || !reason.trim()}
+            onClick={() => void onReject()}
+            className="focus-ring rounded-full border border-error px-3 py-1.5 text-xs font-black text-error disabled:opacity-35"
+          >
             Refuser la preuve
           </button>
         </div>
@@ -515,32 +581,65 @@ function ProofCard({
 function methodHasEvidence(method: TripVerificationMethod, proofs: AdminTripProof[]) {
   if (method === "booking_api") return true;
   const accepted = proofs.filter((proof) => proof.status === "accepted");
-  if (method === "boarding_pass") return accepted.some((proof) => proof.kind === "boarding_pass");
-  if (method === "e_ticket_document") return accepted.some((proof) => proof.kind === "e_ticket");
+  if (method === "boarding_pass")
+    return accepted.some((proof) => proof.kind === "boarding_pass");
+  if (method === "e_ticket_document")
+    return accepted.some((proof) => proof.kind === "e_ticket");
   return accepted.length > 0;
 }
 
 function StatusPill({ status }: { status: TripStatus }) {
-  const tone = status === "verified" ? "bg-success/10 text-success" : status === "rejected" ? "bg-error/10 text-error" : status === "action_required" ? "bg-warning/10 text-warning" : "bg-primary/10 text-primary";
-  return <span className={`rounded-full px-3 py-1.5 text-xs font-black ${tone}`}>{STATUS_LABELS[status]}</span>;
+  const tone =
+    status === "verified"
+      ? "bg-success/10 text-success"
+      : status === "rejected"
+        ? "bg-error/10 text-error"
+        : status === "action_required"
+          ? "bg-warning/10 text-warning"
+          : "bg-primary/10 text-primary";
+  return (
+    <span className={`rounded-full px-3 py-1.5 text-xs font-black ${tone}`}>
+      {STATUS_LABELS[status]}
+    </span>
+  );
 }
 
 function SectionTitle({ icon: Icon, title }: { icon: typeof Route; title: string }) {
-  return <h3 className="mb-3 flex items-center gap-2 text-sm font-black"><Icon className="size-4 text-primary" aria-hidden /> {title}</h3>;
+  return (
+    <h3 className="mb-3 flex items-center gap-2 text-sm font-black">
+      <Icon className="size-4 text-primary" aria-hidden /> {title}
+    </h3>
+  );
 }
 
 function Data({ label, value }: { label: string; value: string }) {
-  return <div className="border-b border-border py-2 last:border-0"><dt className="text-xs text-muted-foreground">{label}</dt><dd className="mt-0.5 font-semibold break-words">{value}</dd></div>;
+  return (
+    <div className="border-b border-border py-2 last:border-0">
+      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 font-semibold break-words">{value}</dd>
+    </div>
+  );
 }
 
 function proofStatus(status: AdminTripProof["status"]) {
-  return { uploaded: "À examiner", accepted: "Acceptée", rejected: "Refusée", replaced: "Ancienne version" }[status];
+  return {
+    uploaded: "À examiner",
+    accepted: "Acceptée",
+    rejected: "Refusée",
+    replaced: "Ancienne version",
+  }[status];
 }
 
 function formatSize(bytes: number) {
-  return bytes < 1_000_000 ? `${Math.round(bytes / 1_000)} Ko` : `${(bytes / 1_000_000).toFixed(1)} Mo`;
+  return bytes < 1_000_000
+    ? `${Math.round(bytes / 1_000)} Ko`
+    : `${(bytes / 1_000_000).toFixed(1)} Mo`;
 }
 
 function formatDateTime(value: string) {
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(value));
+  return new Intl.DateTimeFormat("fr-FR", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC",
+  }).format(new Date(value));
 }

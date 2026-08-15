@@ -16,12 +16,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { countryName } from "@/features/auth/lib/phone-countries";
 import { AuthError } from "@/lib/auth/auth-client";
@@ -172,9 +167,9 @@ export function ReviewQueue() {
         <p className={styles.eyebrow}>Atelier de confiance</p>
         <h1>Chaque badge engage Zoumani.</h1>
         <p>
-          Ici, aucune validation automatique. Une personne regarde une personne,
-          confronte ses preuves et explique chaque décision dans des mots qu&apos;elle
-          pourra comprendre.
+          Ici, aucune validation automatique. Une personne regarde une personne, confronte
+          ses preuves et explique chaque décision dans des mots qu&apos;elle pourra
+          comprendre.
         </p>
       </header>
 
@@ -202,12 +197,18 @@ export function ReviewQueue() {
           className="focus-ring grid size-10 place-items-center rounded-full border border-border bg-surface hover:bg-muted"
           aria-label="Rafraîchir la file"
         >
-          <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} aria-hidden="true" />
+          <RefreshCw
+            className={`size-4 ${loading ? "animate-spin" : ""}`}
+            aria-hidden="true"
+          />
         </button>
       </div>
 
       {error ? (
-        <p className="mb-4 flex items-center gap-2 rounded-xl bg-error/10 p-3 text-sm text-error" role="alert">
+        <p
+          className="mb-4 flex items-center gap-2 rounded-xl bg-error/10 p-3 text-sm text-error"
+          role="alert"
+        >
           <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
           {error}
         </p>
@@ -250,10 +251,14 @@ export function ReviewQueue() {
                             {fullName(dossier)}
                           </span>
                           <span className="block truncate text-xs text-muted-foreground">
-                            {country(dossier.nationality)} → {country(dossier.country_of_residence)}
+                            {country(dossier.nationality)} →{" "}
+                            {country(dossier.country_of_residence)}
                           </span>
                         </span>
-                        <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                        <ArrowRight
+                          className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                          aria-hidden="true"
+                        />
                       </span>
                     </button>
                   </li>
@@ -266,7 +271,9 @@ export function ReviewQueue() {
         {opened ? (
           <Dossier key={opened.verification.id} detail={opened} onAct={act} />
         ) : (
-          <section className={`${styles.detail} grid min-h-96 place-items-center text-center`}>
+          <section
+            className={`${styles.detail} grid min-h-96 place-items-center text-center`}
+          >
             <div>
               <FileSearch className="mx-auto size-9 text-primary" aria-hidden="true" />
               <h2 className="mt-3 font-display text-2xl">Ouvrez un dossier</h2>
@@ -329,7 +336,8 @@ function Dossier({
             {fullName(verification)}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {country(verification.nationality)} · réside en {country(verification.country_of_residence)}
+            {country(verification.nationality)} · réside en{" "}
+            {country(verification.country_of_residence)}
           </p>
         </div>
         <StatusPill status={verification.status} />
@@ -344,7 +352,10 @@ function Dossier({
               <Data label="Nom légal" value={verification.legal_last_name} />
               <Data label="Date de naissance" value={verification.date_of_birth} />
               <Data label="Nationalité" value={country(verification.nationality)} />
-              <Data label="Pays de résidence" value={country(verification.country_of_residence)} />
+              <Data
+                label="Pays de résidence"
+                value={country(verification.country_of_residence)}
+              />
               <Data label="Adresse" value={verification.residential_address} wide />
             </dl>
           </section>
@@ -391,7 +402,9 @@ function Dossier({
                   type="button"
                   disabled={busy || !allAccepted}
                   onClick={() => void run(() => approve(verification.id))}
-                  title={allAccepted ? undefined : "Chaque pièce actuelle doit être acceptée"}
+                  title={
+                    allAccepted ? undefined : "Chaque pièce actuelle doit être acceptée"
+                  }
                   className="focus-ring inline-flex items-center gap-2 rounded-full bg-success px-5 py-3 text-sm font-black text-white disabled:opacity-40"
                 >
                   <Check className="size-4" aria-hidden="true" /> Valider l&apos;identité
@@ -407,10 +420,12 @@ function Dossier({
               </div>
 
               <div className="mt-5 border-t border-border pt-5">
-                <p className="text-sm font-bold">Demander une correction sans tout refuser</p>
+                <p className="text-sm font-bold">
+                  Demander une correction sans tout refuser
+                </p>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  La personne reçoit la consigne par e-mail, corrige uniquement ce point et
-                  renvoie le même dossier.
+                  La personne reçoit la consigne par e-mail, corrige uniquement ce point
+                  et renvoie le même dossier.
                 </p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   <Select
@@ -438,7 +453,9 @@ function Dossier({
                         <span>
                           {targetDocumentId
                             ? documentName(
-                                targetOptions.find((item) => item.id === targetDocumentId),
+                                targetOptions.find(
+                                  (item) => item.id === targetDocumentId,
+                                ),
                               )
                             : "Sélectionner la pièce"}
                         </span>
@@ -492,7 +509,11 @@ function Dossier({
               onClick={() => void run(() => startReview(verification.id))}
               className="focus-ring inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-black text-primary-foreground shadow-soft disabled:opacity-50"
             >
-              {busy ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : <FileSearch className="size-4" aria-hidden="true" />}
+              {busy ? (
+                <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <FileSearch className="size-4" aria-hidden="true" />
+              )}
               Prendre en charge ce dossier
             </button>
           ) : null}
@@ -520,9 +541,14 @@ function Dossier({
               <SectionTitle icon={MailCheck} title="Échanges" />
               <div className="space-y-2">
                 {requests.map((request) => (
-                  <div key={request.id} className="rounded-2xl border border-border p-3 text-xs">
+                  <div
+                    key={request.id}
+                    className="rounded-2xl border border-border p-3 text-xs"
+                  >
                     <strong className="block">{REQUEST_LABELS[request.kind]}</strong>
-                    <p className="mt-1 leading-5 text-muted-foreground">{request.message}</p>
+                    <p className="mt-1 leading-5 text-muted-foreground">
+                      {request.message}
+                    </p>
                     {request.user_response ? (
                       <p className="mt-2 border-l-2 border-primary pl-2 leading-5">
                         {request.user_response}
@@ -570,7 +596,9 @@ function DocumentCard({
             {document.expires_on ? ` · expire le ${formatDate(document.expires_on)}` : ""}
           </p>
           {document.rejection_reason ? (
-            <p className="mt-1 text-xs leading-5 text-error">{document.rejection_reason}</p>
+            <p className="mt-1 text-xs leading-5 text-error">
+              {document.rejection_reason}
+            </p>
           ) : null}
         </div>
       </div>
@@ -663,16 +691,20 @@ function Data({
 }
 
 function fullName(verification: AdminVerification) {
-  return [verification.legal_first_name, verification.legal_last_name]
-    .filter(Boolean)
-    .join(" ") || "Identité à compléter";
+  return (
+    [verification.legal_first_name, verification.legal_last_name]
+      .filter(Boolean)
+      .join(" ") || "Identité à compléter"
+  );
 }
 
 function initials(verification: AdminVerification) {
-  return [verification.legal_first_name, verification.legal_last_name]
-    .filter(Boolean)
-    .map((part) => part?.[0]?.toUpperCase())
-    .join("") || "?";
+  return (
+    [verification.legal_first_name, verification.legal_last_name]
+      .filter(Boolean)
+      .map((part) => part?.[0]?.toUpperCase())
+      .join("") || "?"
+  );
 }
 
 function country(code: string | null) {

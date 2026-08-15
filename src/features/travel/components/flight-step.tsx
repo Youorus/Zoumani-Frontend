@@ -83,7 +83,9 @@ export function FlightStep({
 
   const allComplete = flights.every(isComplete);
   const allChecked = flights.every((flight) => flight.lookup !== null);
-  const hasMissingFlight = flights.some((flight) => flight.lookup?.outcome === "not_found");
+  const hasMissingFlight = flights.some(
+    (flight) => flight.lookup?.outcome === "not_found",
+  );
   const isChecking = flights.some((flight) => flight.isChecking);
 
   function updateFlight(id: string, update: Partial<FlightDraft>) {
@@ -144,9 +146,7 @@ export function FlightStep({
             : item,
         ),
       );
-      setFailure(
-        "Une source n'a pas répondu. Ce tronçon sera contrôlé humainement.",
-      );
+      setFailure("Une source n'a pas répondu. Ce tronçon sera contrôlé humainement.");
     }
   }
 
@@ -388,14 +388,18 @@ function FlightVerdict({ lookup }: { lookup: FlightLookup }) {
           {lookup.schedule.flightDesignator} confirmé
         </p>
         <p className="mt-1 text-muted-foreground">
-          {formatUtc(lookup.schedule.departureAt)} → {formatUtc(lookup.schedule.arrivalAt)}
+          {formatUtc(lookup.schedule.departureAt)} →{" "}
+          {formatUtc(lookup.schedule.arrivalAt)}
         </p>
       </div>
     );
   }
   if (lookup.outcome === "not_found") {
     return (
-      <div className="rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm" role="alert">
+      <div
+        className="rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm"
+        role="alert"
+      >
         <p className="font-semibold text-error">Vol introuvable</p>
         <p className="mt-1 text-muted-foreground">
           Vérifiez la compagnie, le numéro, la date et le sens du trajet.
@@ -445,7 +449,9 @@ export function toSegmentDrafts(flights: FlightChoice[]): SegmentDraft[] {
         provisionalDeparture = new Date(previousArrival.getTime() + 2 * 60 * 60 * 1000);
       }
       departureAt = provisionalDeparture.toISOString();
-      arrivalAt = new Date(provisionalDeparture.getTime() + 4 * 60 * 60 * 1000).toISOString();
+      arrivalAt = new Date(
+        provisionalDeparture.getTime() + 4 * 60 * 60 * 1000,
+      ).toISOString();
     }
 
     previousArrival = new Date(arrivalAt);

@@ -58,8 +58,8 @@ export function StripePaymentPanel({
             Choisissez votre moyen de paiement
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            Stripe affiche uniquement les moyens disponibles pour votre appareil et
-            votre situation. Zoumani ne reçoit jamais vos données bancaires.
+            Stripe affiche uniquement les moyens disponibles pour votre appareil et votre
+            situation. Zoumani ne reçoit jamais vos données bancaires.
           </p>
         </div>
         <span className="hidden shrink-0 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary sm:inline-flex">
@@ -133,15 +133,16 @@ function PaymentForm({
   return (
     <form onSubmit={(event) => void confirm(event)} aria-busy={submitting} noValidate>
       <div className="min-h-32 rounded-2xl border border-border bg-surface-elevated p-3.5 sm:p-4">
-        <PaymentElement
-          options={{ layout: { type: "accordion", radios: "always" } }}
-        />
+        <PaymentElement options={{ layout: { type: "accordion", radios: "always" } }} />
         {checkoutState.type === "loading" && (
           <div
             className="flex min-h-28 items-center justify-center gap-2 text-sm text-muted-foreground"
             role="status"
           >
-            <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />
+            <LoaderCircle
+              className="size-4 animate-spin motion-reduce:animate-none"
+              aria-hidden
+            />
             Préparation du formulaire sécurisé…
           </div>
         )}
@@ -165,7 +166,10 @@ function PaymentForm({
       >
         {submitting ? (
           <>
-            <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />
+            <LoaderCircle
+              className="size-4 animate-spin motion-reduce:animate-none"
+              aria-hidden
+            />
             Confirmation sécurisée…
           </>
         ) : (

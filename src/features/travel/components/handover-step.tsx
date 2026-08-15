@@ -131,7 +131,8 @@ export function HandoverStep({
           current
             ? (valeur.servicePoints.find(
                 (candidate) =>
-                  candidate.code === current.code && candidate.carrier === current.carrier,
+                  candidate.code === current.code &&
+                  candidate.carrier === current.carrier,
               ) ?? null)
             : null,
         );
@@ -202,7 +203,9 @@ export function HandoverStep({
     return (
       <div className="space-y-3 rounded-2xl border border-primary/25 bg-primary/5 p-4">
         <div>
-          <p className="font-medium text-foreground">Trouvons les relais autour de vous</p>
+          <p className="font-medium text-foreground">
+            Trouvons les relais autour de vous
+          </p>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
             Votre adresse vérifiée n&apos;a pas pu être placée sur la carte. Votre
             position sert uniquement à cette recherche de proximité.
@@ -218,7 +221,8 @@ export function HandoverStep({
         </button>
         {acceptsInPerson && (
           <p className="text-xs text-muted-foreground">
-            La remise en main propre reste disponible si vous préférez convenir d&apos;un lieu.
+            La remise en main propre reste disponible si vous préférez convenir d&apos;un
+            lieu.
           </p>
         )}
         {lookupFailure && (
@@ -257,8 +261,8 @@ export function HandoverStep({
           titre="Dépôt en point relais"
           detail={
             options?.pointsOutcome === "unavailable"
-                ? "Momentanément indisponible."
-                : "Vous déposez près de chez vous, le colis est livré au voyageur."
+              ? "Momentanément indisponible."
+              : "Vous déposez près de chez vous, le colis est livré au voyageur."
           }
           prix={quote ? `dès ${quote.priceMajor} €` : "—"}
           actif={method === "carrier"}
@@ -270,7 +274,10 @@ export function HandoverStep({
       </div>
 
       {chargement && (
-        <div className="rounded-xl border border-primary/20 bg-primary/5 p-3" role="status">
+        <div
+          className="rounded-xl border border-primary/20 bg-primary/5 p-3"
+          role="status"
+        >
           <p className="text-sm font-medium text-foreground">Recherche autour de vous…</p>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-primary/15">
             <span className="block h-full w-1/2 animate-pulse rounded-full bg-primary" />
@@ -302,21 +309,22 @@ export function HandoverStep({
       {options &&
         (options.pointsOutcome === "none_nearby" ||
           (options.pointsOutcome === "found" && options.servicePoints.length === 0)) && (
-        <div className="rounded-xl border border-border bg-muted/50 p-3">
-          <p className="text-sm text-muted-foreground">
-            Aucun relais compatible n&apos;a été trouvé dans un rayon de {radiusMeters / 1_000} km.
-          </p>
-          {radiusMeters < 50_000 && (
-            <button
-              type="button"
-              onClick={() => setRadiusMeters(radiusMeters < 15_000 ? 15_000 : 50_000)}
-              className="focus-ring mt-2 rounded-lg text-sm font-bold text-primary"
-            >
-              Élargir la recherche à {radiusMeters < 15_000 ? 15 : 50} km
-            </button>
-          )}
-        </div>
-      )}
+          <div className="rounded-xl border border-border bg-muted/50 p-3">
+            <p className="text-sm text-muted-foreground">
+              Aucun relais compatible n&apos;a été trouvé dans un rayon de{" "}
+              {radiusMeters / 1_000} km.
+            </p>
+            {radiusMeters < 50_000 && (
+              <button
+                type="button"
+                onClick={() => setRadiusMeters(radiusMeters < 15_000 ? 15_000 : 50_000)}
+                className="focus-ring mt-2 rounded-lg text-sm font-bold text-primary"
+              >
+                Élargir la recherche à {radiusMeters < 15_000 ? 15 : 50} km
+              </button>
+            )}
+          </div>
+        )}
 
       {method === "carrier" && options && options.servicePoints.length > 0 && (
         <ServicePointSelector
@@ -336,9 +344,7 @@ export function HandoverStep({
           {method === "carrier" && quote && (
             <div className="flex justify-between gap-4">
               <dt className="text-muted-foreground">Livraison {quote.label}</dt>
-              <dd className="tabular-nums">
-                {(quote.priceMinor / 100).toFixed(2)} €
-              </dd>
+              <dd className="tabular-nums">{(quote.priceMinor / 100).toFixed(2)} €</dd>
             </div>
           )}
           <div className="flex items-start justify-between gap-4">
