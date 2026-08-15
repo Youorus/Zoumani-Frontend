@@ -91,6 +91,16 @@ interface CallOptions {
   /** Corps binaire, pour les envois de fichiers. */
   raw?: BodyInit;
   contentType?: string;
+  /**
+   * Attendre une réponse binaire — un PDF, une image.
+   *
+   * Sans cela, `parse` lit le corps en texte et un PDF revient en chaîne
+   * illisible. Ce drapeau existe pour que ces routes profitent quand même
+   * du jeton et du rafraîchissement silencieux, plutôt que de refaire
+   * l'authentification à côté — une copie qui divergerait au premier
+   * ajustement de session.
+   */
+  binary?: boolean;
 }
 
 async function rawCall(options: CallOptions, token: string | null): Promise<Response> {
@@ -120,9 +130,15 @@ async function rawCall(options: CallOptions, token: string | null): Promise<Resp
   });
 }
 
-async function parse(response: Response): Promise<unknown> {
+async function parse(response: Response, binary = false): Promise<unknown> {
   if (response.status === 204) {
     return null;
+  }
+  // Le succès seulement : une erreur reste du JSON, même sur une route
+  // binaire, et l'interface a besoin de son `reason` pour choisir son
+  // message.
+  if (binary && response.ok) {
+    return response.arrayBuffer();
   }
   const text = await response.text();
   if (!text) {
@@ -172,7 +188,7 @@ export async function callApi(options: CallOptions): Promise<UpstreamResult> {
   if (first.status !== 401) {
     return {
       status: first.status,
-      body: await parse(first),
+      body: await parse(first, options.binary),
       refreshed: false,
       cacheControl: first.headers.get("cache-control"),
     };
@@ -182,7 +198,7 @@ export async function callApi(options: CallOptions): Promise<UpstreamResult> {
   if (!(await refreshSession())) {
     return {
       status: 401,
-      body: await parse(first),
+      body: await parse(first, options.binary),
       refreshed: false,
       cacheControl: null,
     };
@@ -191,7 +207,7 @@ export async function callApi(options: CallOptions): Promise<UpstreamResult> {
   const second = await rawCall(options, await readAccessToken());
   return {
     status: second.status,
-    body: await parse(second),
+    body: await parse(second, options.binary),
     refreshed: true,
     cacheControl: second.headers.get("cache-control"),
   };
@@ -208,7 +224,7 @@ export async function callPublicApi(options: CallOptions): Promise<UpstreamResul
   const response = await rawCall(options, null);
   return {
     status: response.status,
-    body: await parse(response),
+    body: await parse(response, options.binary),
     refreshed: false,
     cacheControl: response.headers.get("cache-control"),
   };
