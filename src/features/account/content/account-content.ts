@@ -159,6 +159,7 @@ const accountFr = {
   menu: {
     label: "Mon compte",
     shipments: "Mes envois",
+    tracking: "Suivi de mes colis",
     trips: "Mes trajets",
     rewards: "Mes points",
     messages: "Messages",
@@ -314,6 +315,7 @@ export const accountContent = {
     menu: {
       label: "My account",
       shipments: "My parcels",
+      tracking: "Track my parcels",
       trips: "My trips",
       rewards: "My points",
       messages: "Messages",

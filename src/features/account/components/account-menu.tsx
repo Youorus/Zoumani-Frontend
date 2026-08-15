@@ -5,6 +5,7 @@ import {
   LogOut,
   MessageCircle,
   Package,
+  Truck,
   Plane,
   Coins,
   ShieldCheck,
@@ -63,6 +64,10 @@ export function AccountMenu({
 
   const entries = [
     { href: "/compte/envois", label: menu.shipments, icon: Package },
+    // Juste après les envois : c'est la suite immédiate d'un colis payé,
+    // et la question qu'on se pose le plus souvent une fois qu'il est
+    // parti — où en est-il ?
+    { href: "/compte/envois/suivi", label: menu.tracking, icon: Truck },
     { href: "/compte/trajets", label: menu.trips, icon: Plane },
     // Placé juste après les trajets : c'est en les publiant qu'on gagne
     // des points, et l'entrée n'a de sens que dans ce voisinage.
