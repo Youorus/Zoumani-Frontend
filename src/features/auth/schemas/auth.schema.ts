@@ -33,12 +33,21 @@ export const codeSchema = z.object({
 export const registrationSchema = z.object({
   firstName: z.string().min(1, "Indiquez votre prénom.").max(100),
   lastName: z.string().min(1, "Indiquez votre nom.").max(100),
-  phoneCountryCode: z.string().length(2, "Choisissez un pays."),
+  /*
+   * Le téléphone est facultatif au niveau du schéma, et **exigé par
+   * l'écran** seulement quand le serveur l'annonce dans `requiredFields`.
+   *
+   * Deux schémas — un avec, un sans — divergeraient au premier
+   * ajustement de format. Un seul, plus permissif, avec la règle portée
+   * là où l'information arrive : c'est le serveur qui sait si le numéro
+   * est demandé, pas le formulaire.
+   */
+  phoneCountryCode: z.string().max(2).optional(),
   phoneNationalNumber: z
     .string()
-    .min(4, "Ce numéro semble trop court.")
     .max(20)
-    .regex(/^[\d\s]+$/, "Le numéro ne contient que des chiffres."),
+    .regex(/^[\d\s]*$/, "Le numéro ne contient que des chiffres.")
+    .optional(),
   acceptsTerms: z.literal(true, {
     message: "Vous devez accepter les conditions d'utilisation.",
   }),

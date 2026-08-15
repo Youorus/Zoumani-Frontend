@@ -134,6 +134,10 @@ export function AuthView({
             busy={flow.busy}
             serverError={fieldError}
             onSubmit={flow.submitRegistration}
+            // Le serveur dit ce qu'il attend. Le formulaire s'y conforme
+            // au lieu d'en tenir une seconde liste, qui divergerait le
+            // jour où un champ est ajouté ou retiré.
+            requiredFields={flow.step?.requiredFields ?? []}
           />
         ) : null}
 
@@ -287,6 +291,7 @@ function RegistrationStep({
   busy,
   serverError,
   onSubmit,
+  requiredFields,
 }: {
   content: (typeof authContent)["fr"];
   language: HomeLanguage;
@@ -294,6 +299,8 @@ function RegistrationStep({
   /** Refus du serveur portant sur un champ précis de ce formulaire. */
   serverError: ServerFieldError | null;
   onSubmit: (input: RegistrationInput) => Promise<void>;
+  /** Champs que l'API réclame réellement pour créer le compte. */
+  requiredFields: string[];
 }) {
   const form = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
@@ -306,6 +313,7 @@ function RegistrationStep({
   // que le compilateur React ne peut pas mémoriser — il renonce alors à
   // optimiser tout le composant, et le prévient par un avertissement.
   const countryCode = useWatch({ control: form.control, name: "phoneCountryCode" });
+  const demandeLeTelephone = requiredFields.includes("phone_national_number");
 
   /*
    * Le refus du serveur rejoint les erreurs du formulaire.
@@ -351,23 +359,29 @@ function RegistrationStep({
         </label>
       </div>
 
-      <PhoneField
-        language={language}
-        label={content.registration.phone}
-        help={content.registration.phoneHelp}
-        searchLabel={content.registration.country}
-        searchPlaceholder={content.registration.countrySearch}
-        emptyText={content.registration.countryEmpty}
-        countryCode={countryCode}
-        onCountryChange={(code) =>
-          form.setValue("phoneCountryCode", code, { shouldValidate: true })
-        }
-        register={form.register("phoneNationalNumber")}
-        error={
-          form.formState.errors.phoneCountryCode?.message ??
-          form.formState.errors.phoneNationalNumber?.message
-        }
-      />
+      {/* Le téléphone n'apparaît que si l'API le réclame. L'afficher
+          sans qu'il soit exigé demanderait un numéro pour rien — et le
+          numéro étant unique, il bloquerait une inscription sur deux en
+          phase d'essai. */}
+      {demandeLeTelephone ? (
+        <PhoneField
+          language={language}
+          label={content.registration.phone}
+          help={content.registration.phoneHelp}
+          searchLabel={content.registration.country}
+          searchPlaceholder={content.registration.countrySearch}
+          emptyText={content.registration.countryEmpty}
+          countryCode={countryCode ?? ""}
+          onCountryChange={(code) =>
+            form.setValue("phoneCountryCode", code, { shouldValidate: true })
+          }
+          register={form.register("phoneNationalNumber")}
+          error={
+            form.formState.errors.phoneCountryCode?.message ??
+            form.formState.errors.phoneNationalNumber?.message
+          }
+        />
+      ) : null}
 
       <ConsentCheckbox
         control={form.control}

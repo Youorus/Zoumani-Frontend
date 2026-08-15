@@ -143,8 +143,10 @@ export async function completeRegistration(
   input: {
     firstName: string;
     lastName: string;
-    phoneCountryCode: string;
-    phoneNationalNumber: string;
+    // Facultatifs : l'API ne les réclame que si le domaine l'exige, et
+    // le formulaire ne les affiche que dans ce cas.
+    phoneCountryCode?: string;
+    phoneNationalNumber?: string;
     acceptsTerms: boolean;
     acceptsPrivacyPolicy: boolean;
   },
@@ -154,10 +156,17 @@ export async function completeRegistration(
       challenge_id: challengeId,
       first_name: input.firstName,
       last_name: input.lastName,
-      phone_country_code: input.phoneCountryCode,
-      // Les espaces de saisie sont retirés ici : le serveur les refuse, et
-      // les laisser transformerait une frappe naturelle en erreur.
-      phone_national_number: input.phoneNationalNumber.replace(/\s/g, ""),
+      // Omis quand l'API ne les réclame pas : envoyer des chaînes vides
+      // ferait échouer la validation du numéro alors qu'il est facultatif.
+      ...(input.phoneCountryCode && input.phoneNationalNumber
+        ? {
+            phone_country_code: input.phoneCountryCode,
+            // Les espaces de saisie sont retirés ici : le serveur les
+            // refuse, et les laisser transformerait une frappe naturelle
+            // en erreur.
+            phone_national_number: input.phoneNationalNumber.replace(/\s/g, ""),
+          }
+        : {}),
       terms_version: CONSENT_VERSIONS.terms,
       privacy_policy_version: CONSENT_VERSIONS.privacyPolicy,
       // Ce que la personne a réellement coché, jamais `true` en dur. Le
