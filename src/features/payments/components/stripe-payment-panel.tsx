@@ -122,9 +122,24 @@ function PaymentForm({
         shipment_id: shipmentId,
       });
       router.push(`/paiement/retour?${query.toString()}` as Route);
-    } catch {
+    } catch (caught) {
+      /*
+       * L'exception est **conservée**, pas avalée.
+       *
+       * Un `catch` muet transforme n'importe quelle panne — script bloqué,
+       * session expirée, argument invalide — en « vérifiez votre
+       * connexion ». Le message est faux neuf fois sur dix, et surtout il
+       * ne laisse aucune trace : personne ne peut diagnostiquer.
+       *
+       * La console reçoit la cause réelle ; l'écran garde un message
+       * lisible, complété du détail quand Stripe en fournit un.
+       */
+      const detail = caught instanceof Error ? caught.message : String(caught);
+      console.error("[zoumani] échec de confirmation du paiement", caught);
       setError(
-        "Le paiement n'a pas pu être confirmé. Vérifiez votre connexion puis réessayez.",
+        detail
+          ? `Le paiement n'a pas pu être confirmé : ${detail}`
+          : "Le paiement n'a pas pu être confirmé. Réessayez dans un instant.",
       );
       setSubmitting(false);
     }
