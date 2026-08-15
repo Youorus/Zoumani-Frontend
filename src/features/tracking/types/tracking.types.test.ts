@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  isCancellable,
+  isClosed,
   isIncident,
   needsLabel,
   stateOf,
@@ -94,5 +96,39 @@ describe("isIncident", () => {
   it("reconnaît le seul état qui appelle une intervention", () => {
     expect(isIncident("incident")).toBe(true);
     expect(isIncident("collected")).toBe(false);
+  });
+});
+
+describe("isCancellable", () => {
+  it("laisse l'expéditeur se rétracter tant que rien n'est engagé", () => {
+    expect(isCancellable(journey())).toBe(true);
+    expect(isCancellable(journey({ step: "awaiting_meeting" }))).toBe(true);
+  });
+
+  it("ne le laisse plus une fois le colis parti", () => {
+    // Le colis partirait de toute façon et serait facturé.
+    for (const step of ["dropped_off", "in_transit", "awaiting_pickup"] as const) {
+      expect(isCancellable(journey({ step }))).toBe(false);
+    }
+  });
+
+  it("ne propose jamais l'annulation au voyageur", () => {
+    // Celui qui ne veut plus transporter retire son offre : autre geste.
+    expect(isCancellable(journey({ isSender: false }))).toBe(false);
+  });
+});
+
+describe("isClosed", () => {
+  it("reconnaît toutes les fins de parcours", () => {
+    for (const step of ["collected", "handed_over", "incident", "cancelled"] as const) {
+      expect(isClosed(step)).toBe(true);
+    }
+  });
+
+  it("ne clôt pas un colis en route", () => {
+    // Le rafraîchissement automatique s'arrête sur `isClosed` : le
+    // considérer clos trop tôt figerait la frise à mi-parcours.
+    expect(isClosed("in_transit")).toBe(false);
+    expect(isClosed("awaiting_pickup")).toBe(false);
   });
 });

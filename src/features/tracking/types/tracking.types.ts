@@ -30,7 +30,8 @@ export type JourneyStep =
   | "awaiting_pickup"
   | "handed_over"
   | "collected"
-  | "incident";
+  | "incident"
+  | "cancelled";
 
 /** Une étape franchie, datée. */
 export interface JourneyEvent {
@@ -119,6 +120,7 @@ export const STEP_LABELS: Record<JourneyStep, string> = {
   handed_over: "Remis en main propre",
   collected: "Retiré par le voyageur",
   incident: "Incident",
+  cancelled: "Annulé",
 };
 
 /** Où en est une étape par rapport à celle en cours. */
@@ -140,6 +142,32 @@ export function stateOf(step: JourneyStep, current: JourneyStep): StepState {
 /** Le colis a-t-il rencontré un problème ? */
 export function isIncident(step: JourneyStep): boolean {
   return step === "incident";
+}
+
+/**
+ * L'envoi peut-il encore être annulé par l'expéditeur ?
+ *
+ * Tant que rien n'est engagé, et pour lui seul : le voyageur qui ne veut
+ * plus transporter retire son offre, ce qui est un autre geste.
+ *
+ * La règle est **aussi** appliquée par le serveur : celle-ci ne décide
+ * que d'afficher un bouton. Un client qui l'ignorerait se ferait refuser.
+ */
+export function isCancellable(journey: Journey): boolean {
+  return (
+    journey.isSender &&
+    (journey.step === "awaiting_dropoff" || journey.step === "awaiting_meeting")
+  );
+}
+
+/** Le parcours est-il clos, quelle qu'en soit la raison ? */
+export function isClosed(step: JourneyStep): boolean {
+  return (
+    step === "collected" ||
+    step === "handed_over" ||
+    step === "incident" ||
+    step === "cancelled"
+  );
 }
 
 /**

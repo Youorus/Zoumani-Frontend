@@ -6,7 +6,14 @@ import type { Route } from "next";
 import { useEffect, useState } from "react";
 
 import { labelUrl, readJourney } from "../api/tracking-client";
-import { isIncident, needsLabel, type Journey } from "../types/tracking.types";
+import {
+  isCancellable,
+  isClosed,
+  isIncident,
+  needsLabel,
+  type Journey,
+} from "../types/tracking.types";
+import { CancelShipment } from "./cancel-shipment";
 import { JourneyTimeline } from "./journey-timeline";
 
 /** Rythme de rafraîchissement pendant qu'un colis circule. */
@@ -35,11 +42,12 @@ const REFRESH_MS = 30_000;
  */
 export function JourneyDetailView({ initial }: { initial: Journey }) {
   const [journey, setJourney] = useState(initial);
+  const [rembourse, setRembourse] = useState<string | null>(null);
 
   useEffect(() => {
-    // Un colis arrivé à destination ne bouge plus : continuer à
-    // interroger l'API serait du trafic pour rien.
-    if (journey.step === "collected" || journey.step === "handed_over") {
+    // Un parcours clos ne bouge plus — livré, annulé ou en incident :
+    // continuer à interroger l'API serait du trafic pour rien.
+    if (isClosed(journey.step)) {
       return;
     }
     const timer = setInterval(() => {
@@ -85,6 +93,33 @@ export function JourneyDetailView({ initial }: { initial: Journey }) {
         {journey.deadlineAt ? <Deadline iso={journey.deadlineAt} /> : null}
 
         {needsLabel(journey) ? <LabelBlock shipmentId={journey.shipmentId} /> : null}
+
+        {rembourse !== null ? (
+          <p
+            className="mt-4 rounded-lg bg-success/10 p-3 text-sm text-success-foreground"
+            role="status"
+          >
+            {rembourse === "0.00"
+              ? "Envoi annulé. Votre remboursement est en cours de traitement ; nous vous confirmons cela par e-mail."
+              : `Envoi annulé. ${rembourse} € vous sont remboursés sous quelques jours.`}
+          </p>
+        ) : null}
+
+        {isCancellable(journey) ? (
+          <div className="mt-4 border-t border-border pt-4">
+            <CancelShipment
+              journeyId={journey.id}
+              onCancelled={(resultat) => {
+                setRembourse(resultat.refundedMajor);
+                // On recharge depuis le serveur plutôt que de deviner
+                // l'état : lui seul sait ce qui a réellement abouti.
+                void readJourney(journey.id)
+                  .then(setJourney)
+                  .catch(() => undefined);
+              }}
+            />
+          </div>
+        ) : null}
       </section>
 
       <section className="rounded-2xl border border-border bg-card p-5">
