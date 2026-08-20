@@ -80,7 +80,19 @@ USER node
 EXPOSE 3000
 
 # Verifie que le serveur repond reellement, pas seulement que le process tourne.
+# ─────────────────────────────────────────────────────────────────────
+# La sonde interroge la page d'accueil, et non plus `/api/health`.
+#
+# Cette route est partie avec le reste du BFF quand la vitrine est devenue
+# statique. Le conteneur démarrait correctement, la sonde tombait sur un
+# 404, Swarm le déclarait « unhealthy » et **revenait à la version
+# précédente** — un déploiement qui se disait réussi remettait en ligne
+# l'ancien site, sans une ligne d'erreur ailleurs que dans `service ps`.
+#
+# `/` est le bon test ici : c'est la seule page du site, et si elle répond
+# 200 il n'y a rien d'autre à vérifier.
+# ─────────────────────────────────────────────────────────────────────
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD curl -fsS http://127.0.0.1:3000/api/health || exit 1
+  CMD curl -fsS http://127.0.0.1:3000/ || exit 1
 
 CMD ["node", "server.js"]
