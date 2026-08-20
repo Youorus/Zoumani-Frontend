@@ -38,10 +38,64 @@ jobs:
         run: npm test
 
       - name: Build de production
-        run: npm run build
+        run: npm run build | tee build.log
         env:
           # Valeurs de substitution : le build doit reussir sans secret.
           NEXT_PUBLIC_APP_URL: https://zoumani.fr
+
+      # ─────────────────────────────────────────────────────────────
+      # Le garde-fou de ce projet.
+      #
+      # La vitrine ne parle plus au serveur : c'est ce qui la rend
+      # insensible aux pannes de l'API et déployable sans secret. Rien
+      # dans le code ne l'impose — un `fetch` dans un composant serveur,
+      # une lecture de cookie, un `force-dynamic`, et la propriété
+      # disparaît sans qu'aucun test n'échoue.
+      #
+      # Next l'annonce lui-même : chaque route sortie `ƒ (Dynamic)` est
+      # une route qui s'exécute à la demande. Il ne doit y en avoir
+      # aucune.
+      # ─────────────────────────────────────────────────────────────
+      - name: Vérifier que le site reste entièrement statique
+        run: |
+          dynamiques=$(grep -cE '^[[:space:]]*[├└┌][[:space:]]+ƒ ' build.log || true)
+          if [ "$dynamiques" != "0" ]; then
+            echo "::error::$dynamiques route(s) dynamique(s) — la vitrine dépend à nouveau du serveur."
+            grep -E '^[[:space:]]*[├└┌][[:space:]]+ƒ ' build.log
+            echo "Une vitrine dynamique tombe avec l'API et réclame des secrets."
+            exit 1
+          fi
+          echo "Toutes les routes sont statiques."
+
+  e2e:
+    name: Parcours de bout en bout
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      # Chromium seul : la vitrine n'a pas de comportement propre à un
+      # moteur, et installer les trois navigateurs triplerait la durée du
+      # job pour la même couverture.
+      - name: Installer Chromium
+        run: npx playwright install --with-deps chromium
+
+      # Ces trois spécifications existaient et ne tournaient nulle part :
+      # le workflow ne les lançait pas. Une suite qui ne s'exécute jamais
+      # est pire qu'aucune suite — elle donne l'impression d'un filet.
+      - name: Parcours Playwright
+        run: npm run test:e2e
+        env:
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
 
   docker:
     name: Image Docker

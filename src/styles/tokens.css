@@ -42,6 +42,12 @@
   --primary-foreground: #fff8f0;
   --secondary: #ffc837;
   --secondary-foreground: #2b1d17;
+  /* Le mot « Zoumani ». Un bordeaux profond, plus sombre et plus froid que
+     la terre rouge d'`--accent` : ce n'est pas la même couleur, et elles ne
+     se remplacent pas. Un jeton à part parce que le mot-logo n'est pas un
+     rôle d'interface — il ne se lit pas comme « une action » ou « un
+     état », il se lit comme la marque. */
+  --wordmark: #690818;
   --accent: #8d2e2e;
   --accent-foreground: #fff8f0;
   --border: rgb(43 29 23 / 0.12);
@@ -117,6 +123,9 @@
   --primary-foreground: #d9fff8;
   --secondary: #16324f;
   --secondary-foreground: #f7f5ef;
+  /* La charte alternative n'a pas de bordeaux : le mot prend son bleu
+     profond, qui y joue le même rôle de couleur d'identité. */
+  --wordmark: #16324f;
   --accent: #ff6b00;
   --accent-foreground: #fff8f0;
   --border: rgb(22 50 79 / 0.14);
@@ -192,6 +201,11 @@
   --primary-foreground: #1c120b;
   --secondary: #3f2f1e;
   --secondary-foreground: #f7ede0;
+  /* Crème, et non un bordeaux éclairci : un bordeaux profond monté assez
+     haut en luminosité pour se lire sur fond sombre vire au rose, et ce
+     n'est plus la même marque. C'est la convention des chartes — le logo
+     en couleur sur fond clair, en monochrome clair sur fond sombre. */
+  --wordmark: #f7ede0;
   --accent: #ffc837;
   --accent-foreground: #2b1d17;
   --border: rgb(247 237 224 / 0.12);
@@ -225,6 +239,7 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-wordmark: var(--wordmark);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);

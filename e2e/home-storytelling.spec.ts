@@ -20,10 +20,18 @@ const waitForHydration = async (page: Page) => {
 };
 
 test("the parcel story stays readable and contained at every breakpoint", async ({ page }) => {
-  await page.goto("/#fonctionnement");
-
   for (const viewport of viewports) {
+    // Le redimensionnement précède le chargement, et la page est
+    // rechargée à chaque largeur.
+    //
+    // L'ordre inverse — charger une fois, redimensionner ensuite — faisait
+    // échouer ce test sans que rien ne soit cassé. `next/image` recalcule
+    // son `srcset` quand la fenêtre change de taille : le navigateur
+    // remplace alors la source, et `complete` repasse à `false` le temps
+    // de la nouvelle requête. On mesurait donc un rechargement d'image, pas
+    // un défaut de la page.
     await page.setViewportSize(viewport);
+    await page.goto("/#fonctionnement");
     const section = page.locator("#fonctionnement:visible");
     await section.scrollIntoViewIfNeeded();
 
