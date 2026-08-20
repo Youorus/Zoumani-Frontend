@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export default function MarketingHomePage() {
   return (
     <main className="min-h-screen overflow-hidden bg-background">
-      <HeroSection backgroundImageUrl="/images/home/hero-airport-v1.webp" />
+      <HeroSection />
       <JsonLd schema={buildGraph(serviceSchema, howItWorksSchema, faqSchema)} />
     </main>
   );

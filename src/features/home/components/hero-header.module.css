@@ -34,8 +34,34 @@
   backdrop-filter: blur(18px) saturate(125%);
 }
 
+/* La navigation centrale, masquée sous 64rem : cinq libellés ne tiennent
+   pas à côté du logo et du bouton, et les tasser les rend illisibles. Le
+   tiroir mobile prend le relais. */
+.nav {
+  display: none;
+  align-items: center;
+  gap: clamp(1rem, 2.2vw, 2.25rem);
+}
+
+@media (min-width: 64rem) {
+  .nav {
+    display: flex;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .navLink {
   position: relative;
+  padding: 0.25rem;
+  color: var(--foreground);
+  font-size: 0.98rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .navLink::after {

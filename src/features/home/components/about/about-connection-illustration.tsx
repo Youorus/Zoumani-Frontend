@@ -29,12 +29,19 @@ export function AboutConnectionIllustration() {
 
       <g className={styles.connectionRoutes}>
         {connectionRoutes.map((route, index) => (
-          <path key={route} d={route} style={{ animationDelay: `${index * -1.2}s` }} />
+          <path
+            key={route}
+            d={route}
+            style={{ animationDelay: `${index * -1.2}s` }}
+          />
         ))}
       </g>
 
       {nodes.map((node, index) => (
-        <g key={`${node.x}-${node.y}`} transform={`translate(${node.x} ${node.y})`}>
+        <g
+          key={`${node.x}-${node.y}`}
+          transform={`translate(${node.x} ${node.y})`}
+        >
           <circle
             className={styles.connectionPulse}
             r="28"

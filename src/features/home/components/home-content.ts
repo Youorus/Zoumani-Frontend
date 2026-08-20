@@ -16,23 +16,47 @@ export interface HomeContent {
   downloadCta: string;
   /** Libellé du bouton d'action une fois la personne connectée. */
   hero: {
-    eyebrow: string;
+    /** « Envoyez vos colis. » — en bordeaux. */
     titleLineOne: string;
-    titleLineTwoPrefix: string;
-    titleHighlightOne: string;
-    titleHighlightTwo: string;
-    titleSuffix: string;
+    /** « Rentabilisez vos voyages. » — en orange : la promesse qu'on ne devine pas. */
+    titleLineTwo: string;
+    /** `{accent}` y marque le fragment à mettre en gras. */
     description: string;
-  };
-  socialProof: {
-    communityLabel: string;
-    users: string;
-    ratingLabel: string;
-  };
-  trustCard: {
-    eyebrow: string;
-    title: string;
-    footer: string;
+    descriptionAccent: string;
+    qrLabel: string;
+    /** Porté par un badge de store tant que l'application n'y est pas. */
+    storeSoon: string;
+    /** Les deux cartes qui montrent les deux côtés de la place de marché. */
+    traveler: {
+      name: string;
+      role: string;
+      route: string;
+      amount: string;
+      space: string;
+    };
+    sender: {
+      name: string;
+      role: string;
+      parcel: string;
+      weight: string;
+      city: string;
+    };
+    phone: {
+      titleBefore: string;
+      titleAccent: string;
+      titleAfter: string;
+      searchTab: string;
+      fromLabel: string;
+      fromValue: string;
+      toLabel: string;
+      toValue: string;
+      dateLabel: string;
+      dateValue: string;
+      submit: string;
+      stepsTitle: string;
+      steps: readonly { title: string; detail: string }[];
+    };
+    trust: readonly { title: string; detail: string }[];
   };
   /**
    * L'appel au téléchargement, à la place de la recherche de trajets.
@@ -139,9 +163,8 @@ export interface HomeContent {
 export const homeContent: Record<HomeLanguage, HomeContent> = {
   fr: {
     navigation: [
-      { href: "#search", label: "Envoyer un colis" },
-      { href: "#services", label: "Devenir voyageur" },
       { href: "#fonctionnement", label: "Comment ça marche" },
+      { href: "#services", label: "Sécurité" },
       { href: "#trust", label: "À propos" },
       { href: "#help", label: "Aide" },
     ],
@@ -155,24 +178,54 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
     downloadCta: "Télécharger l'app",
     hero: {
-      eyebrow: "La diaspora, notre force",
-      titleLineOne: "Vos colis voyagent",
-      titleLineTwoPrefix: "avec ",
-      titleHighlightOne: "ceux qui",
-      titleHighlightTwo: "voyagent",
-      titleSuffix: " déjà.",
+      titleLineOne: "Envoyez vos colis.",
+      titleLineTwo: "Rentabilisez vos voyages.",
       description:
-        "Une solution simple, sûre et humaine pour envoyer vos colis entre l’Afrique et le reste du monde.",
-    },
-    socialProof: {
-      communityLabel: "Membres de la communauté Zoumani",
-      users: "+15 000 utilisateurs",
-      ratingLabel: "Note de 4,8 sur 5",
-    },
-    trustCard: {
-      eyebrow: "Un réseau de",
-      title: "voyageurs de confiance",
-      footer: "Partout. Pour vous.",
+        "Zoumani met en relation ceux qui souhaitent envoyer un colis {accent} disposant de place dans leurs bagages.",
+      descriptionAccent: "avec des voyageurs",
+      qrLabel: "Scannez pour télécharger",
+      storeSoon: "Bientôt",
+      traveler: {
+        name: "Alex",
+        role: "voyageur",
+        route: "Paris → Douala",
+        amount: "+45 €",
+        space: "Espace disponible",
+      },
+      sender: {
+        name: "Marie",
+        role: "expéditrice",
+        parcel: "Colis à envoyer",
+        weight: "2,4 kg",
+        city: "Douala",
+      },
+      phone: {
+        titleBefore: "La connexion qui fait ",
+        titleAccent: "voyager",
+        titleAfter: " vos colis",
+        searchTab: "Rechercher un trajet",
+        fromLabel: "De",
+        fromValue: "Paris, France",
+        toLabel: "À",
+        toValue: "Douala, Cameroun",
+        dateLabel: "Date du voyage",
+        dateValue: "15 mai 2026",
+        submit: "Rechercher",
+        stepsTitle: "Comment ça marche ?",
+        steps: [
+          { title: "1. Publiez", detail: "votre trajet ou votre colis" },
+          { title: "2. Recevez", detail: "des propositions de confiance" },
+          { title: "3. Voyagez", detail: "en toute sécurité et sérénité" },
+        ],
+      },
+      trust: [
+        {
+          title: "Identités vérifiées",
+          detail: "pour des échanges de confiance",
+        },
+        { title: "Paiements sécurisés", detail: "et protégés" },
+        { title: "Support réactif", detail: "à chaque étape" },
+      ],
     },
     app: {
       title: "Zoumani, c'est dans l'application",
@@ -184,7 +237,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       sectionLabel: "Services Zoumani",
       travelerTitleOne: "Vous voyagez bientôt ?",
       travelerTitleTwo: "Rentabilisez votre bagage",
-      travelerDescription: "Aidez quelqu’un, gagnez de l’argent et voyagez léger.",
+      travelerDescription:
+        "Aidez quelqu’un, gagnez de l’argent et voyagez léger.",
       travelerCta: "Je suis voyageur",
       parcelTitleOne: "Vous voulez envoyer",
       parcelTitleTwo: "un colis en Afrique ?",
@@ -239,7 +293,9 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
             meta: "4,9/5 • 48 avis • 1 240 points",
             origin: "Paris",
             destination: "Douala",
-            benefits: [{ icon: "wallet", label: "Rémunération prévue après la remise" }],
+            benefits: [
+              { icon: "wallet", label: "Rémunération prévue après la remise" },
+            ],
           },
         },
         {
@@ -247,7 +303,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Votre colis prend son envol",
           description:
             "Vous vérifiez le colis ensemble. Son assurance choisie et son transit partenaire sont confirmés avant le départ.",
-          imageAlt: "Le voyageur avance dans le terminal avec le colis et son bagage.",
+          imageAlt:
+            "Le voyageur avance dans le terminal avec le colis et son bagage.",
           proof: {
             label: "Vérification finale réussie",
             meta: "Colis pris en charge",
@@ -364,9 +421,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
   },
   en: {
     navigation: [
-      { href: "#search", label: "Send a parcel" },
-      { href: "#services", label: "Become a traveler" },
       { href: "#fonctionnement", label: "How it works" },
+      { href: "#services", label: "Safety" },
       { href: "#trust", label: "About" },
       { href: "#help", label: "Help" },
     ],
@@ -380,24 +436,51 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
     downloadCta: "Get the app",
     hero: {
-      eyebrow: "The diaspora, our strength",
-      titleLineOne: "Your parcels travel",
-      titleLineTwoPrefix: "with ",
-      titleHighlightOne: "those who",
-      titleHighlightTwo: "already travel",
-      titleSuffix: ".",
+      titleLineOne: "Send your parcels.",
+      titleLineTwo: "Make your trips pay.",
       description:
-        "A simple, secure and human way to send parcels between Africa and the rest of the world.",
-    },
-    socialProof: {
-      communityLabel: "Members of the Zoumani community",
-      users: "+15,000 users",
-      ratingLabel: "Rated 4.8 out of 5",
-    },
-    trustCard: {
-      eyebrow: "A network of",
-      title: "trusted travelers",
-      footer: "Everywhere. For you.",
+        "Zoumani connects people who need to send a parcel {accent} with room to spare in their luggage.",
+      descriptionAccent: "with travellers",
+      qrLabel: "Scan to download",
+      storeSoon: "Soon",
+      traveler: {
+        name: "Alex",
+        role: "traveller",
+        route: "Paris → Douala",
+        amount: "+€45",
+        space: "Space available",
+      },
+      sender: {
+        name: "Marie",
+        role: "sender",
+        parcel: "Parcel to send",
+        weight: "2.4 kg",
+        city: "Douala",
+      },
+      phone: {
+        titleBefore: "The connection that gets ",
+        titleAccent: "your parcels",
+        titleAfter: " moving",
+        searchTab: "Find a trip",
+        fromLabel: "From",
+        fromValue: "Paris, France",
+        toLabel: "To",
+        toValue: "Douala, Cameroon",
+        dateLabel: "Travel date",
+        dateValue: "15 May 2026",
+        submit: "Search",
+        stepsTitle: "How does it work?",
+        steps: [
+          { title: "1. Post", detail: "your trip or your parcel" },
+          { title: "2. Receive", detail: "offers you can trust" },
+          { title: "3. Travel", detail: "safely and with peace of mind" },
+        ],
+      },
+      trust: [
+        { title: "Verified identities", detail: "for exchanges you can trust" },
+        { title: "Secure payments", detail: "and protected" },
+        { title: "Responsive support", detail: "at every step" },
+      ],
     },
     app: {
       title: "Zoumani lives in the app",
@@ -413,7 +496,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       travelerCta: "I’m a traveler",
       parcelTitleOne: "Want to send",
       parcelTitleTwo: "a parcel to Africa?",
-      parcelDescription: "Find a trusted traveler and ship with complete peace of mind.",
+      parcelDescription:
+        "Find a trusted traveler and ship with complete peace of mind.",
       parcelCta: "I have a parcel to send",
     },
     partners: {
@@ -442,7 +526,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "You prepare your parcel",
           description:
             "Declare where it starts, where it is going and what is inside. A first verification secures what comes next.",
-          imageAlt: "A woman carefully prepares a small parcel in her Paris apartment.",
+          imageAlt:
+            "A woman carefully prepares a small parcel in her Paris apartment.",
           note: "For Mum, with all my heart.",
           proof: {
             label: "Contents declared",
@@ -462,7 +547,9 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
             meta: "4.9/5 • 48 reviews • 1,240 points",
             origin: "Paris",
             destination: "Douala",
-            benefits: [{ icon: "wallet", label: "Reward scheduled after handover" }],
+            benefits: [
+              { icon: "wallet", label: "Reward scheduled after handover" },
+            ],
           },
         },
         {
@@ -488,7 +575,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "And someone gets it back.",
           description:
             "Your loved one confirms the handover. The traveler is paid, earns points and may receive a new review.",
-          imageAlt: "In Douala, the traveler warmly hands the parcel to its recipient.",
+          imageAlt:
+            "In Douala, the traveler warmly hands the parcel to its recipient.",
           note: "Received. Thank you.",
           proof: {
             label: "Arrived at destination",
@@ -511,7 +599,11 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
     about: {
       eyebrow: "About Zoumani",
-      titleLines: ["What connects us", "deserves more", "than a simple delivery."],
+      titleLines: [
+        "What connects us",
+        "deserves more",
+        "than a simple delivery.",
+      ],
       lead: "Zoumani turns journeys that already exist into useful connections between those who send, travel and wait.",
       body: "Our ambition is simple: make exchanges between Africa, its diaspora and the rest of the world more human, reliable and accessible, without losing what gives them value — trust between people.",
       quote: "We do not simply move parcels. We bring people closer together.",
@@ -580,7 +672,10 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       { value: "120+", label: "Destinations\nworldwide" },
       { value: "15,000+", label: "Active\nusers" },
       { value: "100%", label: "Verified and rated\ntravelers" },
-      { value: "Parcel protection", label: "available for\neligible shipments" },
+      {
+        value: "Parcel protection",
+        label: "available for\neligible shipments",
+      },
       { value: "Support 7 days", label: "A team ready\nto help" },
     ],
   },

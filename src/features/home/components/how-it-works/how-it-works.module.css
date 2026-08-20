@@ -118,7 +118,9 @@
   stroke-dasharray: 1;
   stroke-dashoffset: var(--route-progress-offset, 1);
   stroke-linecap: round;
-  filter: drop-shadow(0 0 0.32rem color-mix(in srgb, var(--primary) 30%, transparent));
+  filter: drop-shadow(
+    0 0 0.32rem color-mix(in srgb, var(--primary) 30%, transparent)
+  );
 }
 
 .step {
@@ -138,7 +140,8 @@
   position: relative;
   aspect-ratio: 3 / 2;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--marketing-panel-foreground) 10%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--marketing-panel-foreground) 10%, transparent);
   border-radius: var(--shape-radius-lg);
   background: var(--marketing-panel);
   box-shadow: 0 2rem 5rem -3rem
@@ -151,7 +154,8 @@
   z-index: 2;
   inset: 0.65rem;
   pointer-events: none;
-  border: 1px solid color-mix(in srgb, var(--inverse-foreground) 22%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--inverse-foreground) 22%, transparent);
   border-radius: calc(var(--shape-radius-lg) - 0.45rem);
   content: "";
 }
@@ -447,7 +451,8 @@
   position: absolute;
   width: 12rem;
   height: 12rem;
-  border: 1px solid color-mix(in srgb, var(--inverse-foreground) 9%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--inverse-foreground) 9%, transparent);
   border-radius: var(--shape-radius-full);
   content: "";
 }

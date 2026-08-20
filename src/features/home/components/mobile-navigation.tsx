@@ -36,7 +36,10 @@ export function MobileNavigation({ copy }: { copy: HomeContent }) {
         <DrawerDescription className="mt-1 text-sm text-muted-foreground">
           {copy.mobileMenu.description}
         </DrawerDescription>
-        <nav aria-label="Navigation mobile" className="mt-8 flex flex-col gap-1">
+        <nav
+          aria-label="Navigation mobile"
+          className="mt-8 flex flex-col gap-1"
+        >
           {copy.navigation.map((item) => (
             <Link
               key={item.href}

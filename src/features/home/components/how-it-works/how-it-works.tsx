@@ -11,11 +11,7 @@ import { StoryRoute } from "./story-route";
 import { storyMedia } from "./story-media";
 import { StoryStep } from "./story-step";
 
-export function HowItWorks({
-  copy,
-}: {
-  copy: HomeContent["howItWorks"];
-}) {
+export function HowItWorks({ copy }: { copy: HomeContent["howItWorks"] }) {
   return (
     <section
       id="fonctionnement"

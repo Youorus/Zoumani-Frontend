@@ -56,9 +56,18 @@ export function AfricaRouteIllustration() {
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor="var(--inverse-foreground)" stopOpacity="0.32" />
-          <stop offset="1" stopColor="var(--inverse-foreground)" stopOpacity="0.1" />
+          <stop
+            offset="1"
+            stopColor="var(--inverse-foreground)"
+            stopOpacity="0.1"
+          />
         </linearGradient>
-        <pattern id="africa-grid" width="11" height="11" patternUnits="userSpaceOnUse">
+        <pattern
+          id="africa-grid"
+          width="11"
+          height="11"
+          patternUnits="userSpaceOnUse"
+        >
           <circle
             cx="1.5"
             cy="1.5"
@@ -107,7 +116,9 @@ export function AfricaRouteIllustration() {
             key={route}
             d={route}
             className={
-              index % 2 === 0 ? `${styles.route} ${styles.routeFast}` : styles.route
+              index % 2 === 0
+                ? `${styles.route} ${styles.routeFast}`
+                : styles.route
             }
             style={{ animationDelay: `${index * -0.7}s` }}
           />
@@ -115,7 +126,10 @@ export function AfricaRouteIllustration() {
       </g>
 
       {destinations.map((destination) => (
-        <DestinationPoint key={`${destination.x}-${destination.y}`} {...destination} />
+        <DestinationPoint
+          key={`${destination.x}-${destination.y}`}
+          {...destination}
+        />
       ))}
 
       <g transform="translate(20 154)">

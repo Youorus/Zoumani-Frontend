@@ -11,7 +11,11 @@ import styles from "./home-footer.module.css";
 
 function FooterRouteArtwork() {
   return (
-    <svg className={styles.routeArtwork} viewBox="0 0 620 420" aria-hidden="true">
+    <svg
+      className={styles.routeArtwork}
+      viewBox="0 0 620 420"
+      aria-hidden="true"
+    >
       <path d="M28 342C142 356 164 218 272 236S412 102 592 68" />
       <path d="M96 402C194 330 250 378 324 278S454 228 606 156" />
       <circle cx="28" cy="342" r="6" />
@@ -70,7 +74,11 @@ export function HomeFooter({
           </div>
 
           {copy.linkGroups.map((group) => (
-            <nav key={group.title} className={styles.linkGroup} aria-label={group.title}>
+            <nav
+              key={group.title}
+              className={styles.linkGroup}
+              aria-label={group.title}
+            >
               <h3>{group.title}</h3>
               <ul>
                 {group.links.map((link) => (

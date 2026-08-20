@@ -1,4 +1,10 @@
-import { Globe2, Heart, HeartHandshake, Plane, ShieldCheck } from "lucide-react";
+import {
+  Globe2,
+  Heart,
+  HeartHandshake,
+  Plane,
+  ShieldCheck,
+} from "lucide-react";
 import Image from "next/image";
 
 import { Container } from "@/components/layout/container";
@@ -12,7 +18,11 @@ const valueIcons = [HeartHandshake, ShieldCheck, Globe2] as const;
 
 export function AboutSection({ copy }: { copy: HomeContent["about"] }) {
   return (
-    <section id="trust" className={styles.section} aria-labelledby="about-title">
+    <section
+      id="trust"
+      className={styles.section}
+      aria-labelledby="about-title"
+    >
       <span className={styles.atmosphere} aria-hidden="true" />
       <AboutConnectionIllustration />
       <Container className={styles.container}>

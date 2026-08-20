@@ -66,7 +66,8 @@ export const trustedPartners: readonly TrustedPartner[] = [
     logoWidth: 52,
     logoHeight: 62,
     website: "https://www.ups.com/",
-    source: "https://commons.wikimedia.org/wiki/File:United_Parcel_Service_logo_2014.svg",
+    source:
+      "https://commons.wikimedia.org/wiki/File:United_Parcel_Service_logo_2014.svg",
   },
   {
     name: "FedEx",
@@ -84,7 +85,8 @@ export const trustedPartners: readonly TrustedPartner[] = [
     logoWidth: 1710,
     logoHeight: 592,
     website: "https://www.mondialrelay.fr/",
-    source: "https://fr.wikipedia.org/wiki/Fichier:Logo_Mondial_Relay_-_2022.svg",
+    source:
+      "https://fr.wikipedia.org/wiki/Fichier:Logo_Mondial_Relay_-_2022.svg",
   },
   {
     name: "AXA",

@@ -40,7 +40,11 @@ interface StoryStatusProps {
 
 function StoryStatus({ moment, proof }: StoryStatusProps) {
   const StatusIcon =
-    moment === "arrival" ? BellRing : moment === "journey" ? PackageCheck : ShieldCheck;
+    moment === "arrival"
+      ? BellRing
+      : moment === "journey"
+        ? PackageCheck
+        : ShieldCheck;
 
   return (
     <div className={`${styles.status} ${styles[`status-${moment}`]}`}>
@@ -115,7 +119,9 @@ export function StoryStep({ copy, medium }: StoryStepProps) {
               {copy.note}
             </p>
           ) : null}
-          {copy.proof ? <StoryStatus moment={medium.id} proof={copy.proof} /> : null}
+          {copy.proof ? (
+            <StoryStatus moment={medium.id} proof={copy.proof} />
+          ) : null}
         </div>
       </div>
 

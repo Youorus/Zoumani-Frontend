@@ -24,7 +24,10 @@ export function StoryRoute() {
       const timelineTop = bounds.top + window.scrollY;
       const start = timelineTop - window.innerHeight * 0.55;
       const end = timelineTop + bounds.height - window.innerHeight * 0.45;
-      const progress = Math.min(1, Math.max(0, (window.scrollY - start) / (end - start)));
+      const progress = Math.min(
+        1,
+        Math.max(0, (window.scrollY - start) / (end - start)),
+      );
 
       route.style.setProperty("--route-progress-offset", String(1 - progress));
     };

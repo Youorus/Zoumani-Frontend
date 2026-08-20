@@ -98,7 +98,9 @@ export function LanguageSwitcher({
           >
             <Flag />
             <span>{label}</span>
-            {language === code ? <Check className="ml-auto size-4 text-primary" /> : null}
+            {language === code ? (
+              <Check className="ml-auto size-4 text-primary" />
+            ) : null}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

@@ -15,7 +15,11 @@ interface PartnerListProps {
   duplicate?: boolean;
 }
 
-function PartnerList({ partners, category, duplicate = false }: PartnerListProps) {
+function PartnerList({
+  partners,
+  category,
+  duplicate = false,
+}: PartnerListProps) {
   return (
     <ul
       aria-hidden={duplicate || undefined}
@@ -64,11 +68,15 @@ function PartnerMarquee({
   return (
     <div className={styles.marqueeRow}>
       <p className={styles.rowLabel}>
-        {category === "insurance" ? <ShieldCheck aria-hidden="true" size={15} /> : null}
+        {category === "insurance" ? (
+          <ShieldCheck aria-hidden="true" size={15} />
+        ) : null}
         {label}
       </p>
       <div className={styles.viewport} aria-label={label}>
-        <div className={`${styles.track} ${reverse ? styles.trackReverse : ""}`}>
+        <div
+          className={`${styles.track} ${reverse ? styles.trackReverse : ""}`}
+        >
           <PartnerList partners={partners} category={category} />
           <PartnerList partners={partners} category={category} duplicate />
         </div>

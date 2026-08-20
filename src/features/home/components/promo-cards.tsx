@@ -2,16 +2,11 @@ import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-
 import { AfricaRouteIllustration } from "./africa-route-illustration";
 import type { HomeContent } from "./home-content";
 import styles from "./home-hero.module.css";
 
-export function PromoCards({
-  copy,
-}: {
-  copy: HomeContent["promos"];
-}) {
+export function PromoCards({ copy }: { copy: HomeContent["promos"] }) {
   return (
     <section
       id="services"
