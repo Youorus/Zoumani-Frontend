@@ -4,10 +4,9 @@ import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { WhatsAppIcon } from "@/components/shared/whatsapp-icon";
 import { ZoumaniLogo } from "@/components/shared/zoumani-logo";
-import { buildSignupHref } from "@/features/account/lib/build-signup-href";
 import { buildWhatsAppUrl } from "@/lib/contact/build-whatsapp-url";
 
-import type { HomeContent, HomeLanguage } from "../home-content";
+import type { HomeContent } from "../home-content";
 import styles from "./home-footer.module.css";
 
 function FooterRouteArtwork() {
@@ -26,12 +25,10 @@ function FooterRouteArtwork() {
 
 export function HomeFooter({
   copy,
-  language,
   whatsapp,
   routeHomeAnchors = false,
 }: {
   copy: HomeContent["footer"];
-  language: HomeLanguage;
   whatsapp: HomeContent["whatsapp"];
   /** Depuis une page interne, les ancres du footer visent l'accueil. */
   routeHomeAnchors?: boolean;
@@ -57,7 +54,7 @@ export function HomeFooter({
             </Link>
             <Link
               className={`${styles.action} ${styles.actionSecondary} focus-ring`}
-              href={buildSignupHref("traveler", language)}
+              href={"#telecharger"}
             >
               <BaggageClaim size={18} aria-hidden="true" />
               {copy.travelerCta}
@@ -80,11 +77,9 @@ export function HomeFooter({
                   <li key={link.href}>
                     <Link
                       href={
-                        link.href === "/signup"
-                          ? buildSignupHref("traveler", language)
-                          : routeHomeAnchors && link.href.startsWith("#")
-                            ? `/${link.href}`
-                            : link.href
+                        routeHomeAnchors && link.href.startsWith("#")
+                          ? `/${link.href}`
+                          : link.href
                       }
                     >
                       {link.label}

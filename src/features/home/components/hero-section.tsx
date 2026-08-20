@@ -14,7 +14,7 @@ import styles from "./home-hero.module.css";
 import { KentePattern } from "./kente-pattern";
 import { AboutSection } from "./about/about-section";
 import { PromoCards } from "./promo-cards";
-import { ShipmentSearch } from "./shipment-search";
+import { AppCallout } from "./app-callout";
 import { SocialProof } from "./social-proof";
 import { TrustCard } from "./trust-card";
 import { TrustedPartners } from "./trusted-partners";
@@ -74,19 +74,23 @@ export function HeroSection({ backgroundImageUrl }: HeroSectionProps) {
           </div>
         </div>
 
-        <ShipmentSearch
-          className={`${styles.searchReveal} mt-9 lg:absolute lg:inset-x-0 lg:bottom-11 lg:mt-0`}
-          copy={copy.search}
-          language={language}
+        {/* `id` : c'est la cible du bouton de la barre de navigation.
+            Une ancre plutôt qu'une page — le site n'en a qu'une. */}
+        <AppCallout
+          id="telecharger"
+          className={`${styles.searchReveal} mt-9 lg:absolute lg:inset-x-0 lg:bottom-11 lg:mx-auto lg:mt-0 lg:max-w-2xl`}
+          titre={copy.app.title}
+          sousTitre={copy.app.subtitle}
+          attente={copy.app.waiting}
         />
       </section>
 
       <div className="bg-marketing-page">
-        <PromoCards copy={copy.promos} language={language} />
+        <PromoCards copy={copy.promos} />
         <TrustedPartners copy={copy.partners} />
-        <HowItWorks copy={copy.howItWorks} language={language} />
+        <HowItWorks copy={copy.howItWorks} />
         <AboutSection copy={copy.about} />
-        <HomeFooter copy={copy.footer} language={language} whatsapp={copy.whatsapp} />
+        <HomeFooter copy={copy.footer} whatsapp={copy.whatsapp} />
       </div>
       <FloatingWhatsApp copy={copy.whatsapp} />
     </>

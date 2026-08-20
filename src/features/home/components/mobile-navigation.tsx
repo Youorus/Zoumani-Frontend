@@ -3,7 +3,7 @@
 import { Menu } from "lucide-react";
 import Link from "next/link";
 
-import { AccountCta } from "@/features/auth/components/account-cta";
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerContent,
@@ -49,11 +49,9 @@ export function MobileNavigation({ copy }: { copy: HomeContent }) {
         </nav>
 
         <div className="mt-auto grid gap-3 pt-8">
-          <AccountCta
-            className="w-full"
-            label={copy.travelerCta}
-            spaceLabel={copy.spaceCta}
-          />
+          <Button asChild className="w-full">
+            <a href="#telecharger">{copy.downloadCta}</a>
+          </Button>
         </div>
       </DrawerContent>
     </Drawer>

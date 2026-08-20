@@ -1,7 +1,7 @@
 export type HomeLanguage = "fr" | "en";
 export type HomeNavigationHref =
   "#search" | "#services" | "#fonctionnement" | "#trust" | "#help";
-export type HomeFooterHref = HomeNavigationHref | "#partners" | "/signup";
+export type HomeFooterHref = HomeNavigationHref | "#partners" | "#telecharger";
 
 export interface HomeContent {
   navigation: ReadonlyArray<{ href: HomeNavigationHref; label: string }>;
@@ -13,9 +13,8 @@ export interface HomeContent {
     title: string;
     description: string;
   };
-  travelerCta: string;
+  downloadCta: string;
   /** Libellé du bouton d'action une fois la personne connectée. */
-  spaceCta: string;
   hero: {
     eyebrow: string;
     titleLineOne: string;
@@ -35,22 +34,19 @@ export interface HomeContent {
     title: string;
     footer: string;
   };
-  search: {
+  /**
+   * L'appel au téléchargement, à la place de la recherche de trajets.
+   *
+   * Le bloc `search` qui occupait cette place portait quinze libellés —
+   * villes, contenus, garanties — pour un formulaire qui interrogeait
+   * l'API. La vitrine ne parle plus au serveur : elle raconte, et renvoie
+   * vers l'application.
+   */
+  app: {
     title: string;
-    departureLabel: string;
-    departureAriaLabel: string;
-    destinationLabel: string;
-    destinationAriaLabel: string;
-    swapLabel: string;
-    cityPlaceholder: string;
-    citySearchPlaceholder: string;
-    cityEmptyText: string;
-    citySuggestionsLabel: string;
-    contentLabel: string;
-    contentPlaceholder: string;
-    contentAllLabel: string;
-    submitLabel: string;
-    guarantees: readonly string[];
+    subtitle: string;
+    /** Affiché tant que l'application n'est publiée sur aucun store. */
+    waiting: string;
   };
   promos: {
     sectionLabel: string;
@@ -157,8 +153,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       title: "Navigation",
       description: "Retrouvez les services Zoumani.",
     },
-    travelerCta: "Je suis voyageur",
-    spaceCta: "Mon espace",
+    downloadCta: "Télécharger l'app",
     hero: {
       eyebrow: "La diaspora, notre force",
       titleLineOne: "Vos colis voyagent",
@@ -179,27 +174,11 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       title: "voyageurs de confiance",
       footer: "Partout. Pour vous.",
     },
-    search: {
-      title: "Envoyer un colis",
-      departureLabel: "De",
-      departureAriaLabel: "Ville de départ",
-      destinationLabel: "À",
-      destinationAriaLabel: "Ville d’arrivée",
-      swapLabel: "Inverser le départ et la destination",
-      cityPlaceholder: "Choisir une ville",
-      citySearchPlaceholder: "Rechercher une ville ou un aéroport...",
-      cityEmptyText: "Aucune destination trouvée.",
-      citySuggestionsLabel: "Destinations populaires",
-      contentLabel: "Ce que j'envoie",
-      contentPlaceholder: "Choisir",
-      contentAllLabel: "Tout type de colis",
-      submitLabel: "Rechercher un voyage",
-      guarantees: [
-        "Paiement sécurisé",
-        "Voyageurs vérifiés",
-        "Protection du colis",
-        "Suivi en temps réel",
-      ],
+    app: {
+      title: "Zoumani, c'est dans l'application",
+      subtitle:
+        "Trouvez un voyageur, réservez de la place et suivez votre colis — tout se passe sur votre téléphone.",
+      waiting: "Bientôt sur l'App Store et Google Play",
     },
     promos: {
       sectionLabel: "Services Zoumani",
@@ -359,7 +338,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Services",
           links: [
             { label: "Envoyer un colis", href: "#search" },
-            { label: "Devenir voyageur", href: "/signup" },
+            { label: "Devenir voyageur", href: "#telecharger" },
             { label: "Comment ça marche", href: "#fonctionnement" },
           ],
         },
@@ -399,8 +378,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       title: "Navigation",
       description: "Explore Zoumani services.",
     },
-    travelerCta: "I’m a traveler",
-    spaceCta: "My account",
+    downloadCta: "Get the app",
     hero: {
       eyebrow: "The diaspora, our strength",
       titleLineOne: "Your parcels travel",
@@ -421,27 +399,11 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       title: "trusted travelers",
       footer: "Everywhere. For you.",
     },
-    search: {
-      title: "Send a parcel",
-      departureLabel: "From",
-      departureAriaLabel: "Departure city",
-      destinationLabel: "To",
-      destinationAriaLabel: "Arrival city",
-      swapLabel: "Swap departure and destination",
-      cityPlaceholder: "Choose a city",
-      citySearchPlaceholder: "Search for a city or airport...",
-      cityEmptyText: "No destination found.",
-      citySuggestionsLabel: "Popular destinations",
-      contentLabel: "What I'm sending",
-      contentPlaceholder: "Choose",
-      contentAllLabel: "Any parcel type",
-      submitLabel: "Search for a trip",
-      guarantees: [
-        "Secure payment",
-        "Verified travelers",
-        "Parcel protection",
-        "Real-time tracking",
-      ],
+    app: {
+      title: "Zoumani lives in the app",
+      subtitle:
+        "Find a traveller, book luggage space and follow your parcel — all from your phone.",
+      waiting: "Coming soon to the App Store and Google Play",
     },
     promos: {
       sectionLabel: "Zoumani services",
@@ -598,7 +560,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Services",
           links: [
             { label: "Send a parcel", href: "#search" },
-            { label: "Become a traveler", href: "/signup" },
+            { label: "Become a traveler", href: "#telecharger" },
             { label: "How it works", href: "#fonctionnement" },
           ],
         },

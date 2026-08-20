@@ -4,9 +4,8 @@ import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { buildSignupHref } from "@/features/account/lib/build-signup-href";
 
-import type { HomeContent, HomeLanguage } from "../home-content";
+import type { HomeContent } from "../home-content";
 import styles from "./how-it-works.module.css";
 import { StoryRoute } from "./story-route";
 import { storyMedia } from "./story-media";
@@ -14,10 +13,8 @@ import { StoryStep } from "./story-step";
 
 export function HowItWorks({
   copy,
-  language,
 }: {
   copy: HomeContent["howItWorks"];
-  language: HomeLanguage;
 }) {
   return (
     <section
@@ -61,7 +58,7 @@ export function HowItWorks({
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href={buildSignupHref("traveler", language)}>
+              <Link href={"#telecharger"}>
                 <Plane size={18} aria-hidden="true" />
                 {copy.travelerCta}
               </Link>

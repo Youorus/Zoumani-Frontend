@@ -1,33 +1,35 @@
 "use client";
 
-import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { PropsWithChildren } from "react";
 
 import { ToastProvider } from "@/components/ui/toast";
-import { AuthProvider } from "@/lib/auth/auth-provider";
-import { getQueryClient } from "@/lib/query/query-client";
-import { RealtimeProvider } from "@/lib/realtime/realtime-provider";
 import { ThemeProvider } from "@/lib/theme/theme-provider";
 
+/**
+ * Les fournisseurs de la vitrine.
+ *
+ * ═══ Ce qui a disparu, et pourquoi ═══
+ *
+ * `AuthProvider`, `QueryClientProvider`, `RealtimeProvider` et les
+ * devtools de TanStack Query. Tous les quatre existaient pour un site qui
+ * parlait à l'API : une session à porter, des requêtes à mettre en cache,
+ * des événements à recevoir.
+ *
+ * La vitrine ne parle plus au serveur. Les garder aurait envoyé au
+ * navigateur un client de requêtes, un magasin de session et un client
+ * temps réel qui n'auraient jamais rien eu à faire — du poids sur la
+ * première page que voit un visiteur, c'est-à-dire au pire endroit
+ * possible.
+ *
+ * ═══ Ce qui reste ═══
+ *
+ * Le thème, parce que la page s'adapte au réglage du système. Les
+ * notifications, parce que le changement de langue en émet une.
+ */
 export function AppProviders({ children }: PropsWithChildren) {
-  const queryClient = getQueryClient();
-
   return (
     <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ToastProvider>
-            {/* Aucun gestionnaire : le backend n'émet pas encore d'événements
-                temps réel. Le fournisseur reste en place — le jour où il
-                en émettra, il n'y aura qu'une liste à remplir. */}
-            <RealtimeProvider handlers={[]}>{children}</RealtimeProvider>
-          </ToastProvider>
-        </AuthProvider>
-        {process.env.NODE_ENV === "development" ? (
-          <ReactQueryDevtools initialIsOpen={false} />
-        ) : null}
-      </QueryClientProvider>
+      <ToastProvider>{children}</ToastProvider>
     </ThemeProvider>
   );
 }

@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
 import { ZoumaniLogo } from "@/components/shared/zoumani-logo";
-import { AccountCta } from "@/features/auth/components/account-cta";
 
 import type { HomeContent, HomeLanguage } from "./home-content";
 import styles from "./hero-header.module.css";
@@ -63,11 +64,9 @@ export function HeroHeader({ copy, language, onLanguageChange }: HeroHeaderProps
             onLanguageChange={onLanguageChange}
           />
           <div className="hidden xl:block">
-            <AccountCta
-              className="px-7"
-              label={copy.travelerCta}
-              spaceLabel={copy.spaceCta}
-            />
+            <Button asChild className="px-7">
+              <a href="#telecharger">{copy.downloadCta}</a>
+            </Button>
           </div>
           <MobileNavigation copy={copy} />
         </div>

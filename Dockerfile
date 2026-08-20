@@ -49,15 +49,17 @@ FROM node:${NODE_VERSION} AS runner
 WORKDIR /app
 
 # ─────────────────────────────────────────────────────────────────────
-# API_URL n'est PAS un argument de construction.
+# Aucune variable d'exécution, et c'est le point de cette image.
 #
-# Elle est lue à chaque requête, côté serveur uniquement — jamais dans le
-# navigateur. La figer dans l'image obligerait à reconstruire pour changer
-# d'API ; il suffit de la poser comme variable d'environnement du
-# conteneur. Sans elle, le relais ne sait pas où appeler et **toutes** les
-# requêtes authentifiées échouent.
+# Elle attendait autrefois `API_URL`, lue à chaque requête pour relayer
+# les appels authentifiés. La vitrine ne parle plus au serveur : toutes
+# ses pages sont pré-calculées à la construction, et le conteneur ne fait
+# plus que les servir.
 #
-#     API_URL=https://api.zoumani.fr/api/v1
+# Conséquence utile : ce site ne tombe pas quand l'API tombe, et il n'a
+# aucun secret à recevoir. Il pourrait même être servi par un
+# hébergement statique — l'image reste là pour rester déployable comme le
+# reste de la plateforme.
 # ─────────────────────────────────────────────────────────────────────
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
