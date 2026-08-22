@@ -2,19 +2,32 @@
 
 import { useState } from "react";
 
-import { AboutSection } from "./about/about-section";
-import { FloatingWhatsApp } from "./floating-whatsapp";
+import { FaqSection } from "./faq/faq-section";
 import { HomeFooter } from "./footer/home-footer";
 import { Hero } from "./hero/hero";
 import { HeroHeader } from "./hero-header";
 import { homeContent } from "./home-content";
 import type { HomeLanguage } from "./home-content";
 import { HowItWorks } from "./how-it-works/how-it-works";
-import { PromoCards } from "./promo-cards";
 import { TrustedPartners } from "./trusted-partners";
 
 /**
  * La page d'accueil, assemblée.
+ *
+ * ═══ Quatre sections, et rien d'autre ═══
+ *
+ * Le slogan et les magasins ; à qui l'on fait confiance ; comment ça
+ * marche ; les questions que l'on se pose. Puis le pied de page. Chaque
+ * section répond à une question qu'un visiteur se pose vraiment, dans
+ * l'ordre où elle lui vient.
+ *
+ * ═══ Ce qui a disparu ═══
+ *
+ * `PromoCards` (deux cartes qui redisaient le slogan), `AboutSection` (un
+ * manifeste de six paragraphes), la frise photographique à six étapes, et
+ * le bouton WhatsApp flottant. WhatsApp reste joignable depuis la FAQ et
+ * le pied de page — deux endroits où l'on va quand on a une question, au
+ * lieu d'une pastille qui suit le défilement.
  *
  * ═══ Pourquoi la langue vit ici ═══
  *
@@ -23,13 +36,6 @@ import { TrustedPartners } from "./trusted-partners";
  * sélecteur — et vers les sections qui affichent les textes. Le remonter
  * plus haut ferait basculer le layout racine en composant client, et la
  * page cesserait d'être pré-calculée.
- *
- * ═══ Ce qui a disparu ═══
- *
- * `HeroScenePlaceholder`, `KentePattern`, `TrustCard`, `SocialProof` et
- * `AppCallout` : le hero sur fond sombre qu'ils habillaient n'existe plus.
- * Les garanties qu'ils portaient sont dans le bandeau du nouveau hero,
- * l'appel au téléchargement dans ses badges de magasin.
  */
 export function HeroSection() {
   const [language, setLanguage] = useState<HomeLanguage>("fr");
@@ -42,21 +48,15 @@ export function HeroSection() {
         language={language}
         onLanguageChange={setLanguage}
       />
-
-      {/* `id` : la cible du bouton « Télécharger l'app » de la barre. Une
-          ancre plutôt qu'une page — le site n'en a qu'une. */}
-      <div id="telecharger">
-        <Hero copy={copy.hero} />
-      </div>
-
-      <div className="bg-marketing-page">
-        <PromoCards copy={copy.promos} />
-        <TrustedPartners copy={copy.partners} />
-        <HowItWorks copy={copy.howItWorks} />
-        <AboutSection copy={copy.about} />
-        <HomeFooter copy={copy.footer} whatsapp={copy.whatsapp} />
-      </div>
-      <FloatingWhatsApp copy={copy.whatsapp} />
+      <Hero copy={copy.hero} stores={copy.stores} />
+      <TrustedPartners copy={copy.partners} />
+      <HowItWorks copy={copy.howItWorks} />
+      <FaqSection copy={copy.faq} whatsapp={copy.whatsapp} />
+      <HomeFooter
+        copy={copy.footer}
+        stores={copy.stores}
+        whatsapp={copy.whatsapp}
+      />
     </>
   );
 }

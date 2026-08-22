@@ -79,77 +79,50 @@ export const serviceSchema = {
   },
 } as const;
 
-/** Explique le fonctionnement de la plateforme — éligible aux résultats enrichis HowTo. */
-export const howItWorksSchema = {
-  "@type": "HowTo",
-  name: "Comment envoyer un colis avec Zoumani",
-  description:
-    "Les étapes pour confier un colis à un voyageur vérifié via la marketplace Zoumani.",
-  totalTime: "PT10M",
-  step: [
-    {
-      name: "Rechercher un voyage",
-      text: "Indiquez la ville de départ et la destination pour trouver les voyageurs disposant d'espace dans leurs bagages.",
-    },
-    {
-      name: "Choisir un voyageur vérifié",
-      text: "Comparez les profils, consultez les vérifications d'identité et sélectionnez le voyageur qui vous convient.",
-    },
-    {
-      name: "Déclarer le colis",
-      text: "Décrivez le contenu, le poids et la valeur du colis à expédier.",
-    },
-    {
-      name: "Payer en toute sécurité",
-      text: "Réglez via le paiement sécurisé de la plateforme, qui protège l'expéditeur comme le voyageur.",
-    },
-    {
-      name: "Suivre la livraison",
-      text: "Suivez l'avancement de la transaction jusqu'à la remise du colis au destinataire.",
-    },
-  ].map((step, index) => ({
-    "@type": "HowToStep",
-    position: index + 1,
-    name: step.name,
-    text: step.text,
-  })),
-} as const;
+/**
+ * Explique le fonctionnement de la plateforme — éligible aux résultats
+ * enrichis HowTo.
+ *
+ * Les étapes viennent du contenu affiché, et non d'une liste recopiée ici :
+ * une page qui promet aux moteurs des étapes qu'elle n'affiche pas est
+ * exactement ce que la documentation de Google appelle du balisage
+ * trompeur. Le seul moyen de garantir qu'elles ne divergent jamais est de
+ * n'en avoir qu'un exemplaire.
+ */
+export function howToSchema(
+  steps: ReadonlyArray<{ title: string; detail: string }>,
+) {
+  return {
+    "@type": "HowTo",
+    name: "Comment envoyer un colis avec Zoumani",
+    description:
+      "Les étapes pour confier un colis à un voyageur vérifié via la marketplace Zoumani.",
+    step: steps.map((step, index) => ({
+      "@type": "HowToStep",
+      position: index + 1,
+      name: step.title,
+      text: step.detail,
+    })),
+  } as const;
+}
 
-/** Questions fréquentes — éligible au bloc FAQ dans les résultats de recherche. */
-export const faqSchema = {
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      question: "Comment fonctionne Zoumani ?",
-      answer:
-        "Zoumani est une marketplace qui met en relation des expéditeurs souhaitant envoyer un colis et des voyageurs disposant d'espace disponible dans leurs bagages. La plateforme gère la recherche de voyage, la mise en relation, la vérification des utilisateurs, la déclaration du colis, le paiement sécurisé et le suivi de la transaction.",
-    },
-    {
-      question: "Zoumani transporte-t-il les colis ?",
-      answer:
-        "Non. Zoumani n'est pas un transporteur. Le transport est effectué par les voyageurs qui utilisent la plateforme. Zoumani fournit le cadre de mise en relation, de vérification, de paiement sécurisé et de suivi.",
-    },
-    {
-      question: "Comment les voyageurs sont-ils vérifiés ?",
-      answer:
-        "Chaque utilisateur passe par un processus de vérification avant de pouvoir proposer ou réserver un espace bagage. Les profils vérifiés sont identifiés sur la plateforme.",
-    },
-    {
-      question: "Le paiement est-il sécurisé ?",
-      answer:
-        "Oui. Le paiement est réalisé via la plateforme et sécurisé pour protéger l'expéditeur comme le voyageur pendant toute la durée de la transaction.",
-    },
-    {
-      question: "Puis-je suivre mon colis ?",
-      answer:
-        "Oui. Le suivi de la transaction est disponible depuis votre espace Zoumani, de la mise en relation jusqu'à la remise du colis.",
-    },
-  ].map(({ question, answer }) => ({
-    "@type": "Question",
-    name: question,
-    acceptedAnswer: { "@type": "Answer", text: answer },
-  })),
-} as const;
+/**
+ * Questions fréquentes — éligible au bloc FAQ dans les résultats de
+ * recherche. Même règle que ci-dessus : ce sont les questions réellement
+ * affichées dans la section FAQ de la page.
+ */
+export function faqSchema(
+  items: ReadonlyArray<{ question: string; answer: string }>,
+) {
+  return {
+    "@type": "FAQPage",
+    mainEntity: items.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: { "@type": "Answer", text: answer },
+    })),
+  } as const;
+}
 
 /** Fil d'Ariane : améliore l'affichage du chemin de page dans les résultats. */
 export function breadcrumbSchema(items: Array<{ name: string; path: string }>) {

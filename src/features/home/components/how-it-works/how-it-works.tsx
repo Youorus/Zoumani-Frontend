@@ -1,17 +1,56 @@
-import { ArrowRight, Plane, Sparkles } from "lucide-react";
-import Link from "next/link";
+"use client";
+
+import { ShieldCheck } from "lucide-react";
+import { useId, useRef, useState } from "react";
 
 import { Container } from "@/components/layout/container";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 import type { HomeContent } from "../home-content";
 import styles from "./how-it-works.module.css";
-import { StoryRoute } from "./story-route";
-import { storyMedia } from "./story-media";
-import { StoryStep } from "./story-step";
 
+/**
+ * « Comment ça marche », en deux parcours.
+ *
+ * ═══ Ce qu'il remplace ═══
+ *
+ * Une frise de six étapes photographiées, alternant gauche et droite sur
+ * quatre écrans de défilement, avec cartes de preuve flottantes et tracé
+ * animé au scroll. Elle racontait bien, mais elle racontait longtemps — et
+ * elle mélangeait le parcours de l'expéditeur et celui du voyageur dans une
+ * seule ligne, si bien qu'aucun des deux ne s'y retrouvait entièrement.
+ *
+ * ═══ Pourquoi des onglets ═══
+ *
+ * Un visiteur est l'un ou l'autre, jamais les deux à la fois. Les onglets
+ * lui font lire trois étapes au lieu de six, et ce sont les siennes.
+ *
+ * ═══ Ce que les onglets ne font pas ═══
+ *
+ * Ils ne changent pas l'URL et ne sont pas des liens. Le panneau inactif
+ * reste dans le document (`hidden`), donc les deux parcours sont indexés
+ * par les moteurs et trouvables par la recherche du navigateur.
+ */
 export function HowItWorks({ copy }: { copy: HomeContent["howItWorks"] }) {
+  const [actif, setActif] = useState(0);
+  const identifiant = useId();
+  const onglets = useRef<Array<HTMLButtonElement | null>>([]);
+
+  // Flèches gauche/droite entre onglets : c'est ce qu'attend un lecteur
+  // d'écran d'un `tablist`, et la tabulation reste réservée à la sortie
+  // du groupe.
+  const auClavier = (evenement: React.KeyboardEvent) => {
+    const pas =
+      evenement.key === "ArrowRight" ? 1 : evenement.key === "ArrowLeft" ? -1 : 0;
+    if (pas === 0) return;
+
+    evenement.preventDefault();
+    const suivant = (actif + pas + copy.tabs.length) % copy.tabs.length;
+    setActif(suivant);
+    onglets.current[suivant]?.focus();
+  };
+
+  const [avant, apres] = copy.guarantee.split("{accent}");
+
   return (
     <section
       id="fonctionnement"
@@ -19,49 +58,68 @@ export function HowItWorks({ copy }: { copy: HomeContent["howItWorks"] }) {
       aria-labelledby="how-it-works-title"
     >
       <Container className={styles.container}>
-        <header className={styles.intro}>
-          <Badge variant="primary">{copy.eyebrow}</Badge>
-          <h2 id="how-it-works-title">
-            {copy.titleLines.map((line) => (
-              <span key={line}>{line}</span>
-            ))}
-          </h2>
-          <p>{copy.description}</p>
-        </header>
+        <p className={styles.eyebrow}>{copy.eyebrow}</p>
+        <h2 id="how-it-works-title" className={styles.title}>
+          {copy.title}
+        </h2>
+        <p className={styles.description}>{copy.description}</p>
 
-        <div className={styles.timeline} data-story-timeline="">
-          <StoryRoute />
-          {storyMedia.map((medium, index) => {
-            const stepCopy = copy.steps[index];
-            return stepCopy ? (
-              <StoryStep key={medium.id} medium={medium} copy={stepCopy} />
-            ) : null;
-          })}
+        <div
+          className={styles.tablist}
+          role="tablist"
+          aria-label={copy.eyebrow}
+          onKeyDown={auClavier}
+        >
+          {copy.tabs.map((onglet, index) => (
+            <button
+              key={onglet.id}
+              ref={(element) => {
+                onglets.current[index] = element;
+              }}
+              type="button"
+              role="tab"
+              id={`${identifiant}-tab-${onglet.id}`}
+              aria-controls={`${identifiant}-panel-${onglet.id}`}
+              aria-selected={index === actif}
+              tabIndex={index === actif ? 0 : -1}
+              className={`focus-ring ${styles.tab}`}
+              onClick={() => setActif(index)}
+            >
+              {onglet.label}
+            </button>
+          ))}
         </div>
 
-        <div className={styles.closing}>
-          <span className={styles.closingIcon} aria-hidden="true">
-            <Sparkles size={26} />
-          </span>
-          <p className={styles.closingEyebrow}>{copy.closingEyebrow}</p>
-          <h3>{copy.closingTitle}</h3>
-          <p className={styles.closingDescription}>{copy.closingDescription}</p>
-          <div className={styles.actions}>
-            <Button asChild size="lg">
-              <Link href="#search">
-                {copy.senderCta}
-                <ArrowRight size={18} aria-hidden="true" />
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href={"#telecharger"}>
-                <Plane size={18} aria-hidden="true" />
-                {copy.travelerCta}
-              </Link>
-            </Button>
+        {copy.tabs.map((onglet, index) => (
+          <div
+            key={onglet.id}
+            role="tabpanel"
+            id={`${identifiant}-panel-${onglet.id}`}
+            aria-labelledby={`${identifiant}-tab-${onglet.id}`}
+            hidden={index !== actif}
+            className={styles.panel}
+          >
+            <ol className={styles.steps}>
+              {onglet.steps.map((etape) => (
+                <li key={etape.number} className={styles.step}>
+                  <span className={styles.dot} aria-hidden="true" />
+                  <span className={styles.number}>{etape.number}</span>
+                  <h3 className={styles.stepTitle}>{etape.title}</h3>
+                  <p className={styles.stepDetail}>{etape.detail}</p>
+                </li>
+              ))}
+            </ol>
           </div>
-          <p className={styles.legalNote}>{copy.legalNote}</p>
-        </div>
+        ))}
+
+        <p className={styles.guarantee}>
+          <ShieldCheck size={22} aria-hidden="true" />
+          <span>
+            {avant}
+            <strong>{copy.guaranteeAccent}</strong>
+            {apres}
+          </span>
+        </p>
       </Container>
     </section>
   );

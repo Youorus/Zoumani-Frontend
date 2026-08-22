@@ -82,7 +82,7 @@ export function HeroHeader({
             language={language}
             onLanguageChange={onLanguageChange}
           />
-          <div className="hidden xl:block">
+          <div className="hidden lg:block">
             <Button asChild className="gap-2 px-6">
               <a href="#telecharger">
                 <Download className="size-5" />

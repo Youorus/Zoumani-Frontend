@@ -1,249 +1,109 @@
 .section {
-  position: relative;
-  overflow: hidden;
-  border-top: 1px solid var(--marketing-panel-border);
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      color-mix(in srgb, var(--secondary) 12%, transparent),
-      transparent 42%
-    ),
-    var(--marketing-page);
+  padding-block: 5rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  scroll-margin-top: 6rem;
 }
 
-.viewport {
-  overflow: hidden;
-  mask-image: linear-gradient(
-    90deg,
-    transparent,
-    #000 8%,
-    #000 92%,
-    transparent
-  );
-}
-
-.protectionCallout {
-  position: relative;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 1rem;
-  width: min(calc(100% - 2.5rem), 58rem);
-  margin: 1.75rem auto 0;
-  padding: 1.15rem 1.25rem;
-  overflow: hidden;
-  border: 1px solid
-    color-mix(in srgb, var(--primary) 24%, var(--marketing-panel-border));
-  border-radius: 1.25rem;
-  background:
-    radial-gradient(
-      circle at 95% 0%,
-      color-mix(in srgb, var(--primary) 13%, transparent),
-      transparent 40%
-    ),
-    color-mix(in srgb, var(--marketing-panel) 97%, var(--primary));
-  box-shadow: 0 22px 60px -46px
-    color-mix(in srgb, var(--primary) 60%, transparent);
-  text-align: left;
-}
-
-.protectionIcon {
-  display: inline-flex;
-  width: 3.25rem;
-  height: 3.25rem;
+.container {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  border-radius: 1rem;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  box-shadow: 0 12px 28px -16px
-    color-mix(in srgb, var(--primary) 80%, transparent);
+  text-align: center;
 }
 
-.protectionEyebrow {
+.eyebrow {
   color: var(--primary);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  line-height: 1.4;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-.protectionTitle {
-  margin-top: 0.1rem;
-  color: var(--marketing-panel-foreground);
-  font-size: 1.05rem;
+.title {
+  max-width: 40rem;
+  margin-top: 1rem;
+  color: var(--wordmark);
+  font-family: var(--font-body), sans-serif;
+  font-size: clamp(1.75rem, 3.4vw, 2.375rem);
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.4;
+  letter-spacing: -0.032em;
+  line-height: 1.15;
+  text-wrap: balance;
 }
 
-.protectionDescription {
-  max-width: 46rem;
-  margin-top: 0.25rem;
-  color: var(--marketing-panel-muted-foreground);
-  font-size: 0.8rem;
-  line-height: 1.55;
+.description {
+  max-width: 38.75rem;
+  margin-top: 0.875rem;
+  color: var(--muted-foreground);
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
-.marqueeStack {
-  display: grid;
-  gap: 1.25rem;
-  margin-top: 1.75rem;
-}
-
-.marqueeRow {
-  display: grid;
-  gap: 0.65rem;
-}
-
-.rowLabel {
+/*
+ * Une case de taille fixe par logo, et `flex-wrap` pour centrer chaque
+ * rangée. 7 cases de 8,125 rem plus 6 gouttières de 2 rem font 68,875 rem :
+ * la largeur maximale est réglée juste au-dessus, donc la première rangée
+ * en tient exactement sept et la seconde centre les six autres.
+ */
+.list {
   display: flex;
+  flex-wrap: wrap;
+  gap: 2.25rem 2rem;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  color: var(--marketing-panel-muted-foreground);
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.rowLabel::before,
-.rowLabel::after {
-  width: 1.75rem;
-  height: 1px;
-  background: color-mix(in srgb, var(--primary) 45%, transparent);
-  content: "";
-}
-
-.track {
-  display: flex;
-  width: max-content;
-  animation: partner-marquee 38s linear infinite;
-  will-change: transform;
-}
-
-.trackReverse {
-  animation-direction: reverse;
-  animation-duration: 32s;
-}
-
-.viewport:hover .track,
-.viewport:focus-within .track {
-  animation-play-state: paused;
-}
-
-.group {
-  display: flex;
-  flex: none;
-  gap: 1rem;
-  padding-right: 1rem;
+  max-width: 69rem;
+  margin-top: 3.5rem;
+  list-style: none;
 }
 
 .partner {
-  display: flex;
-  width: clamp(11.5rem, 16vw, 14rem);
-  height: 5.5rem;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  border: 1px solid var(--marketing-panel-border);
-  border-radius: 1rem;
-  background: color-mix(in srgb, var(--marketing-panel) 94%, transparent);
-  box-shadow: 0 14px 34px -28px
-    color-mix(in srgb, var(--marketing-panel-foreground) 44%, transparent);
+  flex: 0 0 8.125rem;
+  height: 2.75rem;
 }
 
-.insurancePartner {
-  width: clamp(13rem, 19vw, 16rem);
-  border-color: color-mix(
-    in srgb,
-    var(--primary) 18%,
-    var(--marketing-panel-border)
-  );
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--primary) 5%, transparent),
-      transparent 54%
-    ),
-    color-mix(in srgb, var(--marketing-panel) 96%, transparent);
-}
-
+/*
+ * La case impose la taille, `object-fit` place le dessin dedans.
+ *
+ * La version précédente laissait `width` et `height` sur `auto` et bornait
+ * par `max-*` : deux logos sur treize s'y écrasaient à zéro pixel — le
+ * navigateur n'a pas à résoudre une taille quand elle lui est donnée. Et
+ * les cases égales rendent le mur de logos régulier, ce que des largeurs
+ * intrinsèques allant de 52 à 3034 pixels ne feront jamais.
+ */
 .logo {
-  width: auto;
-  max-width: 9.75rem;
-  height: auto;
-  max-height: 2.75rem;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.52;
 }
 
-.partner:has(.visualLabel) .logo {
-  max-width: 1.85rem;
-  max-height: 2.5rem;
+.disclaimer {
+  max-width: 47.5rem;
+  margin-top: 3.5rem;
+  color: color-mix(in srgb, var(--foreground) 42%, transparent);
+  font-size: 0.75rem;
+  line-height: 1.55;
 }
 
-.visualLabel {
-  color: var(--partner-colis-prive);
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-}
-
-@keyframes partner-marquee {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .viewport {
-    overflow-x: auto;
-    mask-image: none;
+@media (max-width: 47.99rem) {
+  .section {
+    padding-block: 3.5rem;
   }
 
-  .track {
-    animation: none;
-  }
-
-  .duplicate {
-    display: none;
-  }
-}
-
-@media (max-width: 39.99rem) {
-  .viewport {
-    mask-image: linear-gradient(
-      90deg,
-      transparent,
-      #000 5%,
-      #000 95%,
-      transparent
-    );
-  }
-
-  .track {
-    animation-duration: 32s;
+  .list {
+    gap: 1.5rem 1.25rem;
+    margin-top: 2.5rem;
   }
 
   .partner {
-    width: 10.75rem;
-    height: 5rem;
+    flex-basis: 6.25rem;
+    height: 2.125rem;
   }
 
-  .protectionCallout {
-    grid-template-columns: 1fr;
-    width: calc(100% - 2rem);
-  }
-
-  .protectionIcon {
-    width: 2.75rem;
-    height: 2.75rem;
-  }
-
-  .insurancePartner {
-    width: 12rem;
+  .disclaimer {
+    margin-top: 2.5rem;
   }
 }

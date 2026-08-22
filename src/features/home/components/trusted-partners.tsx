@@ -1,136 +1,58 @@
 import Image from "next/image";
-import { ShieldCheck } from "lucide-react";
 
-import {
-  trustedPartners,
-  type PartnerCategory,
-  type TrustedPartner,
-} from "../data/trusted-partners";
+import { Container } from "@/components/layout/container";
+
+import { trustedPartners } from "../data/trusted-partners";
 import type { HomeContent } from "./home-content";
 import styles from "./trusted-partners.module.css";
 
-interface PartnerListProps {
-  partners: readonly TrustedPartner[];
-  category: PartnerCategory;
-  duplicate?: boolean;
-}
-
-function PartnerList({
-  partners,
-  category,
-  duplicate = false,
-}: PartnerListProps) {
-  return (
-    <ul
-      aria-hidden={duplicate || undefined}
-      className={`${styles.group} ${duplicate ? styles.duplicate : ""}`}
-    >
-      {partners.map((partner) => (
-        <li
-          key={partner.name}
-          className={`${styles.partner} ${
-            category === "insurance" ? styles.insurancePartner : ""
-          }`}
-          title={partner.name}
-        >
-          <Image
-            src={partner.logo}
-            alt={duplicate ? "" : partner.name}
-            width={partner.logoWidth}
-            height={partner.logoHeight}
-            loading="eager"
-            className={styles.logo}
-          />
-          {partner.visualLabel ? (
-            <span className={styles.visualLabel} aria-hidden="true">
-              {partner.visualLabel}
-            </span>
-          ) : null}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-interface PartnerMarqueeProps {
-  category: PartnerCategory;
-  label: string;
-  partners: readonly TrustedPartner[];
-  reverse?: boolean;
-}
-
-function PartnerMarquee({
-  category,
-  label,
-  partners,
-  reverse = false,
-}: PartnerMarqueeProps) {
-  return (
-    <div className={styles.marqueeRow}>
-      <p className={styles.rowLabel}>
-        {category === "insurance" ? (
-          <ShieldCheck aria-hidden="true" size={15} />
-        ) : null}
-        {label}
-      </p>
-      <div className={styles.viewport} aria-label={label}>
-        <div
-          className={`${styles.track} ${reverse ? styles.trackReverse : ""}`}
-        >
-          <PartnerList partners={partners} category={category} />
-          <PartnerList partners={partners} category={category} duplicate />
-        </div>
-      </div>
-    </div>
-  );
-}
-
+/**
+ * Le bandeau des partenaires.
+ *
+ * ═══ Ce qu'il remplace ═══
+ *
+ * Deux bandeaux défilants — un pour le transport, un pour l'assurance —
+ * qui avançaient en boucle dans des directions opposées. Un logo qui bouge
+ * ne se lit pas : on attend qu'il repasse. Ici ils sont tous posés d'un
+ * coup, et l'œil en fait le tour en une seconde.
+ *
+ * ═══ Pourquoi ils sont en gris ═══
+ *
+ * Treize logos à leurs couleurs de marque, c'est treize chartes qui se
+ * disputent la page. Désaturés et posés à mi-opacité, ils disent
+ * « écosystème » sans voler la vedette à l'orange de Zoumani. Le nom reste
+ * dans le `alt` : rien n'est perdu pour un lecteur d'écran.
+ */
 export function TrustedPartners({ copy }: { copy: HomeContent["partners"] }) {
-  const logisticsPartners = trustedPartners.filter(
-    ({ category }) => category === "logistics",
-  );
-  const insurancePartners = trustedPartners.filter(
-    ({ category }) => category === "insurance",
-  );
-
   return (
     <section
-      id="partners"
-      className={`${styles.section} scroll-mt-24 py-10 sm:py-12`}
+      id="partenaires"
+      className={styles.section}
       aria-labelledby="trusted-partners-title"
     >
-      <div className="mx-auto max-w-[760px] px-5 text-center sm:px-8">
-        <p className="text-xs font-bold tracking-[0.16em] text-primary uppercase">
-          {copy.eyebrow}
-        </p>
-        <h2
-          id="trusted-partners-title"
-          className="mt-2 font-sans text-2xl leading-tight font-extrabold tracking-[-0.03em] text-marketing-panel-foreground sm:text-[1.75rem]"
-        >
+      <Container className={styles.container}>
+        <p className={styles.eyebrow}>{copy.eyebrow}</p>
+        <h2 id="trusted-partners-title" className={styles.title}>
           {copy.title}
         </h2>
-        <p className="mx-auto mt-2 max-w-[650px] text-sm leading-6 text-marketing-panel-muted-foreground">
-          {copy.description}
-        </p>
-      </div>
+        <p className={styles.description}>{copy.description}</p>
 
-      <div className={styles.marqueeStack} aria-label={copy.listLabel}>
-        <PartnerMarquee
-          category="logistics"
-          label={copy.logisticsLabel}
-          partners={logisticsPartners}
-        />
-        <PartnerMarquee
-          category="insurance"
-          label={copy.insuranceLabel}
-          partners={insurancePartners}
-          reverse
-        />
-      </div>
+        <ul className={styles.list} aria-label={copy.listLabel}>
+          {trustedPartners.map((partner) => (
+            <li key={partner.name} className={styles.partner}>
+              <Image
+                src={partner.logo}
+                alt={partner.name}
+                width={partner.logoWidth}
+                height={partner.logoHeight}
+                className={styles.logo}
+              />
+            </li>
+          ))}
+        </ul>
 
-      <p className="mt-5 px-5 text-center text-[0.7rem] leading-5 text-marketing-panel-muted-foreground">
-        {copy.disclaimer}
-      </p>
+        <p className={styles.disclaimer}>{copy.disclaimer}</p>
+      </Container>
     </section>
   );
 }

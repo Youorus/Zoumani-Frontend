@@ -14,11 +14,13 @@ import { homeContent } from "../home-content";
  * basculé en anglais, c'est-à-dire pour personne pendant le
  * développement.
  *
- * Le second test porte sur `{accent}` : c'est un marqueur, pas du texte.
- * `Hero` coupe la description dessus pour mettre un fragment en gras. S'il
- * disparaît d'une traduction, la phrase s'affiche entière sans gras — ou
- * pire, avec le marqueur visible.
+ * Les tests sur `{accent}` portent sur un marqueur, pas sur du texte. Le
+ * hero et la ligne de garantie coupent leur phrase dessus pour mettre un
+ * fragment en gras. S'il disparaît d'une traduction, la phrase s'affiche
+ * entière sans gras — ou pire, avec le marqueur visible au milieu.
  */
+
+const LANGUES = ["fr", "en"] as const;
 
 /** Toutes les clés d'un objet, chemins imbriqués compris. */
 function chemins(valeur: unknown, prefixe = ""): string[] {
@@ -59,23 +61,58 @@ describe("le dictionnaire de la page d'accueil", () => {
     expect(vides).toEqual([]);
   });
 
-  it("garde le marqueur {accent} dans les deux descriptions du hero", () => {
-    // `Hero` coupe dessus pour mettre un fragment en gras. Sans marqueur,
-    // le fragment ne se détacherait plus ; avec un marqueur mal orthographié,
-    // il s'afficherait tel quel au milieu de la phrase.
-    for (const langue of ["fr", "en"] as const) {
-      expect(homeContent[langue].hero.description).toContain("{accent}");
-      expect(homeContent[langue].hero.description.split("{accent}")).toHaveLength(2);
+  it("garde le marqueur {accent} là où une phrase est coupée en deux", () => {
+    for (const langue of LANGUES) {
+      for (const phrase of [
+        homeContent[langue].hero.description,
+        homeContent[langue].howItWorks.guarantee,
+      ]) {
+        expect(phrase.split("{accent}")).toHaveLength(2);
+      }
     }
   });
 
-  it("propose trois garanties et trois étapes, dans les deux langues", () => {
-    // Le hero les dispose en grille de trois colonnes et associe un
-    // pictogramme à chacune par son rang. Un quatrième élément sortirait
-    // de la grille sans pictogramme.
-    for (const langue of ["fr", "en"] as const) {
+  it("propose trois garanties dans le hero", () => {
+    // Le hero les dispose en trois colonnes et associe un pictogramme à
+    // chacune par son rang. Une quatrième sortirait de la grille sans
+    // pictogramme.
+    for (const langue of LANGUES) {
       expect(homeContent[langue].hero.trust).toHaveLength(3);
-      expect(homeContent[langue].hero.phone.steps).toHaveLength(3);
+    }
+  });
+
+  it("donne deux parcours de trois étapes à « Comment ça marche »", () => {
+    // Les étapes sont posées sur un rail à trois colonnes, et les deux
+    // onglets doivent décrire le même nombre d'étapes : sinon le panneau
+    // change de hauteur en basculant, et la page saute sous le curseur.
+    for (const langue of LANGUES) {
+      const onglets = homeContent[langue].howItWorks.tabs;
+      expect(onglets).toHaveLength(2);
+      for (const onglet of onglets) {
+        expect(onglet.steps).toHaveLength(3);
+      }
+    }
+  });
+
+  it("garde les mêmes identifiants d'onglet dans les deux langues", () => {
+    // Ils servent d'ancre ARIA entre l'onglet et son panneau. Traduits, ils
+    // ne casseraient rien de visible — juste le lien que suit un lecteur
+    // d'écran.
+    expect(homeContent.en.howItWorks.tabs.map((t) => t.id)).toEqual(
+      homeContent.fr.howItWorks.tabs.map((t) => t.id),
+    );
+  });
+
+  it("pose une FAQ dont chaque question se termine par un point d'interrogation", () => {
+    // Ces libellés partent tels quels dans le JSON-LD `FAQPage`. Une entrée
+    // qui n'est pas une question y passerait quand même, et affaiblirait le
+    // bloc entier aux yeux des moteurs.
+    for (const langue of LANGUES) {
+      const questions = homeContent[langue].faq.items;
+      expect(questions.length).toBeGreaterThanOrEqual(5);
+      for (const { question } of questions) {
+        expect(question.trimEnd().endsWith("?")).toBe(true);
+      }
     }
   });
 });

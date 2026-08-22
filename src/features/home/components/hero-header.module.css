@@ -28,13 +28,13 @@
 }
 
 .header[data-scrolled="true"] .shell {
-  border-color: var(--navigation-border);
-  background: var(--navigation-surface);
-  box-shadow: var(--navigation-shadow);
+  border-color: var(--border);
+  background: color-mix(in srgb, var(--background) 88%, transparent);
+  box-shadow: 0 1rem 2.5rem -1.5rem color-mix(in srgb, var(--foreground) 45%, transparent);
   backdrop-filter: blur(18px) saturate(125%);
 }
 
-/* La navigation centrale, masquée sous 64rem : cinq libellés ne tiennent
+/* La navigation centrale, masquée sous 64rem : les libellés ne tiennent
    pas à côté du logo et du bouton, et les tasser les rend illisibles. Le
    tiroir mobile prend le relais. */
 .nav {

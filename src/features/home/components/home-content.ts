@@ -1,10 +1,24 @@
 export type HomeLanguage = "fr" | "en";
-export type HomeNavigationHref =
-  "#search" | "#services" | "#fonctionnement" | "#trust" | "#help";
-export type HomeFooterHref = HomeNavigationHref | "#partners" | "#telecharger";
+
+/**
+ * Les ancres de la page. Il n’y a qu’une seule page : toute destination
+ * est une section de celle-ci, et le typage empêche d’écrire un lien vers
+ * une section qui n’existe pas.
+ */
+export type HomeSectionHref =
+  | "#telecharger"
+  | "#fonctionnement"
+  | "#partenaires"
+  | "#faq";
+
+export interface HomeStep {
+  number: string;
+  title: string;
+  detail: string;
+}
 
 export interface HomeContent {
-  navigation: ReadonlyArray<{ href: HomeNavigationHref; label: string }>;
+  navigation: ReadonlyArray<{ href: HomeSectionHref; label: string }>;
   language: {
     triggerLabel: string;
     menuLabel: string;
@@ -14,38 +28,23 @@ export interface HomeContent {
     description: string;
   };
   downloadCta: string;
-  /** Libellé du bouton d'action une fois la personne connectée. */
+
   hero: {
-    /** « Envoyez vos colis. » — en bordeaux. */
+    /** La pastille au-dessus du titre. */
+    eyebrow: string;
+    /** « Envoyez vos colis. » — en bordeaux, la couleur de la marque. */
     titleLineOne: string;
-    /** « Rentabilisez vos voyages. » — en orange : la promesse qu'on ne devine pas. */
+    /** « Rentabilisez vos voyages. » — en orange : la promesse qu’on ne devine pas. */
     titleLineTwo: string;
     /** `{accent}` y marque le fragment à mettre en gras. */
     description: string;
     descriptionAccent: string;
-    qrLabel: string;
-    /** Porté par un badge de store tant que l'application n'y est pas. */
-    storeSoon: string;
-    /** Les deux cartes qui montrent les deux côtés de la place de marché. */
-    traveler: {
-      name: string;
-      role: string;
-      route: string;
-      amount: string;
-      space: string;
-    };
-    sender: {
-      name: string;
-      role: string;
-      parcel: string;
-      weight: string;
-      city: string;
-    };
+    /** Les trois garanties du bandeau bas, en réponse au doute immédiat. */
+    trust: ReadonlyArray<{ title: string; detail: string }>;
+    /** L’écran d’application montré dans le téléphone. */
     phone: {
-      titleBefore: string;
-      titleAccent: string;
-      titleAfter: string;
-      searchTab: string;
+      senderTab: string;
+      travelerTab: string;
       fromLabel: string;
       fromValue: string;
       toLabel: string;
@@ -53,120 +52,83 @@ export interface HomeContent {
       dateLabel: string;
       dateValue: string;
       submit: string;
-      stepsTitle: string;
-      steps: readonly { title: string; detail: string }[];
+      resultsTitle: string;
+      resultsMeta: string;
+      results: ReadonlyArray<{
+        name: string;
+        detail: string;
+        price: string;
+        verified: boolean;
+      }>;
     };
-    trust: readonly { title: string; detail: string }[];
   };
-  /**
-   * L'appel au téléchargement, à la place de la recherche de trajets.
-   *
-   * Le bloc `search` qui occupait cette place portait quinze libellés —
-   * villes, contenus, garanties — pour un formulaire qui interrogeait
-   * l'API. La vitrine ne parle plus au serveur : elle raconte, et renvoie
-   * vers l'application.
-   */
-  app: {
-    title: string;
-    subtitle: string;
-    /** Affiché tant que l'application n'est publiée sur aucun store. */
-    waiting: string;
+
+  /** Les badges de magasin, partagés par le hero et le pied de page. */
+  stores: {
+    appleTop: string;
+    appleBottom: string;
+    playTop: string;
+    playBottom: string;
+    /** Affiché tant que l’application n’est publiée sur aucun magasin. */
+    soon: string;
   };
-  promos: {
-    sectionLabel: string;
-    travelerTitleOne: string;
-    travelerTitleTwo: string;
-    travelerDescription: string;
-    travelerCta: string;
-    parcelTitleOne: string;
-    parcelTitleTwo: string;
-    parcelDescription: string;
-    parcelCta: string;
-  };
+
   partners: {
     eyebrow: string;
     title: string;
     description: string;
-    protectionEyebrow: string;
-    protectionTitle: string;
-    protectionDescription: string;
-    logisticsLabel: string;
-    insuranceLabel: string;
     listLabel: string;
     disclaimer: string;
   };
+
   howItWorks: {
-    eyebrow: string;
-    titleLines: readonly [string, string, string];
-    description: string;
-    steps: ReadonlyArray<{
-      number: string;
-      title: string;
-      description: string;
-      imageAlt: string;
-      note?: string;
-      proof?: {
-        label: string;
-        meta: string;
-        origin?: string;
-        destination?: string;
-        benefits?: ReadonlyArray<{
-          icon: "check" | "rating" | "shield" | "transit" | "wallet";
-          label: string;
-        }>;
-      };
-    }>;
-    closingEyebrow: string;
-    closingTitle: string;
-    closingDescription: string;
-    senderCta: string;
-    travelerCta: string;
-    legalNote: string;
-  };
-  about: {
-    eyebrow: string;
-    titleLines: readonly [string, string, string];
-    lead: string;
-    body: string;
-    quote: string;
-    imageAlt: string;
-    imageCaption: string;
-    valuesLabel: string;
-    values: ReadonlyArray<{ title: string; description: string }>;
-    signature: string;
-  };
-  whatsapp: {
-    eyebrow: string;
-    label: string;
-    ariaLabel: string;
-    message: string;
-  };
-  footer: {
     eyebrow: string;
     title: string;
     description: string;
-    senderCta: string;
-    travelerCta: string;
-    whatsappTitle: string;
-    whatsappDescription: string;
-    whatsappCta: string;
+    /** Deux parcours, deux onglets : on ne lit que le sien. */
+    tabs: ReadonlyArray<{ id: string; label: string; steps: readonly HomeStep[] }>;
+    /** `{accent}` y marque le fragment à mettre en gras. */
+    guarantee: string;
+    guaranteeAccent: string;
+  };
+
+  faq: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    contactCta: string;
+    items: ReadonlyArray<{ question: string; answer: string }>;
+  };
+
+  footer: {
+    title: string;
+    description: string;
     linkGroups: ReadonlyArray<{
       title: string;
-      links: ReadonlyArray<{ label: string; href: HomeFooterHref }>;
+      /** Sans `href` ni `whatsapp`, le libellé reste du texte : la page
+       *  n’existe pas encore, et un lien mort coûte plus cher qu’un mot. */
+      links: ReadonlyArray<{
+        label: string;
+        href?: HomeSectionHref;
+        whatsapp?: boolean;
+      }>;
     }>;
-    signature: string;
     legal: string;
+    legalLinks: readonly string[];
   };
-  stats: ReadonlyArray<{ value: string; label: string }>;
+
+  whatsapp: {
+    ariaLabel: string;
+    message: string;
+  };
 }
 
 export const homeContent: Record<HomeLanguage, HomeContent> = {
   fr: {
     navigation: [
       { href: "#fonctionnement", label: "Comment ça marche" },
-      { href: "#services", label: "Sécurité" },
-      { href: "#trust", label: "À propos" },
-      { href: "#help", label: "Aide" },
+      { href: "#partenaires", label: "Partenaires" },
+      { href: "#faq", label: "Questions fréquentes" },
     ],
     language: {
       triggerLabel: "Choisir la langue",
@@ -174,509 +136,495 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
     mobileMenu: {
       title: "Navigation",
-      description: "Retrouvez les services Zoumani.",
+      description: "Retrouvez les sections de la page.",
     },
-    downloadCta: "Télécharger l'app",
+    downloadCta: "Télécharger l’app",
+
     hero: {
+      eyebrow: "France · Afrique · Le monde",
       titleLineOne: "Envoyez vos colis.",
       titleLineTwo: "Rentabilisez vos voyages.",
       description:
-        "Zoumani met en relation ceux qui souhaitent envoyer un colis {accent} disposant de place dans leurs bagages.",
-      descriptionAccent: "avec des voyageurs",
-      qrLabel: "Scannez pour télécharger",
-      storeSoon: "Bientôt",
-      traveler: {
-        name: "Alex",
-        role: "voyageur",
-        route: "Paris → Douala",
-        amount: "+45 €",
-        space: "Espace disponible",
-      },
-      sender: {
-        name: "Marie",
-        role: "expéditrice",
-        parcel: "Colis à envoyer",
-        weight: "2,4 kg",
-        city: "Douala",
-      },
-      phone: {
-        titleBefore: "La connexion qui fait ",
-        titleAccent: "voyager",
-        titleAfter: " vos colis",
-        searchTab: "Rechercher un trajet",
-        fromLabel: "De",
-        fromValue: "Paris, France",
-        toLabel: "À",
-        toValue: "Douala, Cameroun",
-        dateLabel: "Date du voyage",
-        dateValue: "15 mai 2026",
-        submit: "Rechercher",
-        stepsTitle: "Comment ça marche ?",
-        steps: [
-          { title: "1. Publiez", detail: "votre trajet ou votre colis" },
-          { title: "2. Recevez", detail: "des propositions de confiance" },
-          { title: "3. Voyagez", detail: "en toute sécurité et sérénité" },
-        ],
-      },
+        "Zoumani relie ceux qui ont un colis à envoyer aux {accent} dans leurs bagages. Tout se passe dans l’application.",
+      descriptionAccent: "voyageurs qui ont de la place",
       trust: [
         {
           title: "Identités vérifiées",
-          detail: "pour des échanges de confiance",
+          detail: "Pièce d’identité contrôlée avant tout voyage",
         },
-        { title: "Paiements sécurisés", detail: "et protégés" },
-        { title: "Support réactif", detail: "à chaque étape" },
+        {
+          title: "Paiement protégé",
+          detail: "Le voyageur est payé après la remise du colis",
+        },
+        {
+          title: "Support à chaque étape",
+          detail: "Une équipe joignable du dépôt à la livraison",
+        },
       ],
+      phone: {
+        senderTab: "J’envoie",
+        travelerTab: "Je voyage",
+        fromLabel: "Départ",
+        fromValue: "Paris, France",
+        toLabel: "Arrivée",
+        toValue: "Douala, Cameroun",
+        dateLabel: "Avant le",
+        dateValue: "15 mai 2026",
+        submit: "Voir les voyageurs",
+        resultsTitle: "3 voyageurs vérifiés",
+        resultsMeta: "Mai 2026",
+        results: [
+          {
+            name: "Alex D.",
+            detail: "14 mai · 8 kg disponibles",
+            price: "45 €",
+            verified: true,
+          },
+          {
+            name: "Fatou N.",
+            detail: "15 mai · 5 kg disponibles",
+            price: "38 €",
+            verified: true,
+          },
+          {
+            name: "Samuel K.",
+            detail: "18 mai · 12 kg disponibles",
+            price: "52 €",
+            verified: false,
+          },
+        ],
+      },
     },
-    app: {
-      title: "Zoumani, c'est dans l'application",
-      subtitle:
-        "Trouvez un voyageur, réservez de la place et suivez votre colis — tout se passe sur votre téléphone.",
-      waiting: "Bientôt sur l'App Store et Google Play",
+
+    stores: {
+      appleTop: "Télécharger sur l’",
+      appleBottom: "App Store",
+      playTop: "Disponible sur",
+      playBottom: "Google Play",
+      soon: "Bientôt",
     },
-    promos: {
-      sectionLabel: "Services Zoumani",
-      travelerTitleOne: "Vous voyagez bientôt ?",
-      travelerTitleTwo: "Rentabilisez votre bagage",
-      travelerDescription:
-        "Aidez quelqu’un, gagnez de l’argent et voyagez léger.",
-      travelerCta: "Je suis voyageur",
-      parcelTitleOne: "Vous voulez envoyer",
-      parcelTitleTwo: "un colis en Afrique ?",
-      parcelDescription:
-        "Trouvez un voyageur de confiance et expédiez en toute sérénité.",
-      parcelCta: "J’ai un colis à envoyer",
-    },
+
     partners: {
-      eyebrow: "Transport, protection, confiance",
+      eyebrow: "Transport & protection",
       title: "Votre colis avance. Sa valeur reste protégée.",
       description:
-        "Zoumani réunit des acteurs de l’acheminement et de l’assurance pour construire une expérience fiable, du départ jusqu’à la remise.",
-      protectionEyebrow: "Protection colis",
-      protectionTitle: "Une couverture pensée pour les imprévus",
-      protectionDescription:
-        "Selon l’option et le contrat sélectionnés, votre envoi peut être protégé contre la perte, le vol, les dommages ou un incident pendant le trajet.",
-      logisticsLabel: "Transport & livraison",
-      insuranceLabel: "Assurance & protection",
-      listLabel: "Écosystème potentiel de transport et d’assurance",
+        "Zoumani s’appuie sur les acteurs de l’acheminement et de l’assurance pour couvrir le trajet, du dépôt jusqu’à la remise.",
+      listLabel: "Écosystème de transport et d’assurance",
       disclaimer:
         "Partenariats, garanties, plafonds et exclusions présentés à titre exploratoire, sous réserve d’accord et des conditions du contrat sélectionné.",
     },
+
     howItWorks: {
-      eyebrow: "Comment ça marche ?",
-      titleLines: ["Un colis.", "Un voyage.", "Une personne qui l’attend."],
+      eyebrow: "Comment ça marche",
+      title: "Trois étapes. Zoumani s’occupe de tout le reste.",
       description:
-        "Pour une maman, un papa, un enfant, un ado ou un ami, ce qui voyage n’est jamais juste un colis. C’est un lien. Zoumani veille sur chaque étape.",
-      steps: [
+        "Vous ne cherchez personne, vous ne négociez rien. La plateforme vérifie, met en relation et sécurise l’argent.",
+      tabs: [
         {
-          number: "01",
-          title: "Vous préparez votre envoi",
-          description:
-            "Déclarez d’où il part, où il va et ce qu’il contient. Une première vérification sécurise la suite.",
-          imageAlt:
-            "Une femme prépare avec soin un petit colis dans son appartement à Paris.",
-          note: "Pour maman, avec tout mon cœur.",
-          proof: {
-            label: "Contenu déclaré",
-            meta: "Première vérification enregistrée",
-            benefits: [{ icon: "check", label: "Envoi prêt à être confié" }],
-          },
-        },
-        {
-          number: "02",
-          title: "Le bon voyageur est déjà en route",
-          description:
-            "Choisissez un voyageur vérifié, bien noté, qui va déjà dans la bonne direction.",
-          imageAlt:
-            "Un voyageur vérifie son téléphone près de son bagage et du colis à l’aéroport.",
-          proof: {
-            label: "Voyageur vérifié",
-            meta: "4,9/5 • 48 avis • 1 240 points",
-            origin: "Paris",
-            destination: "Douala",
-            benefits: [
-              { icon: "wallet", label: "Rémunération prévue après la remise" },
-            ],
-          },
-        },
-        {
-          number: "03",
-          title: "Votre colis prend son envol",
-          description:
-            "Vous vérifiez le colis ensemble. Son assurance choisie et son transit partenaire sont confirmés avant le départ.",
-          imageAlt:
-            "Le voyageur avance dans le terminal avec le colis et son bagage.",
-          proof: {
-            label: "Vérification finale réussie",
-            meta: "Colis pris en charge",
-            origin: "Paris",
-            destination: "Douala",
-            benefits: [
-              { icon: "shield", label: "Assurance colis sélectionnée" },
-              { icon: "transit", label: "Transit partenaire confirmé" },
-            ],
-          },
-        },
-        {
-          number: "04",
-          title: "Et quelqu’un le retrouve.",
-          description:
-            "Votre proche confirme la remise. Le voyageur est payé, gagne des points et peut recevoir un nouvel avis.",
-          imageAlt:
-            "À Douala, le voyageur remet chaleureusement le colis à sa destinataire.",
-          note: "Bien reçu. Merci.",
-          proof: {
-            label: "Arrivé à destination",
-            meta: "Remise confirmée par la destinataire",
-            benefits: [
-              { icon: "wallet", label: "Voyageur payé" },
-              { icon: "rating", label: "+120 points • nouvel avis" },
-            ],
-          },
-        },
-      ],
-      closingEyebrow: "Et voilà. Le voyage est terminé.",
-      closingTitle: "De votre main à la sienne.",
-      closingDescription:
-        "Votre proche reçoit ce qui compte. Le voyageur est récompensé. Chaque remise réussie construit la confiance Zoumani.",
-      senderCta: "Trouver un voyageur",
-      travelerCta: "Proposer mon trajet",
-      legalNote:
-        "Profils, points et avis illustratifs. Assurance, rémunération et transit disponibles selon l’envoi, le trajet, l’option choisie et les conditions applicables.",
-    },
-    about: {
-      eyebrow: "À propos de Zoumani",
-      titleLines: ["Ce qui nous relie", "mérite mieux", "qu’un simple envoi."],
-      lead: "Zoumani transforme des trajets qui existent déjà en liens utiles entre celles et ceux qui envoient, voyagent et attendent.",
-      body: "Notre ambition est simple : rendre les échanges entre l’Afrique, sa diaspora et le reste du monde plus humains, plus fiables et plus accessibles, sans perdre ce qui fait leur valeur — la confiance entre les personnes.",
-      quote:
-        "Nous ne faisons pas seulement voyager des colis. Nous rapprochons des personnes.",
-      imageAlt:
-        "Une famille camerounaise de plusieurs générations découvre ensemble le contenu d’un colis reçu d’un proche.",
-      imageCaption: "Une part de chez soi, arrivée à destination.",
-      valuesLabel: "Les convictions Zoumani",
-      values: [
-        {
-          title: "Humain, toujours",
-          description:
-            "Derrière chaque colis, il y a une intention, un proche et une histoire qui méritent notre attention.",
-        },
-        {
-          title: "La confiance se mérite",
-          description:
-            "Vérifications, réputation et preuves de remise rendent chaque trajet plus clair et plus sûr.",
-        },
-        {
-          title: "L’Afrique en mouvement",
-          description:
-            "Nous révélons la force d’une diaspora qui voyage, s’entraide et crée de la valeur des deux côtés du trajet.",
-        },
-      ],
-      signature: "Pensé avec la diaspora. Construit pour rapprocher.",
-    },
-    whatsapp: {
-      eyebrow: "Une question ?",
-      label: "Écrivez-nous",
-      ariaLabel: "Contacter Zoumani sur WhatsApp",
-      message:
-        "Bonjour Zoumani, j’aimerais obtenir des informations sur l’envoi d’un colis ou le parcours voyageur.",
-    },
-    footer: {
-      eyebrow: "Le prochain lien commence ici",
-      title: "Un trajet peut rapprocher deux vies.",
-      description:
-        "Envoyez ce qui compte ou donnez plus de valeur à votre prochain voyage. Zoumani relie les bonnes personnes, au bon moment.",
-      senderCta: "Envoyer un colis",
-      travelerCta: "Proposer mon trajet",
-      whatsappTitle: "Besoin d’en parler ?",
-      whatsappDescription: "Notre équipe vous répond directement sur WhatsApp.",
-      whatsappCta: "Ouvrir la discussion",
-      linkGroups: [
-        {
-          title: "Services",
-          links: [
-            { label: "Envoyer un colis", href: "#search" },
-            { label: "Devenir voyageur", href: "#telecharger" },
-            { label: "Comment ça marche", href: "#fonctionnement" },
+          id: "expediteur",
+          label: "J’envoie un colis",
+          steps: [
+            {
+              number: "01",
+              title: "Décrivez votre envoi",
+              detail:
+                "D’où il part, où il va, ce qu’il contient. Le contenu déclaré est contrôlé avant d’aller plus loin.",
+            },
+            {
+              number: "02",
+              title: "Choisissez un voyageur",
+              detail:
+                "La plateforme vous présente les voyageurs vérifiés qui font déjà le trajet. Vous comparez, vous réservez.",
+            },
+            {
+              number: "03",
+              title: "Suivez jusqu’à la remise",
+              detail:
+                "Vous suivez le colis étape par étape. Le voyageur n’est payé qu’une fois le colis remis.",
+            },
           ],
         },
+        {
+          id: "voyageur",
+          label: "Je voyage",
+          steps: [
+            {
+              number: "01",
+              title: "Publiez votre voyage",
+              detail:
+                "Votre trajet, vos dates, les kilos libres dans votre bagage. La vérification d’identité ne se fait qu’une fois.",
+            },
+            {
+              number: "02",
+              title: "Acceptez les colis",
+              detail:
+                "Zoumani vous envoie des demandes déjà contrôlées. Vous gardez la main sur ce que vous emportez.",
+            },
+            {
+              number: "03",
+              title: "Remettez, encaissez",
+              detail:
+                "À l’arrivée, vous remettez le colis au destinataire. Le paiement est libéré sur votre compte.",
+            },
+          ],
+        },
+      ],
+      guarantee:
+        "Vérification d’identité, mise en relation, paiement séquestré, suivi : {accent}. Vous n’échangez ni argent ni coordonnées en direct.",
+      guaranteeAccent: "Zoumani s’en charge",
+    },
+
+    faq: {
+      eyebrow: "Questions fréquentes",
+      title: "Tout ce qu’on nous demande avant de télécharger.",
+      description:
+        "Une question qui n’est pas là ? Écrivez-nous, la réponse rejoindra cette page.",
+      contactCta: "Poser une question",
+      items: [
+        {
+          question: "Qu’est-ce que Zoumani ?",
+          answer:
+            "Zoumani est une application de cotransportage : elle met en relation les personnes qui ont un colis à envoyer et les voyageurs qui ont de la place dans leurs bagages. Zoumani ne transporte rien elle-même — elle vérifie les identités, sécurise le paiement et suit l’acheminement jusqu’à la remise.",
+        },
+        {
+          question: "Comment envoyer un colis avec un voyageur ?",
+          answer:
+            "Vous décrivez votre envoi dans l’application — départ, destination, contenu, poids. Zoumani vous propose les voyageurs vérifiés qui font déjà ce trajet. Vous en choisissez un, vous payez dans l’application, et vous suivez le colis jusqu’à sa remise au destinataire.",
+        },
+        {
+          question: "Combien coûte un envoi avec Zoumani ?",
+          answer:
+            "Le prix dépend du poids du colis, du trajet et du voyageur choisi. Il s’affiche en toutes lettres avant la réservation et n’augmente pas ensuite : ce que vous voyez est ce que vous payez.",
+        },
+        {
+          question: "Comment les voyageurs sont-ils vérifiés ?",
+          answer:
+            "Chaque voyageur passe une vérification d’identité avant de pouvoir accepter un colis : pièce d’identité contrôlée et coordonnées confirmées. Au fil de ses voyages, son profil porte aussi l’historique des avis laissés par les expéditeurs.",
+        },
+        {
+          question: "Quand le voyageur est-il payé ?",
+          answer:
+            "Jamais avant la remise. Le montant est retenu par Zoumani au moment de la réservation et n’est libéré sur le compte du voyageur qu’une fois le colis remis au destinataire.",
+        },
+        {
+          question: "Que puis-je envoyer, et qu’est-ce qui est interdit ?",
+          answer:
+            "Vous déclarez le contenu à l’avance et il est contrôlé avant le départ. Tout ce que la réglementation aérienne et douanière interdit est refusé : espèces, produits dangereux ou inflammables, denrées périssables, substances réglementées et marchandises soumises à taxe.",
+        },
+        {
+          question: "Vers quels pays Zoumani fonctionne-t-il ?",
+          answer:
+            "Zoumani fonctionne partout où un voyageur publie un trajet. Les liaisons entre l’Europe et l’Afrique sont les plus fournies, parce que c’est là que le besoin d’envoyer est le plus fort.",
+        },
+        {
+          question: "Mon colis est-il assuré ?",
+          answer:
+            "Une protection contre la perte, le vol et les dommages peut être ajoutée à l’envoi, auprès d’assureurs partenaires. Les garanties, les plafonds et les exclusions dépendent de l’option retenue et du contrat de l’assureur.",
+        },
+        {
+          question: "L’application est-elle disponible sur iPhone et Android ?",
+          answer:
+            "Zoumani sortira sur l’App Store et sur Google Play. Les badges de cette page deviendront des liens le jour de la publication — d’ici là, ils portent la mention « Bientôt ».",
+        },
+      ],
+    },
+
+    footer: {
+      title: "Votre colis part avec le prochain voyageur.",
+      description:
+        "Tout se passe dans l’application : la recherche, la vérification, le paiement et le suivi.",
+      linkGroups: [
         {
           title: "Zoumani",
           links: [
-            { label: "Notre mission", href: "#trust" },
-            { label: "Nos partenaires", href: "#partners" },
-            { label: "Aide et contact", href: "#help" },
+            { label: "Comment ça marche", href: "#fonctionnement" },
+            { label: "Partenaires", href: "#partenaires" },
+            { label: "Télécharger l’app", href: "#telecharger" },
+          ],
+        },
+        {
+          title: "Expédier",
+          links: [
+            { label: "Envoyer un colis" },
+            { label: "Contenus autorisés" },
+            { label: "Suivre un colis" },
+          ],
+        },
+        {
+          title: "Voyager",
+          links: [
+            { label: "Publier un voyage" },
+            { label: "Vérification d’identité" },
+            { label: "Rémunération" },
+          ],
+        },
+        {
+          title: "Aide",
+          links: [
+            { label: "Questions fréquentes", href: "#faq" },
+            { label: "Nous contacter sur WhatsApp", whatsapp: true },
           ],
         },
       ],
-      signature: "Par des Africains, pour l’Afrique et sa diaspora.",
       legal: "Tous droits réservés.",
+      legalLinks: ["Mentions légales", "CGU", "Confidentialité", "Cookies"],
     },
-    stats: [
-      { value: "120+", label: "Destinations\ndans le monde" },
-      { value: "15 000+", label: "Utilisateurs\nactifs" },
-      { value: "100%", label: "Voyageurs vérifiés\net notés" },
-      { value: "Protection colis", label: "disponible\nselon l’envoi" },
-      { value: "Support 7j/7", label: "Une équipe à votre\nécoute" },
-    ],
+
+    whatsapp: {
+      ariaLabel: "Contacter Zoumani sur WhatsApp",
+      message: "Bonjour Zoumani, j’ai une question sur le service.",
+    },
   },
+
   en: {
     navigation: [
       { href: "#fonctionnement", label: "How it works" },
-      { href: "#services", label: "Safety" },
-      { href: "#trust", label: "About" },
-      { href: "#help", label: "Help" },
+      { href: "#partenaires", label: "Partners" },
+      { href: "#faq", label: "FAQ" },
     ],
     language: {
-      triggerLabel: "Choose language",
+      triggerLabel: "Choose a language",
       menuLabel: "Language",
     },
     mobileMenu: {
       title: "Navigation",
-      description: "Explore Zoumani services.",
+      description: "Jump to a section of the page.",
     },
     downloadCta: "Get the app",
+
     hero: {
+      eyebrow: "France · Africa · Worldwide",
       titleLineOne: "Send your parcels.",
       titleLineTwo: "Make your trips pay.",
       description:
-        "Zoumani connects people who need to send a parcel {accent} with room to spare in their luggage.",
-      descriptionAccent: "with travellers",
-      qrLabel: "Scan to download",
-      storeSoon: "Soon",
-      traveler: {
-        name: "Alex",
-        role: "traveller",
-        route: "Paris → Douala",
-        amount: "+€45",
-        space: "Space available",
-      },
-      sender: {
-        name: "Marie",
-        role: "sender",
-        parcel: "Parcel to send",
-        weight: "2.4 kg",
-        city: "Douala",
-      },
+        "Zoumani connects people with a parcel to send to {accent} in their luggage. Everything happens in the app.",
+      descriptionAccent: "travellers who have room",
+      trust: [
+        {
+          title: "Verified identities",
+          detail: "ID checked before anyone travels",
+        },
+        {
+          title: "Protected payment",
+          detail: "The traveller is paid once the parcel is handed over",
+        },
+        {
+          title: "Support at every step",
+          detail: "A team you can reach from drop-off to delivery",
+        },
+      ],
       phone: {
-        titleBefore: "The connection that gets ",
-        titleAccent: "your parcels",
-        titleAfter: " moving",
-        searchTab: "Find a trip",
+        senderTab: "I’m sending",
+        travelerTab: "I’m travelling",
         fromLabel: "From",
         fromValue: "Paris, France",
         toLabel: "To",
         toValue: "Douala, Cameroon",
-        dateLabel: "Travel date",
+        dateLabel: "Before",
         dateValue: "15 May 2026",
-        submit: "Search",
-        stepsTitle: "How does it work?",
-        steps: [
-          { title: "1. Post", detail: "your trip or your parcel" },
-          { title: "2. Receive", detail: "offers you can trust" },
-          { title: "3. Travel", detail: "safely and with peace of mind" },
+        submit: "See travellers",
+        resultsTitle: "3 verified travellers",
+        resultsMeta: "May 2026",
+        results: [
+          {
+            name: "Alex D.",
+            detail: "14 May · 8 kg available",
+            price: "€45",
+            verified: true,
+          },
+          {
+            name: "Fatou N.",
+            detail: "15 May · 5 kg available",
+            price: "€38",
+            verified: true,
+          },
+          {
+            name: "Samuel K.",
+            detail: "18 May · 12 kg available",
+            price: "€52",
+            verified: false,
+          },
         ],
       },
-      trust: [
-        { title: "Verified identities", detail: "for exchanges you can trust" },
-        { title: "Secure payments", detail: "and protected" },
-        { title: "Responsive support", detail: "at every step" },
-      ],
     },
-    app: {
-      title: "Zoumani lives in the app",
-      subtitle:
-        "Find a traveller, book luggage space and follow your parcel — all from your phone.",
-      waiting: "Coming soon to the App Store and Google Play",
+
+    stores: {
+      appleTop: "Download on the",
+      appleBottom: "App Store",
+      playTop: "Get it on",
+      playBottom: "Google Play",
+      soon: "Soon",
     },
-    promos: {
-      sectionLabel: "Zoumani services",
-      travelerTitleOne: "Traveling soon?",
-      travelerTitleTwo: "Make your luggage pay",
-      travelerDescription: "Help someone, earn money and travel lighter.",
-      travelerCta: "I’m a traveler",
-      parcelTitleOne: "Want to send",
-      parcelTitleTwo: "a parcel to Africa?",
-      parcelDescription:
-        "Find a trusted traveler and ship with complete peace of mind.",
-      parcelCta: "I have a parcel to send",
-    },
+
     partners: {
-      eyebrow: "Transport, protection, trust",
-      title: "Your parcel keeps moving. Its value stays protected.",
+      eyebrow: "Shipping & protection",
+      title: "Your parcel moves. Its value stays protected.",
       description:
-        "Zoumani brings delivery and insurance specialists together to build a reliable experience from handover to arrival.",
-      protectionEyebrow: "Parcel protection",
-      protectionTitle: "Coverage designed for the unexpected",
-      protectionDescription:
-        "Depending on the selected option and policy, your shipment may be protected against loss, theft, damage or an incident in transit.",
-      logisticsLabel: "Transport & delivery",
-      insuranceLabel: "Insurance & protection",
-      listLabel: "Potential transport and insurance ecosystem",
+        "Zoumani builds on established shipping and insurance players to cover the journey, from drop-off to handover.",
+      listLabel: "Shipping and insurance ecosystem",
       disclaimer:
-        "Partnerships, cover limits and exclusions are shown for exploration, subject to approval and the terms of the selected policy.",
+        "Partnerships, cover, limits and exclusions shown for illustration, subject to agreement and to the terms of the selected policy.",
     },
+
     howItWorks: {
-      eyebrow: "How does it work?",
-      titleLines: ["One parcel.", "One journey.", "Someone waiting for it."],
+      eyebrow: "How it works",
+      title: "Three steps. Zoumani handles everything else.",
       description:
-        "For a mother, a father, a child, a teenager or a friend, what travels is never just a parcel. It is a bond. Zoumani looks after every step.",
-      steps: [
+        "You search for no one and negotiate nothing. The platform verifies, connects and secures the money.",
+      tabs: [
         {
-          number: "01",
-          title: "You prepare your parcel",
-          description:
-            "Declare where it starts, where it is going and what is inside. A first verification secures what comes next.",
-          imageAlt:
-            "A woman carefully prepares a small parcel in her Paris apartment.",
-          note: "For Mum, with all my heart.",
-          proof: {
-            label: "Contents declared",
-            meta: "First verification recorded",
-            benefits: [{ icon: "check", label: "Ready to be entrusted" }],
-          },
-        },
-        {
-          number: "02",
-          title: "The right traveler is already on the way",
-          description:
-            "Choose a verified, well-rated traveler already heading in the right direction.",
-          imageAlt:
-            "A traveler checks his phone beside his luggage and the parcel at the airport.",
-          proof: {
-            label: "Verified traveler",
-            meta: "4.9/5 • 48 reviews • 1,240 points",
-            origin: "Paris",
-            destination: "Douala",
-            benefits: [
-              { icon: "wallet", label: "Reward scheduled after handover" },
-            ],
-          },
-        },
-        {
-          number: "03",
-          title: "Your parcel takes off",
-          description:
-            "You check the parcel together. Its selected insurance and partner transit are confirmed before departure.",
-          imageAlt:
-            "The traveler walks through the terminal with the parcel and his luggage.",
-          proof: {
-            label: "Final verification complete",
-            meta: "Parcel collected",
-            origin: "Paris",
-            destination: "Douala",
-            benefits: [
-              { icon: "shield", label: "Parcel insurance selected" },
-              { icon: "transit", label: "Partner transit confirmed" },
-            ],
-          },
-        },
-        {
-          number: "04",
-          title: "And someone gets it back.",
-          description:
-            "Your loved one confirms the handover. The traveler is paid, earns points and may receive a new review.",
-          imageAlt:
-            "In Douala, the traveler warmly hands the parcel to its recipient.",
-          note: "Received. Thank you.",
-          proof: {
-            label: "Arrived at destination",
-            meta: "Handover confirmed by the recipient",
-            benefits: [
-              { icon: "wallet", label: "Traveler paid" },
-              { icon: "rating", label: "+120 points • new review" },
-            ],
-          },
-        },
-      ],
-      closingEyebrow: "That’s it. The journey is complete.",
-      closingTitle: "From your hands to theirs.",
-      closingDescription:
-        "Your loved one receives what matters. The traveler is rewarded. Every successful handover strengthens trust in Zoumani.",
-      senderCta: "Find a traveler",
-      travelerCta: "Share my trip",
-      legalNote:
-        "Profiles, points and reviews are illustrative. Insurance, rewards and transit are available according to the shipment, journey, selected option and applicable terms.",
-    },
-    about: {
-      eyebrow: "About Zoumani",
-      titleLines: [
-        "What connects us",
-        "deserves more",
-        "than a simple delivery.",
-      ],
-      lead: "Zoumani turns journeys that already exist into useful connections between those who send, travel and wait.",
-      body: "Our ambition is simple: make exchanges between Africa, its diaspora and the rest of the world more human, reliable and accessible, without losing what gives them value — trust between people.",
-      quote: "We do not simply move parcels. We bring people closer together.",
-      imageAlt:
-        "A multigenerational Cameroonian family discovers together the contents of a parcel sent by a loved one.",
-      imageCaption: "A piece of home, safely arrived.",
-      valuesLabel: "Zoumani principles",
-      values: [
-        {
-          title: "Human, always",
-          description:
-            "Behind every parcel is an intention, a loved one and a story worthy of our attention.",
-        },
-        {
-          title: "Trust must be earned",
-          description:
-            "Verification, reputation and proof of handover make every journey clearer and safer.",
-        },
-        {
-          title: "Africa in motion",
-          description:
-            "We reveal the strength of a diaspora that travels, helps one another and creates value on both sides of the journey.",
-        },
-      ],
-      signature: "Shaped with the diaspora. Built to bring people closer.",
-    },
-    whatsapp: {
-      eyebrow: "A question?",
-      label: "Message us",
-      ariaLabel: "Contact Zoumani on WhatsApp",
-      message:
-        "Hello Zoumani, I would like more information about sending a parcel or becoming a traveler.",
-    },
-    footer: {
-      eyebrow: "The next connection starts here",
-      title: "One journey can bring two lives closer.",
-      description:
-        "Send what matters or give more value to your next journey. Zoumani connects the right people at the right time.",
-      senderCta: "Send a parcel",
-      travelerCta: "Share my trip",
-      whatsappTitle: "Want to talk it through?",
-      whatsappDescription: "Our team answers you directly on WhatsApp.",
-      whatsappCta: "Start the conversation",
-      linkGroups: [
-        {
-          title: "Services",
-          links: [
-            { label: "Send a parcel", href: "#search" },
-            { label: "Become a traveler", href: "#telecharger" },
-            { label: "How it works", href: "#fonctionnement" },
+          id: "expediteur",
+          label: "I’m sending a parcel",
+          steps: [
+            {
+              number: "01",
+              title: "Describe your parcel",
+              detail:
+                "Where it leaves from, where it goes, what is inside. The declared contents are checked before anything else.",
+            },
+            {
+              number: "02",
+              title: "Pick a traveller",
+              detail:
+                "The platform shows you the verified travellers already making that trip. You compare, you book.",
+            },
+            {
+              number: "03",
+              title: "Follow it to the handover",
+              detail:
+                "You track the parcel step by step. The traveller is only paid once it has been handed over.",
+            },
           ],
         },
+        {
+          id: "voyageur",
+          label: "I’m travelling",
+          steps: [
+            {
+              number: "01",
+              title: "Post your trip",
+              detail:
+                "Your route, your dates, the spare kilos in your luggage. Identity verification happens only once.",
+            },
+            {
+              number: "02",
+              title: "Accept parcels",
+              detail:
+                "Zoumani sends you requests that have already been checked. You stay in control of what you carry.",
+            },
+            {
+              number: "03",
+              title: "Hand over, get paid",
+              detail:
+                "On arrival you hand the parcel to the recipient. The payment is released to your account.",
+            },
+          ],
+        },
+      ],
+      guarantee:
+        "Identity checks, matching, escrowed payment, tracking: {accent}. You never exchange money or contact details directly.",
+      guaranteeAccent: "Zoumani takes care of it",
+    },
+
+    faq: {
+      eyebrow: "Frequently asked questions",
+      title: "Everything people ask before downloading.",
+      description:
+        "Not seeing your question? Write to us — the answer will join this page.",
+      contactCta: "Ask a question",
+      items: [
+        {
+          question: "What is Zoumani?",
+          answer:
+            "Zoumani is a crowdshipping app: it connects people who have a parcel to send with travellers who have room in their luggage. Zoumani carries nothing itself — it verifies identities, secures the payment and tracks the journey through to the handover.",
+        },
+        {
+          question: "How do I send a parcel with a traveller?",
+          answer:
+            "You describe your parcel in the app — origin, destination, contents, weight. Zoumani shows you the verified travellers already making that trip. You pick one, you pay in the app, and you follow the parcel until it reaches the recipient.",
+        },
+        {
+          question: "How much does sending a parcel cost?",
+          answer:
+            "The price depends on the weight of the parcel, the route and the traveller you pick. It is shown in full before you book and does not go up afterwards: what you see is what you pay.",
+        },
+        {
+          question: "How are travellers verified?",
+          answer:
+            "Every traveller goes through identity verification before they can accept a parcel: ID checked and contact details confirmed. As they travel, their profile also carries the reviews left by senders.",
+        },
+        {
+          question: "When is the traveller paid?",
+          answer:
+            "Never before the handover. Zoumani holds the amount from the moment you book, and releases it to the traveller’s account only once the parcel has reached the recipient.",
+        },
+        {
+          question: "What can I send, and what is forbidden?",
+          answer:
+            "You declare the contents in advance and they are checked before departure. Anything air and customs regulations forbid is refused: cash, dangerous or flammable goods, perishables, controlled substances and dutiable merchandise.",
+        },
+        {
+          question: "Which countries does Zoumani cover?",
+          answer:
+            "Zoumani works anywhere a traveller posts a trip. Routes between Europe and Africa are the busiest, because that is where the need to send is strongest.",
+        },
+        {
+          question: "Is my parcel insured?",
+          answer:
+            "Cover against loss, theft and damage can be added to a shipment through partner insurers. The guarantees, limits and exclusions depend on the option chosen and on the insurer’s policy.",
+        },
+        {
+          question: "Is the app available on iPhone and Android?",
+          answer:
+            "Zoumani is coming to the App Store and Google Play. The badges on this page will become links on release day — until then they carry a “Soon” mark.",
+        },
+      ],
+    },
+
+    footer: {
+      title: "Your parcel leaves with the next traveller.",
+      description:
+        "Everything happens in the app: the search, the verification, the payment and the tracking.",
+      linkGroups: [
         {
           title: "Zoumani",
           links: [
-            { label: "Our mission", href: "#trust" },
-            { label: "Our partners", href: "#partners" },
-            { label: "Help and contact", href: "#help" },
+            { label: "How it works", href: "#fonctionnement" },
+            { label: "Partners", href: "#partenaires" },
+            { label: "Get the app", href: "#telecharger" },
+          ],
+        },
+        {
+          title: "Sending",
+          links: [
+            { label: "Send a parcel" },
+            { label: "Accepted contents" },
+            { label: "Track a parcel" },
+          ],
+        },
+        {
+          title: "Travelling",
+          links: [
+            { label: "Post a trip" },
+            { label: "Identity verification" },
+            { label: "Getting paid" },
+          ],
+        },
+        {
+          title: "Help",
+          links: [
+            { label: "FAQ", href: "#faq" },
+            { label: "Message us on WhatsApp", whatsapp: true },
           ],
         },
       ],
-      signature: "By Africans, for Africa and its diaspora.",
       legal: "All rights reserved.",
+      legalLinks: ["Legal notice", "Terms", "Privacy", "Cookies"],
     },
-    stats: [
-      { value: "120+", label: "Destinations\nworldwide" },
-      { value: "15,000+", label: "Active\nusers" },
-      { value: "100%", label: "Verified and rated\ntravelers" },
-      {
-        value: "Parcel protection",
-        label: "available for\neligible shipments",
-      },
-      { value: "Support 7 days", label: "A team ready\nto help" },
-    ],
+
+    whatsapp: {
+      ariaLabel: "Message Zoumani on WhatsApp",
+      message: "Hello Zoumani, I have a question about the service.",
+    },
   },
 };

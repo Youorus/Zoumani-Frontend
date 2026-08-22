@@ -23,7 +23,7 @@ export function MobileNavigation({ copy }: { copy: HomeContent }) {
       <DrawerTrigger asChild>
         <button
           type="button"
-          className="focus-ring grid size-11 place-items-center rounded-full border border-hero-glass-border bg-hero-glass text-inverse-foreground backdrop-blur-md xl:hidden"
+          className="focus-ring grid size-11 place-items-center rounded-full text-foreground transition-colors hover:bg-muted lg:hidden"
           aria-label="Ouvrir le menu"
         >
           <Menu className="size-5" />
