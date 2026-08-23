@@ -8,6 +8,7 @@ export type HomeLanguage = "fr" | "en";
 export type HomeSectionHref =
   | "#telecharger"
   | "#fonctionnement"
+  | "#securite"
   | "#partenaires"
   | "#faq";
 
@@ -41,6 +42,8 @@ export interface HomeContent {
     descriptionAccent: string;
     /** Les trois garanties du bandeau bas, en réponse au doute immédiat. */
     trust: ReadonlyArray<{ title: string; detail: string }>;
+    /** L'introduction du bloc qui porte les deux badges de magasin. */
+    downloadTitle: string;
     /** L’écran d’application montré dans le téléphone. */
     phone: {
       senderTab: string;
@@ -127,8 +130,9 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
   fr: {
     navigation: [
       { href: "#fonctionnement", label: "Comment ça marche" },
+      { href: "#securite", label: "Sécurité" },
       { href: "#partenaires", label: "Partenaires" },
-      { href: "#faq", label: "Questions fréquentes" },
+      { href: "#faq", label: "FAQ" },
     ],
     language: {
       triggerLabel: "Choisir la langue",
@@ -145,22 +149,23 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       titleLineOne: "Envoyez vos colis.",
       titleLineTwo: "Rentabilisez vos voyages.",
       description:
-        "Zoumani relie ceux qui ont un colis à envoyer aux {accent} dans leurs bagages. Tout se passe dans l’application.",
-      descriptionAccent: "voyageurs qui ont de la place",
+        "Zoumani connecte {accent} pour des envois simples, sécurisés et humains.",
+      descriptionAccent: "expéditeurs et voyageurs",
       trust: [
         {
-          title: "Identités vérifiées",
-          detail: "Pièce d’identité contrôlée avant tout voyage",
+          title: "Voyageurs vérifiés",
+          detail: "Profils contrôlés pour votre tranquillité.",
         },
         {
-          title: "Paiement protégé",
-          detail: "Le voyageur est payé après la remise du colis",
+          title: "Colis sécurisés",
+          detail: "Chaque colis est suivi jusqu’à sa remise.",
         },
         {
-          title: "Support à chaque étape",
-          detail: "Une équipe joignable du dépôt à la livraison",
+          title: "Communauté humaine",
+          detail: "Des échanges simples, respectueux et bienveillants.",
         },
       ],
+      downloadTitle: "Tout se passe dans l’app Zoumani",
       phone: {
         senderTab: "J’envoie",
         travelerTab: "Je voyage",
@@ -379,6 +384,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
   en: {
     navigation: [
       { href: "#fonctionnement", label: "How it works" },
+      { href: "#securite", label: "Safety" },
       { href: "#partenaires", label: "Partners" },
       { href: "#faq", label: "FAQ" },
     ],
@@ -397,22 +403,23 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       titleLineOne: "Send your parcels.",
       titleLineTwo: "Make your trips pay.",
       description:
-        "Zoumani connects people with a parcel to send to {accent} in their luggage. Everything happens in the app.",
-      descriptionAccent: "travellers who have room",
+        "Zoumani connects {accent} for simple, secure and human deliveries.",
+      descriptionAccent: "senders and travellers",
       trust: [
         {
-          title: "Verified identities",
-          detail: "ID checked before anyone travels",
+          title: "Verified travellers",
+          detail: "Profiles checked for your peace of mind.",
         },
         {
-          title: "Protected payment",
-          detail: "The traveller is paid once the parcel is handed over",
+          title: "Secure parcels",
+          detail: "Every parcel is tracked until handover.",
         },
         {
-          title: "Support at every step",
-          detail: "A team you can reach from drop-off to delivery",
+          title: "A human community",
+          detail: "Simple, respectful and thoughtful exchanges.",
         },
       ],
+      downloadTitle: "Everything happens in the Zoumani app",
       phone: {
         senderTab: "I’m sending",
         travelerTab: "I’m travelling",

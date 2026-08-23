@@ -77,6 +77,7 @@ function Badge({
   ligneHaute,
   ligneBasse,
   stack,
+  alwaysInline,
 }: {
   href?: string;
   tone: Tone;
@@ -84,12 +85,17 @@ function Badge({
   ligneHaute: string;
   ligneBasse: string;
   stack: boolean;
+  alwaysInline: boolean;
 }) {
   const classe = cn(
     "inline-flex h-[3.625rem] items-center gap-[0.8rem] rounded-[0.875rem] px-6",
     // Pleine largeur tant qu'ils sont empilés : deux boutons de largeurs
     // differentes l'un sous l'autre se lisent comme une erreur de gabarit.
-    stack ? "w-full justify-center" : "w-full justify-center sm:w-auto sm:justify-start",
+    alwaysInline
+      ? "min-w-0 flex-1 justify-center px-3"
+      : stack
+        ? "w-full justify-center"
+        : "w-full justify-center sm:w-auto sm:justify-start",
     tone === "dark"
       ? "bg-foreground text-inverse-foreground"
       : "bg-inverse-foreground text-foreground",
@@ -136,6 +142,7 @@ export function StoreBadges({
   copy,
   tone = "dark",
   stack = false,
+  alwaysInline = false,
   className,
 }: {
   copy: HomeContent["stores"];
@@ -146,6 +153,8 @@ export function StoreBadges({
    * lui, les garde toujours en colonne dans sa propre colonne étroite.
    */
   stack?: boolean;
+  /** Garde les deux badges côte à côte dans le bloc compact du hero. */
+  alwaysInline?: boolean;
   className?: string;
 }) {
   const publie = Boolean(APP_STORE || PLAY_STORE);
@@ -154,7 +163,9 @@ export function StoreBadges({
     <div
       className={cn(
         "flex gap-3.5",
-        stack
+        alwaysInline
+          ? "w-full flex-row flex-wrap items-center"
+          : stack
           ? "w-full flex-col items-stretch"
           : "w-full flex-col items-stretch sm:w-auto sm:flex-row sm:flex-wrap sm:items-center",
         className,
@@ -167,6 +178,7 @@ export function StoreBadges({
         ligneHaute={copy.appleTop}
         ligneBasse={copy.appleBottom}
         stack={stack}
+        alwaysInline={alwaysInline}
       />
       <Badge
         href={PLAY_STORE}
@@ -175,12 +187,17 @@ export function StoreBadges({
         ligneHaute={copy.playTop}
         ligneBasse={copy.playBottom}
         stack={stack}
+        alwaysInline={alwaysInline}
       />
       {publie ? null : (
         <span
           className={cn(
             "self-center rounded-full text-[0.6875rem] font-extrabold tracking-[0.14em] uppercase",
-            stack ? "" : "sm:self-center",
+            alwaysInline
+              ? "w-full text-center"
+              : stack
+                ? ""
+                : "sm:self-center",
             tone === "dark"
               ? "bg-secondary/28 px-3 py-1.5 text-accent"
               : "text-inverse-muted-foreground",
