@@ -55,6 +55,7 @@ export function HowItWorks({ copy }: { copy: HomeContent["howItWorks"] }) {
     <section
       id="fonctionnement"
       className={styles.section}
+      data-story-section
       aria-labelledby="how-it-works-title"
     >
       <Container className={styles.container}>

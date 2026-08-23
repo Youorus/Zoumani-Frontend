@@ -68,6 +68,7 @@ export interface HomeContent {
 
   /** Les badges de magasin, partagés par le hero et le pied de page. */
   stores: {
+    locale: HomeLanguage;
     appleTop: string;
     appleBottom: string;
     playTop: string;
@@ -117,6 +118,7 @@ export interface HomeContent {
       }>;
     }>;
     legal: string;
+    storeLegal: string;
     legalLinks: readonly string[];
   };
 
@@ -202,6 +204,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
 
     stores: {
+      locale: "fr",
       appleTop: "Télécharger sur l’",
       appleBottom: "App Store",
       playTop: "Disponible sur",
@@ -372,6 +375,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         },
       ],
       legal: "Tous droits réservés.",
+      storeLegal:
+        "Apple et le logo Apple sont des marques d’Apple Inc. Google Play et le logo Google Play sont des marques de Google LLC.",
       legalLinks: ["Mentions légales", "CGU", "Confidentialité", "Cookies"],
     },
 
@@ -456,6 +461,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
 
     stores: {
+      locale: "en",
       appleTop: "Download on the",
       appleBottom: "App Store",
       playTop: "Get it on",
@@ -626,6 +632,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         },
       ],
       legal: "All rights reserved.",
+      storeLegal:
+        "Apple and the Apple logo are trademarks of Apple Inc. Google Play and the Google Play logo are trademarks of Google LLC.",
       legalLinks: ["Legal notice", "Terms", "Privacy", "Cookies"],
     },
 

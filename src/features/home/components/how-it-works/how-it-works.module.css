@@ -23,11 +23,11 @@
   max-width: 50rem;
   margin-top: 1.125rem;
   color: var(--wordmark);
-  font-family: var(--font-body), sans-serif;
-  font-size: clamp(1.9375rem, 4.4vw, 3.125rem);
-  font-weight: 900;
-  letter-spacing: -0.038em;
-  line-height: 1.08;
+  font-family: var(--font-display), serif;
+  font-size: clamp(2.5rem, 5vw, 3.8rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
   text-wrap: balance;
 }
 
@@ -73,6 +73,19 @@
 .panel {
   width: 100%;
   margin-top: 4.5rem;
+  animation: panel-reveal 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes panel-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .steps {
@@ -251,7 +264,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tab {
+  .tab,
+  .panel {
+    animation: none;
     transition: none;
   }
 }

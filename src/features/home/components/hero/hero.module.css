@@ -195,13 +195,35 @@
   animation: reveal-copy 720ms cubic-bezier(0.2, 0.8, 0.2, 1) 180ms both;
 }
 
-.downloadCard > p {
+.downloadIntro > p {
   margin: 0;
   color: #3b1712;
   font-size: 1.02rem;
   font-weight: 850;
   letter-spacing: -0.025em;
   line-height: 1.35;
+}
+
+.downloadIntro {
+  position: relative;
+  min-width: 0;
+}
+
+.downloadArrow {
+  position: absolute;
+  top: 50%;
+  right: -3.2rem;
+  width: 3.8rem;
+  overflow: visible;
+  color: #ff6b00;
+  transform: translateY(-48%);
+}
+
+.downloadArrow path {
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.15;
 }
 
 .storeBadges {
@@ -363,6 +385,20 @@
     gap: 0.8rem;
     max-width: 26rem;
   }
+
+  .downloadIntro {
+    display: inline-flex;
+    max-width: 18rem;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .downloadArrow {
+    position: static;
+    width: 3rem;
+    flex: 0 0 auto;
+    transform: rotate(46deg);
+  }
 }
 
 @media (max-width: 47.99rem) {
@@ -433,7 +469,7 @@
     text-align: center;
   }
 
-  .downloadCard > p {
+  .downloadIntro > p {
     font-size: 0.9rem;
   }
 

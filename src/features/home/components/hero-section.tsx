@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { FaqSection } from "./faq/faq-section";
 import { HomeFooter } from "./footer/home-footer";
@@ -40,6 +40,38 @@ import { TrustedPartners } from "./trusted-partners";
 export function HeroSection() {
   const [language, setLanguage] = useState<HomeLanguage>("fr");
   const copy = homeContent[language];
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const root = document.documentElement;
+    const chapters = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-story-section]"),
+    );
+
+    chapters.forEach((chapter) => {
+      chapter.dataset.storyVisible = "false";
+    });
+    root.classList.add("story-motion");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          (entry.target as HTMLElement).dataset.storyVisible = "true";
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: "0px 0px -8%", threshold: 0.08 },
+    );
+
+    chapters.forEach((chapter) => observer.observe(chapter));
+
+    return () => {
+      observer.disconnect();
+      root.classList.remove("story-motion");
+    };
+  }, []);
 
   return (
     <>

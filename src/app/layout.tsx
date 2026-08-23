@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import type { PropsWithChildren } from "react";
 
 import "./globals.css";
@@ -8,6 +9,19 @@ import { siteConfig, siteUrl, isIndexable } from "@/lib/seo/site";
 import { buildGraph, organizationSchema, websiteSchema } from "@/lib/seo/structured-data";
 
 import { AppProviders } from "./providers";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-cormorant",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   // Permet a tous les champs URL des pages enfants d'utiliser des chemins relatifs.
@@ -121,7 +135,11 @@ export const viewport: Viewport = {
  */
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html
+      lang="fr"
+      className={`${manrope.variable} ${cormorant.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <AppProviders>{children}</AppProviders>
         <JsonLd schema={buildGraph(organizationSchema, websiteSchema)} />

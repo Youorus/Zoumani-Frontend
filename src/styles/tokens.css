@@ -8,8 +8,8 @@
   --violet-colis-prive: #56207a;
   --vert-whatsapp: #25d366;
 
-  --font-body: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
-  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-body: var(--font-manrope), "Avenir Next", sans-serif;
+  --font-display: var(--font-cormorant), "Iowan Old Style", serif;
 
   --lagoon-depth: #0f766e;
   --oasis-foam: #d9fff8;

@@ -76,7 +76,18 @@ export function Hero({
         </ul>
 
         <div className={styles.downloadCard}>
-          <p>{copy.downloadTitle}</p>
+          <div className={styles.downloadIntro}>
+            <p>{copy.downloadTitle}</p>
+            <svg
+              viewBox="0 0 76 46"
+              fill="none"
+              aria-hidden="true"
+              className={styles.downloadArrow}
+            >
+              <path d="M3 8c18-9 43-3 49 12 4 10-2 18-13 20" />
+              <path d="m45 31-7 9 11 2" />
+            </svg>
+          </div>
           <StoreBadges
             copy={stores}
             alwaysInline

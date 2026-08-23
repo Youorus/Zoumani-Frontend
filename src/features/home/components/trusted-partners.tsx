@@ -28,6 +28,7 @@ export function TrustedPartners({ copy }: { copy: HomeContent["partners"] }) {
     <section
       id="partenaires"
       className={styles.section}
+      data-story-section
       aria-labelledby="trusted-partners-title"
     >
       <Container className={styles.container}>

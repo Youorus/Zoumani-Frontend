@@ -39,7 +39,12 @@ export function HomeFooter({
   whatsapp: HomeContent["whatsapp"];
 }) {
   return (
-    <footer id="contact" className={styles.footer} aria-labelledby="footer-title">
+    <footer
+      id="contact"
+      className={styles.footer}
+      data-story-section
+      aria-labelledby="footer-title"
+    >
       <Container className={styles.container}>
         <div className={styles.top}>
           <div>
@@ -102,6 +107,7 @@ export function HomeFooter({
             ))}
           </ul>
         </div>
+        <p className={styles.storeLegal}>{copy.storeLegal}</p>
       </Container>
 
       {/* Hors du conteneur : il doit toucher les deux bords de la fenêtre. */}

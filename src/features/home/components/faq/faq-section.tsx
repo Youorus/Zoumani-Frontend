@@ -43,7 +43,12 @@ export function FaqSection({
   whatsapp: HomeContent["whatsapp"];
 }) {
   return (
-    <section id="faq" className={styles.section} aria-labelledby="faq-title">
+    <section
+      id="faq"
+      className={styles.section}
+      data-story-section
+      aria-labelledby="faq-title"
+    >
       <Container className={styles.container}>
         <div className={styles.intro}>
           <p className={styles.eyebrow}>{copy.eyebrow}</p>
