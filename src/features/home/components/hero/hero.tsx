@@ -78,16 +78,16 @@ export function Hero({
         <div className={styles.downloadCard}>
           <div className={styles.downloadIntro}>
             <p>{copy.downloadTitle}</p>
-            <svg
-              viewBox="0 0 76 46"
-              fill="none"
-              aria-hidden="true"
-              className={styles.downloadArrow}
-            >
-              <path d="M3 8c18-9 43-3 49 12 4 10-2 18-13 20" />
-              <path d="m45 31-7 9 11 2" />
-            </svg>
           </div>
+          <svg
+            viewBox="0 0 72 44"
+            fill="none"
+            aria-hidden="true"
+            className={styles.downloadArrow}
+          >
+            <path d="M3 12C22 1 45 2 57 14c6 6 7 12 7 18" />
+            <path d="m54 26 10 7-11 6" />
+          </svg>
           <StoreBadges
             copy={stores}
             alwaysInline

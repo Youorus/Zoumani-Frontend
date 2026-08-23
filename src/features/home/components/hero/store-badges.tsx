@@ -51,6 +51,7 @@ function Badge({
       alt={alt}
       width={store === "apple" ? 177 : 194}
       height={store === "apple" ? 56 : 75}
+      loading={alwaysInline ? "eager" : "lazy"}
       sizes="(max-width: 640px) 44vw, 12rem"
       style={{ width: "100%", height: "auto" }}
     />
