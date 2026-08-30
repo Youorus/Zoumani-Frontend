@@ -130,7 +130,10 @@ N'ajoute pas d'autre appel sans le demander.
 
 3. `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`.
 4. Vérifier dans la sortie du build que **rien n'est passé en dynamique**.
-5. La documentation part avec le code, dans le même commit. Un `README`
+5. La documentation part avec le code, dans le même commit. Ce qu'on
+   renonce à faire va dans `docs/PLUS-TARD.md`, avec ce que ça coûte et
+   ce qui déclencherait de s'en occuper. Une chose repoussée sans trace
+   est redécouverte six mois plus tard, souvent au pire moment. Un `README`
    qui décrit un site qu'on n'a plus est pire que pas de README : c'est
    celui-là qu'on croit.
 
