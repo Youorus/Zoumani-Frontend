@@ -12,8 +12,20 @@ export default function robots(): MetadataRoute.Robots {
     return { rules: { userAgent: "*", disallow: "/" } };
   }
 
-  // Routes applicatives et techniques : sans valeur pour la recherche.
-  const disallow = ["/api/", "/trips", "/trips/"];
+  /**
+   * Les seules routes à ne pas explorer.
+   *
+   * `/trips` y figurait, hérité d'un espace connecté que ce dépôt n'a
+   * jamais servi : l'adresse rend 404, vérifié en production. Un
+   * `Disallow` sur une route inexistante n'est pas neutre — il fait
+   * croire à un espace privé, et il survit à la création future d'une
+   * page qui porterait ce nom.
+   *
+   * Reste `/api/` : les routes de l'API rendent du JSON, elles n'ont rien
+   * à faire dans un index et leur exploration consomme du budget de
+   * crawl pour rien.
+   */
+  const disallow = ["/api/"];
 
   return {
     rules: [

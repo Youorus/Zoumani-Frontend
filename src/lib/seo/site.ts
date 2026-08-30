@@ -40,15 +40,38 @@ export const siteConfig = {
     "Zoumani",
   ],
 
-  twitter: "@zoumani",
+  /**
+   * Compte X officiel, quand il existera.
+   *
+   * `@zoumani` y figurait. Ce compte n'est pas celui de la marque : il
+   * appartient à quelqu'un d'autre, et le déclarer dans `twitter:site`
+   * lui attribuait la paternité de chaque page partagée.
+   */
+  twitter: undefined as string | undefined,
 
-  /** Réseaux sociaux : alimente sameAs dans le JSON-LD. Retirer les entrées non ouvertes. */
-  social: {
-    facebook: "https://www.facebook.com/zoumani",
-    instagram: "https://www.instagram.com/zoumani",
-    linkedin: "https://www.linkedin.com/company/zoumani",
-    x: "https://x.com/zoumani",
-  },
+  /**
+   * Profils officiels de la marque — et rien d'autre.
+   *
+   * ═══ Pourquoi cette liste est vide ═══
+   *
+   * Elle contenait quatre adresses devinées à partir du nom :
+   * `facebook.com/zoumani`, `instagram.com/zoumani`,
+   * `linkedin.com/company/zoumani`, `x.com/zoumani`. Vérification faite,
+   * `instagram.com/zoumani` est le compte personnel d'une personne réelle,
+   * sans lien avec la marque.
+   *
+   * `sameAs` n'est pas une liste de liens : c'est une **déclaration
+   * d'identité**. On y affirme à Google que ces profils sont ceux de
+   * l'entreprise. Une adresse devinée revient donc à s'approprier le
+   * compte d'un tiers dans le graphe de connaissances — et à laisser
+   * Google construire l'identité de Zoumani autour de quelqu'un d'autre.
+   *
+   * Un `sameAs` absent ne coûte rien. Un `sameAs` faux coûte une
+   * réclamation et une identité de marque à défaire.
+   *
+   * N'ajouter ici qu'une adresse **ouverte et contrôlée** par Zoumani.
+   */
+  social: {} as Readonly<Record<string, string>>,
 
   /**
    * Codes de vérification des consoles moteurs de recherche.

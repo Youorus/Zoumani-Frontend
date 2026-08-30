@@ -83,3 +83,64 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* ═══ La FAQ ═══
+
+   Elle n'existait qu'en données structurées. Voir le commentaire de
+   `page.tsx` : un `FAQPage` déclaré sans contenu visible expose à une
+   action manuelle de Google. */
+.faq {
+  margin-top: clamp(3rem, 7vh, 4.5rem);
+}
+
+.faqTitle {
+  margin: 0 0 1.4rem;
+  color: var(--foreground);
+  font-size: clamp(1.5rem, 3.4vw, 1.95rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.faqItem {
+  border-bottom: 1px solid var(--border);
+}
+
+.faqQuestion {
+  padding: 1.05rem 0;
+  color: var(--foreground);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.45;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faqQuestion::-webkit-details-marker {
+  display: none;
+}
+
+/* Le chevron est dessiné en CSS : une icône de plus serait une requête
+   de plus pour un triangle. */
+.faqQuestion::after {
+  content: "";
+  float: right;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin: 0.35rem 0.2rem 0 1rem;
+  border-right: 2px solid var(--primary);
+  border-bottom: 2px solid var(--primary);
+  transform: rotate(45deg);
+  transition: transform 200ms ease;
+}
+
+.faqItem[open] .faqQuestion::after {
+  transform: rotate(-135deg);
+}
+
+.faqAnswer {
+  margin: 0 0 1.15rem;
+  max-width: 46rem;
+  color: var(--muted-foreground);
+  font-size: 0.97rem;
+  line-height: 1.7;
+}

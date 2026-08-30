@@ -86,8 +86,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.shortDescription,
-    site: siteConfig.twitter,
-    creator: siteConfig.twitter,
+    // Omis tant que le compte officiel n'existe pas : `@zoumani` désigne
+    // quelqu'un d'autre, et l'annoncer lui attribuait chaque partage.
+    ...(siteConfig.twitter
+      ? { site: siteConfig.twitter, creator: siteConfig.twitter }
+      : {}),
     images: ["/opengraph-image"],
   },
 

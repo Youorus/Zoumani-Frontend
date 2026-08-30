@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+
+import { SiteFooter, SiteHeader } from "@/components/layout/site-chrome";
 import { Suspense } from "react";
 
 import { PrelaunchIntent } from "@/features/prelaunch/components/prelaunch-intent";
-import { siteConfig } from "@/lib/seo/site";
+import { pageMetadata } from "@/lib/seo/metadata";
 import styles from "./page.module.css";
 
 /**
@@ -18,21 +20,14 @@ import styles from "./page.module.css";
  * dire perd exactement ce qu'on cherche.
  */
 
-export const metadata: Metadata = {
-  title: "Rejoindre la liste de lancement",
+export const metadata: Metadata = pageMetadata({
+  path: "/preinscription",
+  title: "Se pré-inscrire à l’ouverture",
   description:
     "Dites-nous votre trajet : nous vous prévenons dès que Zoumani ouvre. Un colis à envoyer, ou des kilos libres dans votre valise.",
-  alternates: { canonical: "/preinscription" },
-  openGraph: {
-    title: `Rejoindre la liste de lancement | ${siteConfig.name}`,
-    description:
-      "Dites-nous votre trajet : nous vous prévenons dès que Zoumani ouvre sur ce corridor.",
-    url: `${siteConfig.url}/preinscription`,
-    siteName: siteConfig.name,
-    locale: "fr_FR",
-    type: "website",
-  },
-};
+  ogDescription:
+    "Dites-nous votre trajet : nous vous prévenons dès que Zoumani ouvre sur ce corridor.",
+});
 
 const ETAPES = [
   {
@@ -52,37 +47,41 @@ const ETAPES = [
 
 export default function PreinscriptionPage() {
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Envoyez vos colis. Rentabilisez vos voyages.</h1>
-        <p className={styles.lede}>
-          Zoumani met en relation les expéditeurs et les voyageurs qui font déjà le même
-          trajet. Dites-nous le vôtre : nous vous préviendrons dès l’ouverture.
-        </p>
-      </header>
+    <>
+      <SiteHeader />
+      <main className={styles.page}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Envoyez vos colis. Rentabilisez vos voyages.</h1>
+          <p className={styles.lede}>
+            Zoumani met en relation les expéditeurs et les voyageurs qui font déjà le même
+            trajet. Dites-nous le vôtre : nous vous préviendrons dès l’ouverture.
+          </p>
+        </header>
 
-      <Suspense fallback={<div className={styles.reserve} aria-hidden />}>
-        <PrelaunchIntent />
-      </Suspense>
+        <Suspense fallback={<div className={styles.reserve} aria-hidden />}>
+          <PrelaunchIntent />
+        </Suspense>
 
-      <section aria-labelledby="comment" className={styles.steps}>
-        <h2 id="comment" className={styles.stepsTitle}>
-          Comment ça marche
-        </h2>
-        <ol className={styles.stepsList}>
-          {ETAPES.map((etape, i) => (
-            <li key={etape.titre} className={styles.step}>
-              <span aria-hidden className={styles.stepNumber}>
-                {i + 1}
-              </span>
-              <span>
-                <span className={styles.stepTitle}>{etape.titre}</span>
-                <span className={styles.stepText}>{etape.texte}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
-    </main>
+        <section aria-labelledby="comment" className={styles.steps}>
+          <h2 id="comment" className={styles.stepsTitle}>
+            Comment ça marche
+          </h2>
+          <ol className={styles.stepsList}>
+            {ETAPES.map((etape, i) => (
+              <li key={etape.titre} className={styles.step}>
+                <span aria-hidden className={styles.stepNumber}>
+                  {i + 1}
+                </span>
+                <span>
+                  <span className={styles.stepTitle}>{etape.titre}</span>
+                  <span className={styles.stepText}>{etape.texte}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

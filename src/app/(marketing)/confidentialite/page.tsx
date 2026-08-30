@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 
+import { SiteFooter, SiteHeader } from "@/components/layout/site-chrome";
+
+import { pageMetadata } from "@/lib/seo/metadata";
+
 import { siteConfig } from "@/lib/seo/site";
 import styles from "./page.module.css";
 
@@ -23,13 +27,12 @@ import styles from "./page.module.css";
  * `prelaunch`.
  */
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/confidentialite",
   title: "Politique de confidentialité",
   description:
     "Ce que Zoumani recueille avant son lancement, pourquoi, combien de temps, et comment le faire effacer.",
-  alternates: { canonical: "/confidentialite" },
-  robots: { index: true, follow: true },
-};
+});
 
 const SECTIONS = [
   {
@@ -78,32 +81,36 @@ const SECTIONS = [
 
 export default function ConfidentialitePage() {
   return (
-    <main className={styles.page}>
-      <h1 className={styles.title}>Politique de confidentialité</h1>
-      <p className={styles.lede}>
-        Zoumani n’est pas encore ouvert. Ce que nous recueillons d’ici là tient en
-        une phrase : de quoi vous prévenir, et de quoi savoir où ouvrir en premier.
-      </p>
+    <>
+      <SiteHeader />
+      <main className={styles.page}>
+        <h1 className={styles.title}>Politique de confidentialité</h1>
+        <p className={styles.lede}>
+          Zoumani n’est pas encore ouvert. Ce que nous recueillons d’ici là tient en
+          une phrase : de quoi vous prévenir, et de quoi savoir où ouvrir en premier.
+        </p>
 
-      {SECTIONS.map((section) => (
-        <section key={section.titre} className={styles.section}>
-          <h2 className={styles.sectionTitle}>{section.titre}</h2>
-          {section.corps.map((paragraphe) => (
-            <p
-              key={paragraphe.slice(0, 40)}
-              className={styles.paragraph}
-              // Le gras est écrit en Markdown dans le contenu ci-dessus ;
-              // il n'y en a pas d'autre balise, et le texte vient d'une
-              // constante du code — jamais d'une saisie.
-              dangerouslySetInnerHTML={{
-                __html: paragraphe.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>"),
-              }}
-            />
-          ))}
-        </section>
-      ))}
+        {SECTIONS.map((section) => (
+          <section key={section.titre} className={styles.section}>
+            <h2 className={styles.sectionTitle}>{section.titre}</h2>
+            {section.corps.map((paragraphe) => (
+              <p
+                key={paragraphe.slice(0, 40)}
+                className={styles.paragraph}
+                // Le gras est écrit en Markdown dans le contenu ci-dessus ;
+                // il n'y en a pas d'autre balise, et le texte vient d'une
+                // constante du code — jamais d'une saisie.
+                dangerouslySetInnerHTML={{
+                  __html: paragraphe.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>"),
+                }}
+              />
+            ))}
+          </section>
+        ))}
 
-      <p className={styles.updated}>Dernière mise à jour : 30 août 2026.</p>
-    </main>
+        <p className={styles.updated}>Dernière mise à jour : 30 août 2026.</p>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

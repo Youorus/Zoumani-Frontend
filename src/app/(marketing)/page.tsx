@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { HeroSection } from "@/features/home/components/hero-section";
 import { PageInstrumentation } from "@/features/home/components/page-instrumentation";
 import { homeContent } from "@/features/home/components/home-content";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { siteConfig } from "@/lib/seo/site";
 import {
   buildGraph,
@@ -12,12 +13,15 @@ import {
   serviceSchema,
 } from "@/lib/seo/structured-data";
 
+// Le seul titre absolu du site : l'accueil ne porte pas le gabarit
+// « … | Zoumani », son titre contient déjà la marque.
 export const metadata: Metadata = {
-  title: {
-    absolute: siteConfig.title,
-  },
-  description: siteConfig.description,
-  alternates: { canonical: "/" },
+  ...pageMetadata({
+    path: "/",
+    title: siteConfig.title,
+    description: siteConfig.description,
+  }),
+  title: { absolute: siteConfig.title },
 };
 
 export default function MarketingHomePage() {

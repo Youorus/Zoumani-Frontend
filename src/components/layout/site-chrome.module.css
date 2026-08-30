@@ -1,0 +1,99 @@
+.header {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-elevated);
+}
+
+.header .shell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem clamp(1rem, 4vw, 2.5rem);
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 0.9rem;
+}
+
+.shell {
+  margin: 0 auto;
+  max-width: 72rem;
+  padding-inline: clamp(1.15rem, 5vw, 2rem);
+}
+
+.brand {
+  display: inline-flex;
+  gap: 0.55rem;
+  align-items: center;
+  color: var(--foreground);
+}
+
+.headerNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.8rem, 2.4vw, 1.75rem);
+}
+
+.headerLink {
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: color 160ms ease;
+}
+
+.headerLink:hover {
+  color: var(--primary);
+}
+
+/* Sous 480 px, le logo et trois liens ne tiennent pas sur une ligne : la
+   navigation passe dessous plutôt que de compresser les libellés. */
+@media (max-width: 30rem) {
+  .header .shell {
+    justify-content: flex-start;
+  }
+}
+
+.footer {
+  margin-top: clamp(3rem, 8vh, 5rem);
+  border-top: 1px solid var(--border);
+  background: var(--surface-elevated);
+}
+
+.footer .shell {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: clamp(1.6rem, 4vw, 3rem);
+  padding-block: clamp(2.4rem, 6vw, 3.4rem);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  align-items: flex-start;
+}
+
+.groupTitle {
+  margin: 0 0 0.35rem;
+  color: var(--foreground);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.footerLink {
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  transition: color 160ms ease;
+}
+
+.footerLink:hover {
+  color: var(--primary);
+}
+
+.legal {
+  margin: 0;
+  align-self: start;
+  color: var(--muted-foreground);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}

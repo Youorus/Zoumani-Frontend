@@ -6,6 +6,14 @@ import { absoluteUrl, siteConfig, siteUrl } from "./site";
  * l'entité Zoumani et afficher des résultats enrichis.
  */
 
+/**
+ * Les profils officiels, s'il y en a.
+ *
+ * Une propriété `sameAs: []` est pire qu'absente : elle affirme que
+ * l'entreprise n'a aucun profil, là où le silence laisse simplement la
+ * question ouverte. Tant que la liste est vide, la clé ne figure pas
+ * dans le graphe.
+ */
 const sameAs = Object.values(siteConfig.social);
 
 /** Identifiants stables : permettent de relier les graphes entre eux. */
@@ -31,7 +39,7 @@ export const organizationSchema = {
     caption: siteConfig.name,
   },
   image: absoluteUrl("/opengraph-image"),
-  sameAs,
+  ...(sameAs.length > 0 ? { sameAs } : {}),
 } as const;
 
 export const websiteSchema = {

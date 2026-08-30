@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
+
+import { pageMetadata } from "@/lib/seo/metadata";
 import Link from "next/link";
+
+import { SiteFooter, SiteHeader } from "@/components/layout/site-chrome";
 
 import styles from "../confidentialite/page.module.css";
 
@@ -26,11 +30,12 @@ import styles from "../confidentialite/page.module.css";
  * a été vérifié sur l'adresse qui sert ce site.
  */
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/mentions-legales",
   title: "Mentions légales",
-  description: "Éditeur, hébergeur et nature du site Zoumani.",
-  alternates: { canonical: "/mentions-legales" },
-};
+  description:
+    "Éditeur, hébergeur et nature du site Zoumani.",
+});
 
 /**
  * L'identité de l'éditeur.
@@ -55,86 +60,90 @@ const IDENTITE_CONNUE = Boolean(EDITEUR.raisonSociale && EDITEUR.siege);
 
 export default function MentionsLegalesPage() {
   return (
-    <main className={styles.page}>
-      <h1 className={styles.title}>Mentions légales</h1>
-      <p className={styles.lede}>
-        Qui édite ce site, qui l’héberge, et ce qu’il est — ou n’est pas encore.
-      </p>
+    <>
+      <SiteHeader />
+      <main className={styles.page}>
+        <h1 className={styles.title}>Mentions légales</h1>
+        <p className={styles.lede}>
+          Qui édite ce site, qui l’héberge, et ce qu’il est — ou n’est pas encore.
+        </p>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Éditeur du site</h2>
-        {IDENTITE_CONNUE ? (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Éditeur du site</h2>
+          {IDENTITE_CONNUE ? (
+            <p className={styles.paragraph}>
+              {EDITEUR.raisonSociale}, {EDITEUR.formeJuridique}.
+              <br />
+              Siège social : {EDITEUR.siege}.
+              <br />
+              {EDITEUR.immatriculation}.
+              <br />
+              Directeur de la publication : {EDITEUR.directeurDePublication}.
+              <br />
+              Contact : {EDITEUR.contact}
+            </p>
+          ) : (
+            <p className={styles.paragraph}>
+              Zoumani est un projet en cours de constitution. Les informations
+              d’immatriculation seront publiées ici dès l’enregistrement de la société,
+              et avant toute mise en service commerciale.
+              <br />
+              Contact : {EDITEUR.contact}
+            </p>
+          )}
+        </section>
+
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Hébergement</h2>
           <p className={styles.paragraph}>
-            {EDITEUR.raisonSociale}, {EDITEUR.formeJuridique}.
+            Hetzner Online GmbH — Industriestr. 25, 91710 Gunzenhausen, Allemagne.
             <br />
-            Siège social : {EDITEUR.siege}.
-            <br />
-            {EDITEUR.immatriculation}.
-            <br />
-            Directeur de la publication : {EDITEUR.directeurDePublication}.
-            <br />
-            Contact : {EDITEUR.contact}
+            Serveurs situés à Falkenstein (Saxe), Allemagne. hetzner.com
           </p>
-        ) : (
+        </section>
+
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Nature du site</h2>
           <p className={styles.paragraph}>
-            Zoumani est un projet en cours de constitution. Les informations
-            d’immatriculation seront publiées ici dès l’enregistrement de la société,
-            et avant toute mise en service commerciale.
-            <br />
-            Contact : {EDITEUR.contact}
+            Ce site présente un service <strong>en cours de préparation</strong>. Il ne
+            constitue ni une offre commerciale, ni un service de transport, ni un
+            contrat. Aucune transaction n’y est possible, et aucun transporteur,
+            assureur ou partenaire n’y est engagé à ce jour.
           </p>
-        )}
-      </section>
+          <p className={styles.paragraph}>
+            S’inscrire à la liste de lancement n’engage à rien, et ne réserve aucune
+            place.
+          </p>
+        </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Hébergement</h2>
-        <p className={styles.paragraph}>
-          Hetzner Online GmbH — Industriestr. 25, 91710 Gunzenhausen, Allemagne.
-          <br />
-          Serveurs situés à Falkenstein (Saxe), Allemagne. hetzner.com
-        </p>
-      </section>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Propriété intellectuelle</h2>
+          <p className={styles.paragraph}>
+            La marque Zoumani, les textes, l’identité visuelle et le code de ce site
+            sont protégés. Toute reproduction, même partielle, sans autorisation
+            préalable est interdite.
+          </p>
+          <p className={styles.paragraph}>
+            Les logos App Store et Google Play appartiennent respectivement à Apple Inc.
+            et Google LLC.
+          </p>
+        </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Nature du site</h2>
-        <p className={styles.paragraph}>
-          Ce site présente un service <strong>en cours de préparation</strong>. Il ne
-          constitue ni une offre commerciale, ni un service de transport, ni un
-          contrat. Aucune transaction n’y est possible, et aucun transporteur,
-          assureur ou partenaire n’y est engagé à ce jour.
-        </p>
-        <p className={styles.paragraph}>
-          S’inscrire à la liste de lancement n’engage à rien, et ne réserve aucune
-          place.
-        </p>
-      </section>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Données personnelles</h2>
+          <p className={styles.paragraph}>
+            Ce que nous recueillons, pourquoi, combien de temps et comment le faire
+            effacer est décrit dans notre{" "}
+            <Link href="/confidentialite" className={styles.link}>
+              politique de confidentialité
+            </Link>
+            .
+          </p>
+        </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Propriété intellectuelle</h2>
-        <p className={styles.paragraph}>
-          La marque Zoumani, les textes, l’identité visuelle et le code de ce site
-          sont protégés. Toute reproduction, même partielle, sans autorisation
-          préalable est interdite.
-        </p>
-        <p className={styles.paragraph}>
-          Les logos App Store et Google Play appartiennent respectivement à Apple Inc.
-          et Google LLC.
-        </p>
-      </section>
-
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Données personnelles</h2>
-        <p className={styles.paragraph}>
-          Ce que nous recueillons, pourquoi, combien de temps et comment le faire
-          effacer est décrit dans notre{" "}
-          <Link href="/confidentialite" className={styles.link}>
-            politique de confidentialité
-          </Link>
-          .
-        </p>
-      </section>
-
-      <p className={styles.updated}>Dernière mise à jour : 30 août 2026.</p>
-    </main>
+        <p className={styles.updated}>Dernière mise à jour : 30 août 2026.</p>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

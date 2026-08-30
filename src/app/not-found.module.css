@@ -1,0 +1,92 @@
+.page {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: clamp(5rem, 14vh, 8rem) clamp(1.15rem, 5vw, 2rem) clamp(4rem, 10vh, 6rem);
+}
+
+.code {
+  margin: 0 0 0.9rem;
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0 0 1rem;
+  color: var(--foreground);
+  font-size: clamp(2.1rem, 6vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.lede {
+  margin: 0 0 2.4rem;
+  max-width: 34rem;
+  color: var(--muted-foreground);
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
+.exits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.85rem;
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+/* Un `<a>`, et non un bloc rendu cliquable au clic JavaScript : une
+   navigation qui compte doit être un lien que le moteur suit et que le
+   visiteur peut ouvrir dans un onglet. */
+.exit {
+  display: block;
+  height: 100%;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface-elevated);
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.exit:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.exit strong {
+  display: block;
+  color: var(--foreground);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.exit span {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted-foreground);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.more {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+.more a {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.more a:hover {
+  color: var(--primary);
+}
