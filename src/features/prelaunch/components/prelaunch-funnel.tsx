@@ -211,7 +211,37 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
               : "Où vous prévenir ?"}
       </h2>
 
-      <div className={styles.fields}>
+      {/* ═══ Pourquoi un vrai `<form>` ═══
+
+          Il n'y en avait pas : les champs vivaient dans des `<div>`, et
+          les boutons étaient des `type="button"`. Les trois champs de
+          contact portaient pourtant déjà `autoComplete="given-name"`,
+          `"email"` et `"tel"` — correctement transmis à l'`<input>`.
+
+          Cet attribut ne suffit pas. Les navigateurs ne remplissent pas
+          un champ isolé : ils classent un **groupe** de champs, et pour
+          cela ils s'appuient sur le formulaire qui les contient et sur
+          leur attribut `name`. Sans les deux, Chrome hésite et Safari
+          sur iPhone n'affiche pas du tout la barre de remplissage
+          au-dessus du clavier. Un gestionnaire de mots de passe non plus.
+
+          Le `<form>` apporte au passage ce qu'on ne peut pas simuler : la
+          touche « Entrée » et le bouton vert du clavier mobile valident
+          l'étape. Sur un tunnel en quatre écrans, c'est autant de gestes
+          en moins.
+
+          `noValidate` : la validation est déjà écrite, avec des messages
+          en français rattachés à leur champ. Celle du navigateur
+          afficherait une bulle en plus, dans la langue du système. */}
+      <form
+        className={styles.fields}
+        noValidate
+        onSubmit={(evenement) => {
+          evenement.preventDefault();
+          if (step === "contact") void submit();
+          else forward();
+        }}
+      >
         {step === "route" && (
           <>
             <CityField
@@ -295,7 +325,10 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
               label="Prénom"
               value={state.firstName}
               onChange={(v) => update({ firstName: v })}
+              name="given-name"
               autoComplete="given-name"
+              autoCapitalize="words"
+              enterKeyHint="next"
               placeholder="Marc"
               error={tried && !state.firstName.trim() ? "Indiquez votre prénom." : null}
             />
@@ -303,7 +336,10 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
               label="E-mail"
               type="email"
               inputMode="email"
+              name="email"
               autoComplete="email"
+              autoCapitalize="none"
+              enterKeyHint="next"
               value={state.email}
               onChange={(v) => update({ email: v })}
               placeholder="vous@exemple.com"
@@ -312,7 +348,10 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
               label="Ou téléphone / WhatsApp"
               type="tel"
               inputMode="tel"
+              name="tel"
               autoComplete="tel"
+              autoCapitalize="none"
+              enterKeyHint="send"
               value={state.phone}
               onChange={(v) => update({ phone: v })}
               placeholder="+33 6 12 34 56 78"
@@ -352,23 +391,21 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
             )}
           </>
         )}
-      </div>
 
-      <div className={styles.actions}>
-        {rank > 0 && (
-          <button type="button" className={styles.back} onClick={backward}>
-            Retour
+        <div className={styles.actions}>
+          {rank > 0 && (
+            <button type="button" className={styles.back} onClick={backward}>
+              Retour
+            </button>
+          )}
+          {/* `type="submit"` et non plus `"button"` : c'est lui qui rend
+              la touche « Entrée » opérante. Le `onSubmit` du formulaire
+              porte désormais la logique. */}
+          <button type="submit" className={styles.next} disabled={sending}>
+            {step === "contact" ? (sending ? "Enregistrement…" : copy.cta) : "Continuer"}
           </button>
-        )}
-        <button
-          type="button"
-          className={styles.next}
-          disabled={sending}
-          onClick={step === "contact" ? () => void submit() : forward}
-        >
-          {step === "contact" ? (sending ? "Enregistrement…" : copy.cta) : "Continuer"}
-        </button>
-      </div>
+        </div>
+      </form>
     </div>
   );
 }
@@ -382,6 +419,9 @@ function Field({
   type = "text",
   inputMode,
   autoComplete,
+  name,
+  enterKeyHint,
+  autoCapitalize,
   placeholder,
 }: {
   label: string;
@@ -392,6 +432,20 @@ function Field({
   type?: string;
   inputMode?: "text" | "email" | "tel";
   autoComplete?: string;
+  /**
+   * Le nom du champ.
+   *
+   * Il manquait. Un `<input>` sans `name` est un champ que le navigateur
+   * n'arrive pas à classer : `autocomplete` lui dit quoi mettre, `name`
+   * lui confirme de quoi il s'agit, et les heuristiques de Chrome comme
+   * de Safari s'appuient sur les deux. Sans lui, le remplissage
+   * automatique se déclenche mal, voire pas du tout sur iPhone.
+   */
+  name?: string;
+  /** Le libellé de la touche de validation du clavier mobile. */
+  enterKeyHint?: "next" | "send" | "done";
+  /** Correction et majuscule automatiques — à couper pour un e-mail. */
+  autoCapitalize?: "none" | "words" | "sentences";
   placeholder?: string;
 }) {
   const id = useId();
@@ -402,9 +456,16 @@ function Field({
       </label>
       <input
         id={id}
+        name={name}
         type={type}
         inputMode={inputMode}
         autoComplete={autoComplete}
+        enterKeyHint={enterKeyHint}
+        autoCapitalize={autoCapitalize}
+        // Le correcteur souligne en rouge un e-mail et un numéro, et sur
+        // certains claviers il en « corrige » une partie à la validation.
+        autoCorrect={autoCapitalize === "none" ? "off" : undefined}
+        spellCheck={autoCapitalize === "none" ? false : undefined}
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
