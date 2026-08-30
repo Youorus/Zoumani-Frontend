@@ -5,10 +5,13 @@ import { absoluteUrl } from "@/lib/seo/site";
 /**
  * Le plan du site.
  *
- * Une seule URL, et c'est normal : la vitrine n'a qu'une page. Elle en
- * comptait davantage — recherche, connexion, inscription — parties avec
- * l'espace connecté. Un plan de site à une entrée reste utile : il donne
- * la date de dernière modification et signale l'existence du domaine.
+ * Deux URL. La vitrine n'en avait qu'une depuis le départ de l'espace
+ * connecté ; la préinscription en ajoute une, parce qu'elle porte son
+ * propre contenu et sa propre requête — « rejoindre la liste » n'est pas
+ * « qu'est-ce que Zoumani ».
+ *
+ * Sans paramètre `type` : `?type=sender` et `?type=traveler` mènent au
+ * même contenu, et les indexer produirait trois adresses pour une page.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
@@ -19,6 +22,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
       changeFrequency: "daily",
       priority: 1,
+    },
+    {
+      url: absoluteUrl("/preinscription"),
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.9,
     },
   ];
 }

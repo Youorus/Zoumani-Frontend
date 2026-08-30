@@ -1,16 +1,23 @@
 export type HomeLanguage = "fr" | "en";
 
 /**
- * Les ancres de la page. Il n’y a qu’une seule page : toute destination
- * est une section de celle-ci, et le typage empêche d’écrire un lien vers
- * une section qui n’existe pas.
+ * Où la navigation peut mener.
+ *
+ * Des **ancres** d’abord : la vitrine tenait en une page, et le typage
+ * empêche d’écrire un lien vers une section qui n’existe pas.
+ *
+ * Et depuis la préinscription, une **route**. Elle est énumérée comme le
+ * reste plutôt que d’ouvrir le type à `string` : une adresse mal écrite
+ * doit échouer à la compilation, pas produire un 404 découvert par un
+ * visiteur venu d’une publicité.
  */
 export type HomeSectionHref =
   | "#telecharger"
   | "#fonctionnement"
   | "#securite"
   | "#partenaires"
-  | "#faq";
+  | "#faq"
+  | "/preinscription";
 
 export interface HomeStep {
   number: string;
@@ -135,6 +142,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       { href: "#securite", label: "Sécurité" },
       { href: "#partenaires", label: "Partenaires" },
       { href: "#faq", label: "FAQ" },
+      { href: "/preinscription", label: "Pré-inscription" },
     ],
     language: {
       triggerLabel: "Choisir la langue",
@@ -392,6 +400,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       { href: "#securite", label: "Safety" },
       { href: "#partenaires", label: "Partners" },
       { href: "#faq", label: "FAQ" },
+      { href: "/preinscription", label: "Join the waitlist" },
     ],
     language: {
       triggerLabel: "Choose a language",
