@@ -323,7 +323,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           links: [
             { label: "Comment ça marche", href: "#fonctionnement" },
             { label: "Partenaires", href: "#partenaires" },
-            { label: "Télécharger l’app", href: "#telecharger" },
+            { label: "Rejoindre la liste", href: "/preinscription" },
           ],
         },
         {
@@ -554,7 +554,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           links: [
             { label: "How it works", href: "#fonctionnement" },
             { label: "Partners", href: "#partenaires" },
-            { label: "Get the app", href: "#telecharger" },
+            { label: "Join the waitlist", href: "/preinscription" },
           ],
         },
         {
