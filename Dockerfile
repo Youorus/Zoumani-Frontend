@@ -25,6 +25,10 @@ COPY . .
 # Les variables NEXT_PUBLIC_* sont figees dans le bundle JavaScript au build :
 # elles doivent donc etre presentes ici, et pas seulement a l'execution.
 ARG NEXT_PUBLIC_APP_URL
+# Racine versionnee de l'API : c'est elle qui recoit les preinscriptions.
+# Absente, le tunnel refuse d'envoyer plutot que de faire croire a un
+# enregistrement — la vitrine, elle, reste entierement statique.
+ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_WHATSAPP_NUMBER
 ARG NEXT_PUBLIC_SEO_INDEXABLE
 ARG NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
@@ -33,6 +37,7 @@ ARG NEXT_PUBLIC_YANDEX_VERIFICATION
 ARG DEPLOYMENT_ID
 
 ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL} \
+    NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \
     NEXT_PUBLIC_WHATSAPP_NUMBER=${NEXT_PUBLIC_WHATSAPP_NUMBER} \
     NEXT_PUBLIC_SEO_INDEXABLE=${NEXT_PUBLIC_SEO_INDEXABLE} \
     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=${NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION} \
