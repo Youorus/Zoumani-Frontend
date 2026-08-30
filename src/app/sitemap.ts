@@ -42,6 +42,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.2,
     },
     {
+      url: absoluteUrl("/cgu"),
+      lastModified,
+      changeFrequency: "yearly" as const,
+      priority: 0.3,
+    },
+    {
+      url: absoluteUrl("/cookies"),
+      lastModified,
+      changeFrequency: "yearly" as const,
+      priority: 0.2,
+    },
+    {
       url: absoluteUrl("/mentions-legales"),
       lastModified,
       changeFrequency: "yearly" as const,

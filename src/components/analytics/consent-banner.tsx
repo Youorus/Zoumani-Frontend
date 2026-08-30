@@ -57,7 +57,7 @@ export function ConsentBanner() {
         Nous aimerions mesurer les visites pour comprendre ce qui est utile sur ce
         site. Rien n’est déposé sans votre accord, et vous pouvez refuser sans rien
         perdre.{" "}
-        <Link href="/confidentialite" className={styles.link}>
+        <Link href="/cookies" className={styles.link}>
           En savoir plus
         </Link>
         .

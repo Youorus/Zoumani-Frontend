@@ -1,0 +1,105 @@
+.page {
+  width: 100%;
+  max-width: 46rem;
+  margin-inline: auto;
+  padding: 3.5rem 1.25rem 5rem;
+}
+
+.title {
+  font-size: clamp(1.9rem, 5vw, 2.6rem);
+  line-height: 1.12;
+  color: var(--foreground);
+}
+
+.meta {
+  margin-top: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--muted-foreground);
+}
+
+.body {
+  margin-top: 2.5rem;
+}
+
+.h2 {
+  margin-top: 2.75rem;
+  font-size: 1.35rem;
+  color: var(--foreground);
+}
+
+.h3 {
+  margin-top: 1.75rem;
+  font-size: 1.05rem;
+  color: var(--foreground);
+}
+
+.paragraph,
+.list {
+  margin-top: 0.85rem;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+
+.paragraph strong,
+.list strong {
+  color: var(--foreground);
+}
+
+.list {
+  padding-left: 1.35rem;
+}
+
+.list li + li {
+  margin-top: 0.4rem;
+}
+
+.quote {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--muted-foreground);
+  background: color-mix(in srgb, var(--primary) 7%, transparent);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 var(--shape-radius-xs) var(--shape-radius-xs) 0;
+}
+
+.tableWrap {
+  margin-top: 1.25rem;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.table th,
+.table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+}
+
+.table th {
+  font-weight: 700;
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+}
+
+.rule {
+  margin-block: 2.5rem;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+.body code {
+  padding: 0.1em 0.35em;
+  font-size: 0.9em;
+  background: color-mix(in srgb, var(--foreground) 7%, transparent);
+  border-radius: 0.3rem;
+}
