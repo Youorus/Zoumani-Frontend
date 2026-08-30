@@ -27,7 +27,11 @@ export const STEPS: readonly Step[] = ["route", "timing", "details", "contact"];
 export type FunnelState = {
   intention: Intention | null;
   originCity: string;
+  /** Rempli seulement quand la ville vient d'une suggestion. Vide pour une
+   *  saisie libre — mieux vaut une ville sans pays qu'un pays deviné. */
+  originCountry: string;
   destinationCity: string;
+  destinationCountry: string;
   timing: Timing;
   travelOn: string;
   parcelKind: string;
@@ -41,7 +45,9 @@ export type FunnelState = {
 export const EMPTY_FUNNEL: FunnelState = {
   intention: null,
   originCity: "",
+  originCountry: "",
   destinationCity: "",
+  destinationCountry: "",
   timing: "asap",
   travelOn: "",
   parcelKind: "",
@@ -122,8 +128,11 @@ export function toLeadDraft(state: FunnelState): LeadDraft {
   return {
     intention: state.intention,
     firstName: state.firstName,
-    origin: { city: state.originCity },
-    destination: { city: state.destinationCity },
+    origin: { city: state.originCity, countryCode: state.originCountry || undefined },
+    destination: {
+      city: state.destinationCity,
+      countryCode: state.destinationCountry || undefined,
+    },
     email: state.email,
     phone: state.phone,
     timing: state.timing,

@@ -23,6 +23,7 @@ import {
   type FunnelState,
   type Step,
 } from "../model/funnel";
+import { CityField } from "./city-field";
 import styles from "./prelaunch-funnel.module.css";
 
 const TIMINGS = [
@@ -213,20 +214,22 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
       <div className={styles.fields}>
         {step === "route" && (
           <>
-            <Field
+            <CityField
               label="Ville de départ"
               value={state.originCity}
-              onChange={(v) => update({ originCity: v })}
+              onChange={(city, country) =>
+                update({ originCity: city, originCountry: country ?? "" })
+              }
               placeholder="Paris"
-              autoComplete="address-level2"
               error={tried && state.originCity.trim().length < 2 ? "Indiquez une ville." : null}
             />
-            <Field
+            <CityField
               label="Destination"
               value={state.destinationCity}
-              onChange={(v) => update({ destinationCity: v })}
+              onChange={(city, country) =>
+                update({ destinationCity: city, destinationCountry: country ?? "" })
+              }
               placeholder="Douala"
-              autoComplete="address-level2"
               error={
                 tried && state.destinationCity.trim().length < 2 ? "Indiquez une ville." : null
               }

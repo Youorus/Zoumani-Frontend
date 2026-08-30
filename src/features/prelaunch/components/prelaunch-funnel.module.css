@@ -283,3 +283,55 @@
     flex: 1 1 100%;
   }
 }
+
+/* ── La complétion de ville ── */
+
+.combo {
+  position: relative;
+}
+
+.suggestions {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0.3rem;
+  list-style: none;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--shape-radius-sm);
+  box-shadow: var(--elevation-lifted);
+  max-height: 17rem;
+  overflow-y: auto;
+}
+
+/* 2.75 rem : une ligne qu'on atteint au pouce sans viser. */
+.suggestion {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--foreground);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--shape-radius-sm) - 0.25rem);
+  cursor: pointer;
+}
+
+.suggestionActive,
+.suggestion:hover {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.suggestionCity {
+  font-weight: 600;
+}
+
+.suggestionCountry {
+  color: var(--muted-foreground);
+}
