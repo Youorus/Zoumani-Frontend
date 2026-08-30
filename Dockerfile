@@ -33,6 +33,17 @@ ARG NEXT_PUBLIC_API_URL
 # charge et le bandeau de consentement ne s'affiche pas : demander
 # l'autorisation de ne rien mesurer serait absurde.
 ARG NEXT_PUBLIC_GTM_ID
+# Identifiant de mesure GA4. Il ne sert QUE si NEXT_PUBLIC_GTM_ID est
+# absent : charger GA4 par les deux chemins compterait chaque visite
+# deux fois. Voir src/components/analytics/google-analytics.tsx.
+ARG NEXT_PUBLIC_GA_MEASUREMENT_ID
+# Projet Microsoft Clarity. Il n'implemente pas le Consent Mode : le
+# script n'est demande qu'apres acceptation de la mesure d'audience.
+ARG NEXT_PUBLIC_CLARITY_PROJECT_ID
+# Cle IndexNow. NON prefixee NEXT_PUBLIC_ : elle ne doit jamais entrer
+# dans le paquet servi. Elle est lue ici pour ecrire public/{cle}.txt
+# avant la construction, et au demarrage pour signer les envois.
+ARG INDEXNOW_KEY
 ARG NEXT_PUBLIC_WHATSAPP_NUMBER
 ARG NEXT_PUBLIC_SEO_INDEXABLE
 ARG NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
@@ -43,6 +54,9 @@ ARG DEPLOYMENT_ID
 ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL} \
     NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \
     NEXT_PUBLIC_GTM_ID=${NEXT_PUBLIC_GTM_ID} \
+    NEXT_PUBLIC_GA_MEASUREMENT_ID=${NEXT_PUBLIC_GA_MEASUREMENT_ID} \
+    NEXT_PUBLIC_CLARITY_PROJECT_ID=${NEXT_PUBLIC_CLARITY_PROJECT_ID} \
+    INDEXNOW_KEY=${INDEXNOW_KEY} \
     NEXT_PUBLIC_WHATSAPP_NUMBER=${NEXT_PUBLIC_WHATSAPP_NUMBER} \
     NEXT_PUBLIC_SEO_INDEXABLE=${NEXT_PUBLIC_SEO_INDEXABLE} \
     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=${NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION} \

@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test --pass-with-no-tests"
+    "test:e2e": "playwright test --pass-with-no-tests",
+    "prebuild": "node scripts/write-indexnow-key.mjs"
   },
   "engines": {
     "node": ">=20.0.0"

@@ -103,7 +103,8 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
   // exactement ce à quoi un effet sert.
   useEffect(() => {
     captureAttribution();
-    track(EVENTS.prelaunchViewed, { intent_role: initialIntent ?? "none" });
+    track(EVENTS.prelaunchView, { intent_role: initialIntent ?? "none" });
+    track(EVENTS.routeStarted, { intent_role: initialIntent ?? "none" });
   }, [initialIntent]);
 
   const update = useCallback((patch: Partial<FunnelState>) => {
@@ -130,7 +131,15 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
       <IntentChoice
         onPick={(role) => {
           update({ intention: role });
-          track(EVENTS.prelaunchIntentSelected, { intent_role: role });
+          track(EVENTS.intentSelected, { intent_role: role });
+          // Le versant en second événement, et non seulement en
+          // paramètre : dans GA4, une audience ou une conversion se
+          // définit sur un nom d'événement bien plus simplement que sur
+          // la valeur d'un paramètre.
+          track(
+            role === "sender" ? EVENTS.senderSelected : EVENTS.travelerSelected,
+            {},
+          );
         }}
       />
     );
@@ -143,16 +152,17 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
     setTried(true);
     if (step === "route") {
       if (!routeIsComplete(state)) return;
-      track(EVENTS.prelaunchRouteCompleted, context);
+      track(EVENTS.routeCompleted, context);
       setTried(false);
       setStep("timing");
     } else if (step === "timing") {
-      track(EVENTS.prelaunchTimingCompleted, { ...context, timing: state.timing });
+      track(EVENTS.timingCompleted, { ...context, timing: state.timing });
       setTried(false);
       setStep("details");
     } else if (step === "details") {
-      track(EVENTS.prelaunchDetailsCompleted, context);
+      track(EVENTS.detailsCompleted, context);
       setTried(false);
+      track(EVENTS.contactStarted, context);
       setStep("contact");
     }
   }
@@ -168,10 +178,10 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
     if (!canSubmit(state) || sending) return;
     setSending(true);
     setServerError(null);
-    track(EVENTS.prelaunchLeadSubmitted, context);
+    track(EVENTS.prelaunchSubmit, context);
     try {
       const lead = await registerLead(toLeadDraft(state), readAttribution());
-      track(EVENTS.prelaunchLeadSuccess, { ...context, already_known: lead.alreadyKnown });
+      track(EVENTS.prelaunchSuccess, { ...context, already_known: lead.alreadyKnown });
       clearDraft();
       setDone(lead);
     } catch (cause) {
@@ -179,7 +189,7 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
         cause instanceof PrelaunchUnavailable || cause instanceof Error
           ? cause.message
           : "L’inscription n’a pas abouti. Réessayez dans un instant.";
-      track(EVENTS.prelaunchLeadError, { ...context, message });
+      track(EVENTS.prelaunchError, { ...context, message });
       setServerError(message);
     } finally {
       setSending(false);

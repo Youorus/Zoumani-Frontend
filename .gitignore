@@ -13,3 +13,6 @@ test-results
 .env.development.local
 .env.test.local
 .env.production.local
+
+# IndexNow : le fichier de vérification EST la clé, il ne se versionne pas.
+/public/*.txt

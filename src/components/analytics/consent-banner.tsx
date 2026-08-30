@@ -4,54 +4,75 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { env } from "@/lib/env/env";
-import { readConsent, writeConsent } from "@/lib/marketing/consent";
+import {
+  CONSENT_ALL,
+  CONSENT_NONE,
+  type ConsentChoice,
+  readConsent,
+  writeConsent,
+} from "@/lib/marketing/consent";
 import styles from "./consent-banner.module.css";
 
 /**
- * Le bandeau de consentement à la mesure d'audience.
+ * Le bandeau de consentement.
  *
- * ═══ Deux boutons de même poids ═══
+ * ═══ Trois boutons de même poids ═══
  *
- * Un « refuser » plus petit, plus pâle, ou caché derrière un lien
- * « paramétrer » est exactement ce que la CNIL sanctionne — et ce qui
- * fait qu'un consentement obtenu ne vaut rien. Refuser doit coûter le
- * même geste qu'accepter.
+ * « Refuser » plus petit, plus pâle, ou caché derrière « paramétrer » est
+ * exactement ce que la CNIL sanctionne — et ce qui fait qu'un
+ * consentement obtenu ne vaut rien. Refuser coûte ici le même geste
+ * qu'accepter, et « Personnaliser » ouvre un panneau au lieu de mener à
+ * une page où l'on se perd.
+ *
+ * ═══ Ce que « Personnaliser » sert vraiment ═══
+ *
+ * Deux interrupteurs, pas douze. Le panneau n'existe pas pour décourager
+ * — c'est l'autre façon de fabriquer un « tout accepter ». Il existe
+ * parce que la mesure d'audience et la publicité sont deux finalités
+ * distinctes, et qu'accepter l'une n'autorise pas l'autre.
  *
  * ═══ Rien à fermer ═══
  *
  * Pas de croix. Une croix laisse un choix indéterminé, qu'il faudrait
- * interpréter — et l'interpréter comme un accord serait précisément
- * l'abus. On répond, ou le bandeau reste.
+ * interpréter — et l'interpréter comme un accord serait l'abus même. On
+ * répond, ou le bandeau reste.
  *
- * ═══ Il ne s'affiche pas sans conteneur ═══
+ * ═══ Il ne s'affiche que s'il y a quelque chose à autoriser ═══
  *
- * Sans identifiant GTM, rien n'est mesuré : demander l'autorisation de
- * ne rien faire serait absurde, et userait la patience qu'on aura besoin
- * le jour où l'on mesure vraiment.
+ * Sans GTM, sans GA4 et sans Clarity, rien n'est mesuré : demander
+ * l'autorisation de ne rien faire userait la patience dont on aura
+ * besoin le jour où l'on mesure vraiment.
  */
 export function ConsentBanner() {
   // L'état initial est lu paresseusement : un `setState` en effet
   // déclencherait un rendu en cascade, et le bandeau clignoterait.
-  const [choice, setChoice] = useState<"granted" | "denied" | null | "pending">(
-    () => (typeof window === "undefined" ? "pending" : readConsent()),
+  const [choice, setChoice] = useState<ConsentChoice | null | "pending">(() =>
+    typeof window === "undefined" ? "pending" : readConsent(),
   );
+  const [panneau, setPanneau] = useState(false);
+  const [mesure, setMesure] = useState(true);
+  const [publicite, setPublicite] = useState(false);
 
-  if (!env.NEXT_PUBLIC_GTM_ID) return null;
+  const mesurable =
+    env.NEXT_PUBLIC_GTM_ID ||
+    env.NEXT_PUBLIC_GA_MEASUREMENT_ID ||
+    env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
+  if (!mesurable) return null;
   // `pending` : rendu serveur. On n'affiche rien plutôt que de faire
   // apparaître puis disparaître le bandeau chez qui a déjà répondu.
   if (choice !== null) return null;
 
-  function answer(state: "granted" | "denied") {
-    writeConsent(state);
-    setChoice(state);
+  function repondre(valeur: ConsentChoice) {
+    writeConsent(valeur);
+    setChoice(valeur);
   }
 
   return (
     <aside
       className={styles.banner}
       role="dialog"
-      aria-live="polite"
-      aria-label="Mesure d’audience"
+      aria-modal="false"
+      aria-label="Vos préférences de confidentialité"
     >
       <p className={styles.text}>
         Nous aimerions mesurer les visites pour comprendre ce qui est utile sur ce
@@ -62,18 +83,85 @@ export function ConsentBanner() {
         </Link>
         .
       </p>
+
+      {panneau && (
+        <div className={styles.panel}>
+          <div className={styles.row}>
+            <div>
+              <strong className={styles.rowTitle}>Strictement nécessaire</strong>
+              <span className={styles.rowText}>
+                Retient ce que vous saisissez dans le formulaire et votre réponse à
+                cette question. Sans eux, le site ne fonctionne pas — ils sont
+                exemptés de consentement.
+              </span>
+            </div>
+            <span className={styles.always}>Toujours actif</span>
+          </div>
+
+          <label className={styles.row}>
+            <div>
+              <strong className={styles.rowTitle}>Mesure d’audience</strong>
+              <span className={styles.rowText}>
+                Combien de personnes viennent, ce qu’elles lisent, où elles
+                s’arrêtent. Jamais votre nom, votre e-mail ni votre téléphone.
+              </span>
+            </div>
+            <input
+              type="checkbox"
+              className={styles.toggle}
+              checked={mesure}
+              onChange={(e) => setMesure(e.target.checked)}
+            />
+          </label>
+
+          <label className={styles.row}>
+            <div>
+              <strong className={styles.rowTitle}>Publicité</strong>
+              <span className={styles.rowText}>
+                Mesurer quelles campagnes amènent du monde, et ne pas vous montrer
+                deux fois la même annonce. Rien n’est branché aujourd’hui.
+              </span>
+            </div>
+            <input
+              type="checkbox"
+              className={styles.toggle}
+              checked={publicite}
+              onChange={(e) => setPublicite(e.target.checked)}
+            />
+          </label>
+        </div>
+      )}
+
       <div className={styles.actions}>
+        {panneau ? (
+          <button
+            type="button"
+            className={`${styles.button} ${styles.refuse}`}
+            onClick={() => repondre({ analytics: mesure, marketing: publicite })}
+          >
+            Enregistrer mes choix
+          </button>
+        ) : (
+          <button
+            type="button"
+            className={`${styles.button} ${styles.refuse}`}
+            onClick={() => setPanneau(true)}
+            aria-expanded={panneau}
+          >
+            Personnaliser
+          </button>
+        )}
         <button
           type="button"
           className={`${styles.button} ${styles.refuse}`}
-          onClick={() => answer("denied")}
+          onClick={() => repondre(CONSENT_NONE)}
         >
           Refuser
         </button>
         <button
           type="button"
           className={`${styles.button} ${styles.accept}`}
-          onClick={() => answer("granted")}
+          onClick={() => repondre(CONSENT_ALL)}
         >
           Accepter
         </button>

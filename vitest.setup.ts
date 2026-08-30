@@ -18,3 +18,36 @@ if (!("ResizeObserver" in globalThis)) {
     disconnect() {}
   };
 }
+
+/**
+ * `localStorage` n'existe pas non plus.
+ *
+ * Node 26 le signale lui-même : « localStorage is not available because
+ * --localstorage-file was not provided ». jsdom ne le fournit pas
+ * davantage dans cette configuration, et `window.localStorage` est donc
+ * `undefined` — pas vide, absent.
+ *
+ * Le code de production s'en accommode : chaque lecture et chaque
+ * écriture est déjà enveloppée d'un `try`, parce qu'un navigateur en
+ * navigation privée lève à l'accès. Mais un test du consentement qui ne
+ * peut rien mémoriser ne teste rien.
+ *
+ * L'implémentation tient en une `Map` : on vérifie ce que le code écrit
+ * et relit, pas la conformité de jsdom au standard du stockage.
+ */
+if (!("localStorage" in globalThis) || !globalThis.localStorage) {
+  const memoire = new Map<string, string>();
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    value: {
+      getItem: (cle: string) => memoire.get(cle) ?? null,
+      setItem: (cle: string, valeur: string) => void memoire.set(cle, String(valeur)),
+      removeItem: (cle: string) => void memoire.delete(cle),
+      clear: () => memoire.clear(),
+      key: (i: number) => [...memoire.keys()][i] ?? null,
+      get length() {
+        return memoire.size;
+      },
+    },
+  });
+}

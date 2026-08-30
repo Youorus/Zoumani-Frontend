@@ -71,3 +71,61 @@
     }
   }
 }
+
+/* ═══ Le panneau « Personnaliser » ═══
+
+   Deux interrupteurs, pas douze. Un panneau qui décourage est l'autre
+   façon de fabriquer un « tout accepter ». */
+.panel {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0.2rem 0 0.4rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+label.row {
+  cursor: pointer;
+}
+
+.rowTitle {
+  display: block;
+  color: var(--foreground);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.rowText {
+  display: block;
+  margin-top: 0.2rem;
+  max-width: 34rem;
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.always {
+  flex: 0 0 auto;
+  color: var(--muted-foreground);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Une vraie case à cocher, agrandie : un interrupteur dessiné en div
+   perdrait le clavier, le lecteur d'écran et l'état natif. */
+.toggle {
+  flex: 0 0 auto;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-top: 0.15rem;
+  accent-color: var(--primary);
+  cursor: pointer;
+}

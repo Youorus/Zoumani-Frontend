@@ -9,6 +9,8 @@ import { siteConfig, siteUrl, isIndexable } from "@/lib/seo/site";
 import { buildGraph, organizationSchema, websiteSchema } from "@/lib/seo/structured-data";
 
 import { ConsentBanner } from "@/components/analytics/consent-banner";
+import { MicrosoftClarity } from "@/components/analytics/clarity";
+import { ConsentDefaults, GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { GoogleTagManager } from "@/components/analytics/google-tag-manager";
 import { AppProviders } from "./providers";
 
@@ -164,9 +166,15 @@ export default function RootLayout({ children }: PropsWithChildren) {
         {/* Le consentement, puis le conteneur : une balise qui démarre
             sans état de consentement se considère autorisée. Les deux ne
             rendent rien tant qu'aucun identifiant GTM n'est configuré. */}
+        {/* L'ordre compte : le consentement par défaut, puis les
+            mesureurs. Une balise qui démarre sans état de consentement
+            se considère autorisée. */}
+        <ConsentDefaults />
         <GoogleTagManager />
+        <GoogleAnalytics />
         <AppProviders>{children}</AppProviders>
         <ConsentBanner />
+        <MicrosoftClarity />
         <JsonLd schema={buildGraph(organizationSchema, websiteSchema)} />
       </body>
     </html>

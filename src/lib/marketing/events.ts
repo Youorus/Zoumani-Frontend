@@ -30,16 +30,62 @@ export const EVENTS = {
   timeOnPage: "time_on_page",
   sectionViewed: "section_viewed",
   ctaClicked: "cta_clicked",
-  // ── Le tunnel ──
-  prelaunchViewed: "prelaunch_viewed",
-  prelaunchIntentSelected: "prelaunch_intent_selected",
-  prelaunchRouteCompleted: "prelaunch_route_completed",
-  prelaunchTimingCompleted: "prelaunch_timing_completed",
-  prelaunchDetailsCompleted: "prelaunch_details_completed",
-  prelaunchLeadSubmitted: "prelaunch_lead_submitted",
-  prelaunchLeadSuccess: "prelaunch_lead_success",
-  prelaunchLeadError: "prelaunch_lead_error",
+  pageView: "page_view",
+
+  // ── Le tunnel de pré-lancement ──
+  //
+  // Les noms suivent la nomenclature arrêtée avec Marc. Ils ont été
+  // renommés depuis `prelaunch_lead_*` : le coût était nul, aucune
+  // donnée n'ayant encore été collectée — le conteneur GTM ne portait
+  // aucune balise. Renommer plus tard aurait coupé l'historique en deux.
+  //
+  // `*_started` et `*_completed` vont par paires : c'est l'écart entre
+  // les deux qui dit où l'on abandonne, et un tunnel qui ne mesure que
+  // les réussites ne dit jamais pourquoi il fuit.
+  prelaunchView: "prelaunch_view",
+  intentSelected: "intent_selected",
+  senderSelected: "sender_selected",
+  travelerSelected: "traveler_selected",
+  routeStarted: "route_started",
+  routeCompleted: "route_completed",
+  timingCompleted: "timing_completed",
+  detailsCompleted: "details_completed",
+  contactStarted: "contact_started",
+  prelaunchSubmit: "prelaunch_submit",
+  /** L'événement de conversion. C'est celui à marquer « key event » dans GA4. */
+  prelaunchSuccess: "prelaunch_success",
+  prelaunchError: "prelaunch_error",
 } as const;
+
+/**
+ * Ce qui ne doit jamais partir vers une régie de mesure.
+ *
+ * La règle est simple à énoncer et facile à enfreindre : un jour
+ * quelqu'un ajoutera `email` au contexte d'un événement pour déboguer, et
+ * l'oubliera. Le filtre est donc posé **au seul endroit par lequel tout
+ * passe**, plutôt que confié à la vigilance de chaque appel.
+ *
+ * Il retire la clé et, en développement, le dit bruyamment — un filtre
+ * silencieux masquerait la faute au lieu de la corriger.
+ */
+const INTERDITS = new Set([
+  "email",
+  "phone",
+  "tel",
+  "telephone",
+  "first_name",
+  "firstName",
+  "last_name",
+  "lastName",
+  "name",
+  "full_name",
+  "address",
+  "ip",
+  "user_id",
+  "password",
+  "document",
+  "id_document",
+]);
 
 export type EventName = (typeof EVENTS)[keyof typeof EVENTS];
 export type EventParams = Record<string, string | number | boolean | undefined>;
@@ -56,7 +102,17 @@ export function track(event: EventName, params: EventParams = {}) {
 
   const propre: EventParams = {};
   for (const [k, v] of Object.entries(params)) {
-    if (v !== undefined && v !== "") propre[k] = v;
+    if (v === undefined || v === "") continue;
+    if (INTERDITS.has(k)) {
+      if (process.env.NODE_ENV === "development") {
+        console.error(
+          `[mesure] « ${k} » est une donnée personnelle et n'a pas été envoyée ` +
+            `avec « ${event} ». Retirez-la de l'appel plutôt que de compter sur ce filtre.`,
+        );
+      }
+      continue;
+    }
+    propre[k] = v;
   }
 
   // `dataLayer` est la convention de Google Tag Manager : le poser ici
@@ -72,3 +128,33 @@ export function track(event: EventName, params: EventParams = {}) {
     console.info("[mesure]", event, propre);
   }
 }
+
+/**
+ * Un changement de page.
+ *
+ * Le site est une application à navigation client : passer de l'accueil
+ * à `/preinscription` ne recharge pas le document, et GA4 ne voit donc
+ * aucune nouvelle page. Sans cet appel, tout le trafic serait attribué à
+ * la première page ouverte.
+ */
+export function page(path: string, title?: string) {
+  track(EVENTS.pageView, { page_path: path, page_title: title });
+}
+
+/**
+ * La façade de mesure.
+ *
+ * Elle existe pour qu'aucun composant n'appelle `gtag` ni ne pousse dans
+ * le `dataLayer` lui-même : le jour où l'on change de régie, c'est
+ * `track` qu'on modifie, et rien d'autre.
+ *
+ * ═══ Pourquoi il n'y a pas d'`identify` ═══
+ *
+ * Il n'y a personne à identifier. Le site n'a pas de comptes — la
+ * pré-inscription enregistre une intention, pas un utilisateur. Une
+ * fonction `identify` ne pourrait aujourd'hui transmettre qu'un e-mail
+ * ou un téléphone, c'est-à-dire exactement ce que le filtre ci-dessus
+ * interdit. Elle s'ajoutera le jour où il existera un identifiant de
+ * compte, qui n'est pas une donnée personnelle en soi.
+ */
+export const analytics = { track, page } as const;

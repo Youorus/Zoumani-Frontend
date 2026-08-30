@@ -44,6 +44,39 @@ const publicEnvSchema = z.object({
       .regex(/^GTM-[A-Z0-9]{4,10}$/, "Identifiant GTM attendu, de la forme GTM-XXXXXXX")
       .optional(),
   ),
+  /**
+   * Identifiant de mesure GA4 — `G-XXXXXXXXXX`.
+   *
+   * ═══ Il ne sert que si GTM est absent ═══
+   *
+   * Charger GA4 par cette balise **et** par une balise dans le conteneur
+   * GTM compterait chaque visite deux fois, sans qu'aucun des deux
+   * chemins ne soit en faute. Comme rien ici ne peut savoir ce que
+   * contient le conteneur, la règle est tranchée en amont :
+   * `NEXT_PUBLIC_GTM_ID` l'emporte, et cette balise ne se charge pas
+   * quand il est posé. Un seul chemin, choisi par la configuration.
+   */
+  NEXT_PUBLIC_GA_MEASUREMENT_ID: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z
+      .string()
+      .regex(/^G-[A-Z0-9]{6,12}$/, "Identifiant GA4 attendu, de la forme G-XXXXXXXXXX")
+      .optional(),
+  ),
+  /**
+   * Identifiant de projet Microsoft Clarity.
+   *
+   * Dix caractères alphanumériques minuscules. Clarity enregistre les
+   * sessions : il est soumis au consentement de mesure au même titre que
+   * GA4, et ne se charge qu'après accord.
+   */
+  NEXT_PUBLIC_CLARITY_PROJECT_ID: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z
+      .string()
+      .regex(/^[a-z0-9]{6,15}$/, "Identifiant Clarity attendu, alphanumérique minuscule")
+      .optional(),
+  ),
   NEXT_PUBLIC_API_URL: z.preprocess(
     (value) => (value === "" ? undefined : value),
     z.string().url().optional(),
@@ -60,6 +93,8 @@ const publicEnvSchema = z.object({
 const parsedPublicEnv = publicEnvSchema.safeParse({
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID,
+  NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
+  NEXT_PUBLIC_CLARITY_PROJECT_ID: process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID,
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   NEXT_PUBLIC_WHATSAPP_NUMBER: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER,
 });
