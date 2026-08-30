@@ -5,7 +5,6 @@ import { SiteFooter, SiteHeader } from "@/components/layout/site-chrome";
 import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/seo/json-ld";
-import { homeContent } from "@/features/home/components/home-content";
 import { ENTRY_PAGES, entryPageBySlug } from "@/features/prelaunch/model/entry-pages";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { buildGraph, faqSchema, serviceSchema } from "@/lib/seo/structured-data";
@@ -58,7 +57,6 @@ export default async function EntryPage({
   if (!page) notFound();
 
   const other = ENTRY_PAGES.find((p) => p.slug !== page.slug);
-  const { faq } = homeContent.fr;
 
   return (
     <>
@@ -117,7 +115,7 @@ export default async function EntryPage({
           <h2 id="faq-title" className={styles.faqTitle}>
             Questions fréquentes
           </h2>
-          {faq.items.map((item) => (
+          {page.faq.map((item) => (
             <details key={item.question} className={styles.faqItem}>
               <summary className={styles.faqQuestion}>{item.question}</summary>
               <p className={styles.faqAnswer}>{item.answer}</p>
@@ -125,7 +123,7 @@ export default async function EntryPage({
           ))}
         </section>
 
-        <JsonLd schema={buildGraph(serviceSchema, faqSchema(faq.items))} />
+        <JsonLd schema={buildGraph(serviceSchema, faqSchema(page.faq))} />
       </main>
       <SiteFooter />
     </>

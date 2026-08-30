@@ -62,6 +62,43 @@ describe("Identité déclarée à Google", () => {
   });
 });
 
+describe("FAQ", () => {
+  it("donne à chaque page d’entrée ses propres questions", () => {
+    // Les deux pages affichaient la FAQ de l'accueil, au mot près, et la
+    // déclaraient chacune en `FAQPage`. Trois pages du même site portant
+    // un contenu principal identique se concurrencent : Google en retient
+    // une pour la requête, et les deux autres ont travaillé contre elle.
+    const paires = ENTRY_PAGES.flatMap((a, i) =>
+      ENTRY_PAGES.slice(i + 1).map((b) => [a, b] as const),
+    );
+    for (const [a, b] of paires) {
+      const communes = a.faq
+        .map((q) => q.question)
+        .filter((q) => b.faq.some((autre) => autre.question === q));
+      expect(communes).toEqual([]);
+    }
+  });
+
+  it("répond depuis le côté du marché de la page", () => {
+    // Une FAQ d'expéditeur servie à un voyageur répond à côté : il veut
+    // savoir ce qu'il gagne et ce qu'il risque, pas ce que coûte un envoi.
+    const voyageur = ENTRY_PAGES.find((p) => p.intention === "traveler");
+    const texte = voyageur?.faq.map((q) => q.question).join(" ") ?? "";
+    expect(texte).toMatch(/gagner|payé|responsable/i);
+  });
+
+  it("ne laisse aucune page d’entrée sans FAQ", () => {
+    // La déclarer en JSON-LD sans rien afficher expose à une action
+    // manuelle qui retire tous les résultats enrichis du site.
+    for (const page of ENTRY_PAGES) {
+      expect(page.faq.length).toBeGreaterThan(2);
+      for (const item of page.faq) {
+        expect(item.answer.length).toBeGreaterThan(80);
+      }
+    }
+  });
+});
+
 describe("Plan du site", () => {
   const entrees = sitemap();
 
