@@ -33,6 +33,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Les deux pages d'entrée, construites depuis `ENTRY_PAGES` : le jour
     // où un corridor mérite la sienne, elle entre ici sans que ce fichier
     // change.
+    // Obligatoire dès qu'on collecte, et référencée : une politique de
+    // confidentialité qu'on ne trouve pas ne vaut pas mieux qu'une absente.
+    {
+      url: absoluteUrl("/confidentialite"),
+      lastModified,
+      changeFrequency: "yearly" as const,
+      priority: 0.2,
+    },
     ...ENTRY_PAGES.map((page) => ({
       url: absoluteUrl(`/${page.slug}`),
       lastModified,

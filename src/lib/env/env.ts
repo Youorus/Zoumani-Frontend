@@ -30,6 +30,20 @@ import { z } from "zod";
 
 const publicEnvSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
+  /**
+   * Identifiant du conteneur Google Tag Manager — `GTM-XXXXXXX`.
+   *
+   * Facultatif. Absent, aucun script tiers n'est chargé et le site reste
+   * ce qu'il était : muet. Les événements continuent d'être produits, ils
+   * ne partent simplement nulle part.
+   */
+  NEXT_PUBLIC_GTM_ID: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z
+      .string()
+      .regex(/^GTM-[A-Z0-9]{4,10}$/, "Identifiant GTM attendu, de la forme GTM-XXXXXXX")
+      .optional(),
+  ),
   NEXT_PUBLIC_API_URL: z.preprocess(
     (value) => (value === "" ? undefined : value),
     z.string().url().optional(),
@@ -45,6 +59,7 @@ const publicEnvSchema = z.object({
 
 const parsedPublicEnv = publicEnvSchema.safeParse({
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+  NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID,
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   NEXT_PUBLIC_WHATSAPP_NUMBER: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER,
 });

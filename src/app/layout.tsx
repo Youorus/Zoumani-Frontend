@@ -8,6 +8,8 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { siteConfig, siteUrl, isIndexable } from "@/lib/seo/site";
 import { buildGraph, organizationSchema, websiteSchema } from "@/lib/seo/structured-data";
 
+import { ConsentBanner } from "@/components/analytics/consent-banner";
+import { GoogleTagManager } from "@/components/analytics/google-tag-manager";
 import { AppProviders } from "./providers";
 
 /**
@@ -156,7 +158,12 @@ export default function RootLayout({ children }: PropsWithChildren) {
       suppressHydrationWarning
     >
       <body>
+        {/* Le consentement, puis le conteneur : une balise qui démarre
+            sans état de consentement se considère autorisée. Les deux ne
+            rendent rien tant qu'aucun identifiant GTM n'est configuré. */}
+        <GoogleTagManager />
         <AppProviders>{children}</AppProviders>
+        <ConsentBanner />
         <JsonLd schema={buildGraph(organizationSchema, websiteSchema)} />
       </body>
     </html>

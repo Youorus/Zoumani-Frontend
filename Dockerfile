@@ -29,6 +29,10 @@ ARG NEXT_PUBLIC_APP_URL
 # Absente, le tunnel refuse d'envoyer plutot que de faire croire a un
 # enregistrement — la vitrine, elle, reste entierement statique.
 ARG NEXT_PUBLIC_API_URL
+# Conteneur Google Tag Manager. Absent, aucun script tiers n'est
+# charge et le bandeau de consentement ne s'affiche pas : demander
+# l'autorisation de ne rien mesurer serait absurde.
+ARG NEXT_PUBLIC_GTM_ID
 ARG NEXT_PUBLIC_WHATSAPP_NUMBER
 ARG NEXT_PUBLIC_SEO_INDEXABLE
 ARG NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
@@ -38,6 +42,7 @@ ARG DEPLOYMENT_ID
 
 ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL} \
     NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \
+    NEXT_PUBLIC_GTM_ID=${NEXT_PUBLIC_GTM_ID} \
     NEXT_PUBLIC_WHATSAPP_NUMBER=${NEXT_PUBLIC_WHATSAPP_NUMBER} \
     NEXT_PUBLIC_SEO_INDEXABLE=${NEXT_PUBLIC_SEO_INDEXABLE} \
     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=${NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION} \

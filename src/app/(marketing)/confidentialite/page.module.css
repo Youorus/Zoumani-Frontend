@@ -1,0 +1,47 @@
+.page {
+  width: 100%;
+  max-width: 44rem;
+  margin-inline: auto;
+  padding: 3.5rem 1.25rem 5rem;
+}
+
+.title {
+  font-size: clamp(1.9rem, 5vw, 2.6rem);
+  line-height: 1.12;
+  color: var(--foreground);
+}
+
+.lede {
+  margin-top: 1rem;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--muted-foreground);
+}
+
+.section {
+  margin-top: 2.75rem;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  color: var(--foreground);
+}
+
+.paragraph {
+  margin-top: 0.85rem;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+
+.paragraph strong {
+  color: var(--foreground);
+}
+
+.updated {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  font-size: 0.88rem;
+  color: var(--muted-foreground);
+  border-top: 1px solid var(--border);
+}
