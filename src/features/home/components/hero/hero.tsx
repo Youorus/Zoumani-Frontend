@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
 
 import type { HomeContent } from "../home-content";
 import styles from "./hero.module.css";
@@ -14,19 +13,28 @@ export function Hero({
 
   return (
     <section id="telecharger" className={styles.hero}>
+      {/* ═══ La photo n'est plus un fond ═══
+
+          Elle couvrait toute la largeur sous un voile crème allant de
+          gauche à droite. Deux effets, tous deux mauvais : un lavis
+          laiteux traversait le sujet en son milieu, et surtout le
+          hero entier baignait dans le même orange que le bouton
+          principal — qui cessait donc de se voir.
+
+          Elle occupe maintenant sa moitié droite, nette, avec un
+          raccord court sur son bord gauche. Le texte est sur du crème
+          franc. Le seul orange saturé de l'écran redevient le bouton. */}
       <div className={styles.photoLayer} aria-hidden="true">
         <Image
           src="/images/hero/zoumani-airport-campaign.webp"
           alt=""
           fill
           preload
-          sizes="100vw"
+          sizes="(max-width: 47.99rem) 100vw, 55vw"
           className={styles.photo}
         />
-        <span className={styles.photoScrim} />
+        <span className={styles.photoEdge} />
       </div>
-
-      <span className={styles.orangeRoute} aria-hidden="true" />
 
       {/* ═══ Ce que le hero ne fait plus ═══
 
@@ -37,9 +45,10 @@ export function Hero({
           téléphone les boutons tombaient sous la ligne de flottaison.
 
           Il ne reste que ce qui décide : la promesse, une phrase qui
-          l'explique, et les deux portes. Les trois garanties n'ont pas
-          disparu — elles ont leur propre bande, juste dessous, où elles
-          se lisent au lieu de concurrencer l'appel à l'action. */}
+          l'explique, et les deux portes. Les trois garanties sont
+          parties avec le reste — « Comment ça marche » les démontre en
+          trois étapes et la FAQ les détaille, là où le hero n'en
+          donnait que des slogans. */}
       <div className={styles.inner}>
         <div className={styles.copy}>
           <h1 className={styles.title}>
@@ -90,15 +99,6 @@ export function Hero({
           </div>
           <p className={styles.waitlistNote}>{copy.waitlist.note}</p>
         </div>
-      </div>
-
-      <div className={styles.routeLine} aria-hidden="true">
-        <svg viewBox="0 0 1000 90" preserveAspectRatio="none">
-          <path d="M0 75C320 82 555 86 790 54c86-12 143-29 210-49" />
-        </svg>
-        <span>
-          <MapPin />
-        </span>
       </div>
     </section>
   );

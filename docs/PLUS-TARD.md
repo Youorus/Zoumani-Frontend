@@ -74,6 +74,32 @@ jour où elle l'est, un badge inerte est une déception à la seconde même
 où l'on avait convaincu.
 **Déclencheur :** la publication sur l'App Store et Google Play.
 
+### La photo du hero a l'air générée
+
+`public/images/hero/zoumani-airport-campaign.webp` — un homme de dos
+devant une baie d'aéroport, sac à dos, valise et carton. Le contre-jour
+trop parfait, le carton en équilibre sur la valise et l'absence de tout
+détail imparfait la font lire comme une image de synthèse.
+
+Son traitement a été corrigé — désaturée de 28 %, contraste relevé,
+cadrée sur sa moitié droite au lieu d'être un fond voilé — ce qui atténue
+l'effet sans l'effacer. Le problème restant tient à l'image elle-même,
+pas à son affichage.
+
+**Ce que ça coûte :** une plateforme dont le modèle repose entièrement
+sur la confiance entre inconnus s'illustre d'une personne qui n'existe
+pas. Le visiteur ne le formule pas, mais il le sent — c'est exactement
+le registre où une image de synthèse se paie.
+**Déclencheur :** une vraie photographie disponible. Trois voies, par
+coût croissant : une banque libre de droits (Unsplash, Pexels — licence
+commerciale, gratuit), une banque payante (Stocksy, Adobe Stock), ou une
+prise de vue avec de vrais utilisateurs le jour où il y en a. La
+troisième est la seule qui donne une image que personne d'autre n'a.
+**Contrainte de remplacement :** format paysage, sujet décalé à droite
+du cadre (la moitié gauche est recouverte par le texte sur grand écran),
+WebP sous 120 Ko, 1600 px de large minimum. C'est un remplacement de
+fichier à chemin identique, rien d'autre à toucher.
+
 ### La nature du site est décrite au futur
 
 Les mentions légales affirment qu'aucune transaction n'est possible et
