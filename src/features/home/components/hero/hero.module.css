@@ -1,6 +1,10 @@
 .hero {
   position: relative;
-  min-height: clamp(52rem, 100svh, 64rem);
+  /* 52rem au minimum, c'était la hauteur qu'il fallait pour empiler le
+     titre, trois garanties et une carte. Il ne reste que le titre, une
+     phrase et deux boutons : à hauteur inchangée, le hero se serait
+     terminé par un grand vide. */
+  min-height: clamp(36rem, 84svh, 46rem);
   overflow: hidden;
   background: #fff8f0;
   isolation: isolate;
@@ -39,47 +43,19 @@
   z-index: 3;
   display: grid;
   width: 100%;
-  min-height: clamp(52rem, 100svh, 64rem);
+  min-height: clamp(36rem, 84svh, 46rem);
   max-width: 96rem;
-  grid-template-areas:
-    "copy phone"
-    "trust phone"
-    "download phone";
-  grid-template-columns: minmax(32rem, 45.5rem) minmax(18rem, 1fr);
-  grid-template-rows: auto auto 1fr;
-  column-gap: clamp(1.5rem, 3vw, 4rem);
+  /* Une colonne. Le voile de la photo dégage la gauche : le texte y
+     reste, la photo respire à droite. */
+  align-content: center;
+  grid-template-columns: minmax(0, 46rem);
   margin-inline: auto;
-  padding: clamp(8.75rem, 15vh, 10.25rem) clamp(2rem, 3.4vw, 3.5rem) 5rem;
+  padding: clamp(7.5rem, 13vh, 9rem) clamp(2rem, 3.4vw, 3.5rem) 5rem;
 }
 
 .copy {
-  grid-area: copy;
   max-width: 44rem;
   animation: reveal-copy 720ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7rem;
-  margin: 0;
-  padding: 0.7rem 1.1rem;
-  border: 1px solid rgb(255 107 0 / 0.08);
-  border-radius: 999px;
-  background: rgb(255 255 255 / 0.42);
-  box-shadow: 0 0.75rem 2rem -1.75rem rgb(80 32 10 / 0.4);
-  color: rgb(141 46 46 / 0.68);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  backdrop-filter: blur(0.6rem);
-}
-
-.eyebrow svg {
-  width: 1rem;
-  height: 1rem;
-  color: #ff6b00;
 }
 
 .title {
@@ -120,102 +96,25 @@
   font-weight: 600;
 }
 
-.trust {
-  display: grid;
-  grid-area: trust;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(0.8rem, 1.4vw, 1.6rem);
-  margin: clamp(2rem, 3.8vh, 2.8rem) 0 0;
-  padding: 0;
-  list-style: none;
-  animation: reveal-copy 720ms cubic-bezier(0.2, 0.8, 0.2, 1) 100ms both;
-}
+/* ═══ Les deux portes ═══
 
-.trustItem {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 0.75rem;
-}
+   Elles étaient dans une carte, avec un titre et une phrase de
+   présentation. La carte disait « Zoumani ouvre bientôt » juste sous un
+   titre qui l'avait déjà dit, et son cadre séparait les boutons de la
+   phrase qui les amène. Elle est partie : il reste les deux portes et
+   une mention.
 
-.trustIcon {
-  display: grid;
-  width: 3.25rem;
-  height: 3.25rem;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 1px solid rgb(141 46 46 / 0.08);
-  border-radius: 50%;
-  background: rgb(255 248 240 / 0.7);
-  box-shadow: 0 0.7rem 1.7rem -1.2rem rgb(76 29 10 / 0.46);
-  color: #ff6b00;
-  backdrop-filter: blur(0.65rem);
-}
-
-.trustIcon svg {
-  width: 1.55rem;
-  height: 1.55rem;
-  stroke-width: 1.75;
-}
-
-.trustItem strong,
-.trustItem small {
-  display: block;
-}
-
-.trustItem strong {
-  color: #3b1712;
-  font-size: 0.84rem;
-  font-weight: 800;
-  line-height: 1.25;
-}
-
-.trustItem small {
-  margin-top: 0.3rem;
-  color: rgb(43 29 23 / 0.68);
-  font-size: 0.7rem;
-  line-height: 1.45;
-}
-
-/* ═══ La carte de préinscription ═══
-
-   Elle occupe la zone `download`, laissée libre par la maquette de
-   téléphone : la grille du hero n'a donc pas bougé.
-
-   Deux portes de même poids visuel. Hiérarchiser l'une reviendrait à
+   Même poids visuel pour les deux. Hiérarchiser l'une reviendrait à
    choisir pour le visiteur de quel côté du marché il se place — alors
    que c'est précisément ce qu'on lui demande. */
 .waitlist {
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
-  grid-area: download;
+  gap: 0.7rem;
   width: min(100%, 34rem);
   align-self: start;
-  margin-top: clamp(2rem, 3.6vh, 2.7rem);
-  padding: 1.35rem 1.45rem 1.25rem;
-  border: 1px solid rgb(141 46 46 / 0.13);
-  border-radius: 1.25rem;
-  background: rgb(255 248 240 / 0.78);
-  box-shadow: 0 1.4rem 3.2rem -2.8rem rgb(63 26 11 / 0.48);
-  backdrop-filter: blur(1rem) saturate(118%);
+  margin-top: clamp(1.9rem, 3.4vh, 2.5rem);
   animation: reveal-copy 720ms cubic-bezier(0.2, 0.8, 0.2, 1) 180ms both;
-}
-
-.waitlistTitle {
-  margin: 0;
-  color: #3b1712;
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.3;
-}
-
-.waitlistLede {
-  margin: 0;
-  color: rgb(59 23 18 / 0.72);
-  font-size: 0.92rem;
-  line-height: 1.5;
 }
 
 .waitlistActions {
@@ -339,8 +238,6 @@
 
 @media (max-width: 79.99rem) {
   .inner {
-    grid-template-columns: minmax(29rem, 57%) minmax(16rem, 43%);
-    column-gap: 1rem;
     padding-inline: 2rem;
   }
 
@@ -348,30 +245,16 @@
     font-size: clamp(3.4rem, 5.4vw, 4.5rem);
   }
 
-  .trust {
-    gap: 0.7rem;
-  }
-
-  .trustIcon {
-    width: 2.8rem;
-    height: 2.8rem;
-  }
-
-  .trustItem small {
-    font-size: 0.65rem;
-  }
-
 }
 
 @media (max-width: 63.99rem) {
   .hero,
   .inner {
-    min-height: 50rem;
+    min-height: 34rem;
   }
 
   .inner {
-    grid-template-columns: minmax(26rem, 58%) minmax(15rem, 42%);
-    padding: 8rem 1.5rem 4rem;
+    padding: 7rem 1.5rem 4rem;
   }
 
   .photo {
@@ -388,24 +271,6 @@
     font-size: clamp(3rem, 5.7vw, 3.75rem);
   }
 
-  .trustItem {
-    align-items: flex-start;
-  }
-
-  .trustIcon {
-    width: 2.45rem;
-    height: 2.45rem;
-  }
-
-  .trustIcon svg {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-
-  .trustItem small {
-    display: none;
-  }
-
 }
 
 @media (max-width: 47.99rem) {
@@ -419,7 +284,7 @@
   }
 
   .photoLayer {
-    top: 31rem;
+    top: 24rem;
   }
 
   .photo {
@@ -435,17 +300,15 @@
   .inner {
     display: flex;
     flex-direction: column;
-    padding: 7.4rem 1rem 3rem;
+    padding: 6.5rem 1rem 3rem;
   }
 
   .copy {
-    order: 1;
     text-align: center;
   }
 
-  .eyebrow {
-    padding: 0.58rem 0.85rem;
-    font-size: 0.63rem;
+  .waitlist {
+    margin-inline: auto;
   }
 
   .title {
@@ -463,28 +326,6 @@
     max-width: 31rem;
     margin: 1.25rem auto 0;
     font-size: 0.96rem;
-  }
-
-  .trust {
-    order: 4;
-    width: min(100%, 34rem);
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-    margin: 0 auto;
-    padding: 1rem;
-    border: 1px solid rgb(255 255 255 / 0.25);
-    border-radius: 1.25rem;
-    background: rgb(255 248 240 / 0.84);
-    box-shadow: 0 1.5rem 3rem -2.2rem rgb(42 17 6 / 0.62);
-    backdrop-filter: blur(1rem);
-  }
-
-  .trustItem {
-    align-items: center;
-  }
-
-  .trustItem small {
-    display: block;
   }
 
   .orangeRoute {
@@ -511,7 +352,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .copy,
-  .trust,
   .waitlist {
     animation: none;
   }

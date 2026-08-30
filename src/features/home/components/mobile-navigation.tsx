@@ -3,7 +3,6 @@
 import { Menu } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerContent,
@@ -51,13 +50,10 @@ export function MobileNavigation({ copy }: { copy: HomeContent }) {
           ))}
         </nav>
 
-        <div className="mt-auto grid gap-3 pt-8">
-          <Button asChild className="w-full">
-            <Link href="/preinscription" data-cta="mobile-menu">
-              {copy.downloadCta}
-            </Link>
-          </Button>
-        </div>
+        {/* Le bouton « Rejoindre la liste » vivait ici aussi. Il est parti
+            avec celui de la barre, pour la même raison : il ne nommait
+            pas sa destination. L'entrée « Pré-inscription » de la liste
+            ci-dessus y mène, et le hero le fait mieux encore. */}
       </DrawerContent>
     </Drawer>
   );

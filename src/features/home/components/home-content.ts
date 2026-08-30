@@ -39,11 +39,7 @@ export interface HomeContent {
     title: string;
     description: string;
   };
-  downloadCta: string;
-
   hero: {
-    /** La pastille au-dessus du titre. */
-    eyebrow: string;
     /** « Envoyez vos colis. » — en bordeaux, la couleur de la marque. */
     titleLineOne: string;
     /** « Rentabilisez vos voyages. » — en orange : la promesse qu’on ne devine pas. */
@@ -51,9 +47,6 @@ export interface HomeContent {
     /** `{accent}` y marque le fragment à mettre en gras. */
     description: string;
     descriptionAccent: string;
-    /** Les trois garanties du bandeau bas, en réponse au doute immédiat. */
-    trust: ReadonlyArray<{ title: string; detail: string }>;
-    /** L’écran d’application montré dans le téléphone. */
     /**
      * L'appel à rejoindre la liste de lancement.
      *
@@ -64,12 +57,24 @@ export interface HomeContent {
      * premier vrai écran.
      */
     waitlist: {
-      title: string;
-      lede: string;
       senderCta: string;
       travelerCta: string;
       note: string;
     };
+  };
+
+  /**
+   * Les trois garanties, en bande sous le hero.
+   *
+   * Elles étaient dans le hero, où elles concurrençaient les deux
+   * boutons. Elles portent maintenant l'ancre `#securite` de la
+   * navigation, qui pointait jusque-là sur une liste noyée dans
+   * l'en-tête.
+   */
+  safety: {
+    /** Nom de la section pour les lecteurs d’écran — elle n’a pas de titre visible. */
+    label: string;
+    items: ReadonlyArray<{ title: string; detail: string }>;
   };
 
   /** Les badges de magasin, partagés par le hero et le pied de page. */
@@ -97,9 +102,6 @@ export interface HomeContent {
     description: string;
     /** Deux parcours, deux onglets : on ne lit que le sien. */
     tabs: ReadonlyArray<{ id: string; label: string; steps: readonly HomeStep[] }>;
-    /** `{accent}` y marque le fragment à mettre en gras. */
-    guarantee: string;
-    guaranteeAccent: string;
   };
 
   faq: {
@@ -151,16 +153,26 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       title: "Navigation",
       description: "Retrouvez les sections de la page.",
     },
-    downloadCta: "Rejoindre la liste",
-
     hero: {
-      eyebrow: "France · Afrique · Le monde",
       titleLineOne: "Envoyez vos colis.",
       titleLineTwo: "Rentabilisez vos voyages.",
+      // Une seule phrase, et elle doit faire trois choses : dire que le
+      // service n'est pas encore ouvert, dire ce qu'on attend du
+      // visiteur, dire ce qu'il y gagne. L'accent tombe sur la dernière
+      // — c'est la seule des trois qui le concerne.
       description:
-        "Zoumani connecte {accent} pour des envois simples, sécurisés et humains.",
-      descriptionAccent: "expéditeurs et voyageurs",
-      trust: [
+        "Zoumani ouvre bientôt. Dites-nous votre trajet, {accent}.",
+      descriptionAccent: "vous serez prévenu le premier",
+      waitlist: {
+        senderCta: "J’ai un colis à envoyer",
+        travelerCta: "Je pars bientôt en voyage",
+        note: "Une minute, sans créer de compte.",
+      },
+    },
+
+    safety: {
+      label: "Nos garanties",
+      items: [
         {
           title: "Voyageurs vérifiés",
           detail: "Profils contrôlés pour votre tranquillité.",
@@ -174,13 +186,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           detail: "Des échanges simples, respectueux et bienveillants.",
         },
       ],
-      waitlist: {
-        title: "Zoumani ouvre bientôt",
-        lede: "Dites-nous votre trajet. Nous vous prévenons dès qu’il s’ouvre.",
-        senderCta: "J’ai un colis à envoyer",
-        travelerCta: "Je pars bientôt en voyage",
-        note: "Une minute, sans créer de compte.",
-      },
     },
 
     stores: {
@@ -257,9 +262,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           ],
         },
       ],
-      guarantee:
-        "Vérification d’identité, mise en relation, paiement séquestré, suivi : {accent}. Vous n’échangez ni argent ni coordonnées en direct.",
-      guaranteeAccent: "Zoumani s’en charge",
     },
 
     faq: {
@@ -327,7 +329,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           links: [
             { label: "Comment ça marche", href: "#fonctionnement" },
             { label: "Partenaires", href: "#partenaires" },
-            { label: "Rejoindre la liste", href: "/preinscription" },
+            { label: "Se pré-inscrire", href: "/preinscription" },
           ],
         },
         {
@@ -376,7 +378,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       { href: "#securite", label: "Safety" },
       { href: "#partenaires", label: "Partners" },
       { href: "#faq", label: "FAQ" },
-      { href: "/preinscription", label: "Join the waitlist" },
+      { href: "/preinscription", label: "Pre-register" },
     ],
     language: {
       triggerLabel: "Choose a language",
@@ -386,16 +388,21 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       title: "Navigation",
       description: "Jump to a section of the page.",
     },
-    downloadCta: "Join the waitlist",
-
     hero: {
-      eyebrow: "France · Africa · Worldwide",
       titleLineOne: "Send your parcels.",
       titleLineTwo: "Make your trips pay.",
-      description:
-        "Zoumani connects {accent} for simple, secure and human deliveries.",
-      descriptionAccent: "senders and travellers",
-      trust: [
+      description: "Zoumani opens soon. Tell us your route, {accent}.",
+      descriptionAccent: "you’ll be the first to know",
+      waitlist: {
+        senderCta: "I have a parcel to send",
+        travelerCta: "I’m travelling soon",
+        note: "One minute, no account needed.",
+      },
+    },
+
+    safety: {
+      label: "Our guarantees",
+      items: [
         {
           title: "Verified travellers",
           detail: "Profiles checked for your peace of mind.",
@@ -409,13 +416,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           detail: "Simple, respectful and thoughtful exchanges.",
         },
       ],
-      waitlist: {
-        title: "Zoumani opens soon",
-        lede: "Tell us your route. We’ll let you know as soon as it opens.",
-        senderCta: "I have a parcel to send",
-        travelerCta: "I’m travelling soon",
-        note: "One minute, no account needed.",
-      },
     },
 
     stores: {
@@ -492,9 +492,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           ],
         },
       ],
-      guarantee:
-        "Identity checks, matching, escrowed payment, tracking: {accent}. You never exchange money or contact details directly.",
-      guaranteeAccent: "Zoumani takes care of it",
     },
 
     faq: {
@@ -562,7 +559,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           links: [
             { label: "How it works", href: "#fonctionnement" },
             { label: "Partners", href: "#partenaires" },
-            { label: "Join the waitlist", href: "/preinscription" },
+            { label: "Pre-register", href: "/preinscription" },
           ],
         },
         {

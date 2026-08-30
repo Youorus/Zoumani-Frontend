@@ -1,6 +1,5 @@
 "use client";
 
-import { ShieldCheck } from "lucide-react";
 import { useId, useRef, useState } from "react";
 
 import { Container } from "@/components/layout/container";
@@ -48,8 +47,6 @@ export function HowItWorks({ copy }: { copy: HomeContent["howItWorks"] }) {
     setActif(suivant);
     onglets.current[suivant]?.focus();
   };
-
-  const [avant, apres] = copy.guarantee.split("{accent}");
 
   return (
     <section
@@ -112,15 +109,6 @@ export function HowItWorks({ copy }: { copy: HomeContent["howItWorks"] }) {
             </ol>
           </div>
         ))}
-
-        <p className={styles.guarantee}>
-          <ShieldCheck size={22} aria-hidden="true" />
-          <span>
-            {avant}
-            <strong>{copy.guaranteeAccent}</strong>
-            {apres}
-          </span>
-        </p>
       </Container>
     </section>
   );

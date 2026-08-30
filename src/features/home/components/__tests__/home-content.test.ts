@@ -63,21 +63,18 @@ describe("le dictionnaire de la page d'accueil", () => {
 
   it("garde le marqueur {accent} là où une phrase est coupée en deux", () => {
     for (const langue of LANGUES) {
-      for (const phrase of [
-        homeContent[langue].hero.description,
-        homeContent[langue].howItWorks.guarantee,
-      ]) {
-        expect(phrase.split("{accent}")).toHaveLength(2);
-      }
+      expect(homeContent[langue].hero.description.split("{accent}")).toHaveLength(
+        2,
+      );
     }
   });
 
-  it("propose trois garanties dans le hero", () => {
-    // Le hero les dispose en trois colonnes et associe un pictogramme à
-    // chacune par son rang. Une quatrième sortirait de la grille sans
-    // pictogramme.
+  it("propose trois garanties dans la bande sécurité", () => {
+    // `SafetyStrip` les dispose en trois colonnes et associe un
+    // pictogramme à chacune par son rang. Une quatrième sortirait de la
+    // grille sans pictogramme.
     for (const langue of LANGUES) {
-      expect(homeContent[langue].hero.trust).toHaveLength(3);
+      expect(homeContent[langue].safety.items).toHaveLength(3);
     }
   });
 

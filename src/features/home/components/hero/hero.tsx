@@ -1,17 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Globe2,
-  MapPin,
-  PackageCheck,
-  ShieldCheck,
-  UsersRound,
-} from "lucide-react";
+import { MapPin } from "lucide-react";
 
 import type { HomeContent } from "../home-content";
 import styles from "./hero.module.css";
-
-const TRUST_ICONS = [ShieldCheck, PackageCheck, UsersRound] as const;
 
 export function Hero({
   copy,
@@ -36,13 +28,20 @@ export function Hero({
 
       <span className={styles.orangeRoute} aria-hidden="true" />
 
+      {/* ═══ Ce que le hero ne fait plus ═══
+
+          Il portait une pastille « France · Afrique · Le monde », un
+          titre, une phrase, trois cartes de garantie et une carte de
+          préinscription à deux étages. Six blocs empilés : au premier
+          coup d'œil, on ne savait pas lequel regarder, et sur un
+          téléphone les boutons tombaient sous la ligne de flottaison.
+
+          Il ne reste que ce qui décide : la promesse, une phrase qui
+          l'explique, et les deux portes. Les trois garanties n'ont pas
+          disparu — elles ont leur propre bande, juste dessous, où elles
+          se lisent au lieu de concurrencer l'appel à l'action. */}
       <div className={styles.inner}>
         <div className={styles.copy}>
-          <p className={styles.eyebrow}>
-            <Globe2 aria-hidden="true" />
-            {copy.eyebrow}
-          </p>
-
           <h1 className={styles.title}>
             <span className={styles.titlePrimary}>{copy.titleLineOne}</span>
             <span className={styles.titleAccent}>{copy.titleLineTwo}</span>
@@ -54,23 +53,6 @@ export function Hero({
             {afterAccent}
           </p>
         </div>
-
-        <ul id="securite" className={styles.trust}>
-          {copy.trust.map((item, index) => {
-            const Icon = TRUST_ICONS[index] ?? ShieldCheck;
-            return (
-              <li key={item.title} className={styles.trustItem}>
-                <span className={styles.trustIcon}>
-                  <Icon aria-hidden="true" />
-                </span>
-                <span>
-                  <strong>{item.title}</strong>
-                  <small>{item.detail}</small>
-                </span>
-              </li>
-            );
-          })}
-        </ul>
 
         {/* ═══ Ce qui a remplacé le téléphone ═══
 
@@ -84,10 +66,12 @@ export function Hero({
             À la place, la seule chose qu'on puisse honnêtement demander
             aujourd'hui : votre trajet. Deux portes, parce que les deux
             versants du marché ne se reconnaissent pas dans les mêmes
-            mots. */}
+            mots — et parce qu'un bouton qui nomme l'intention de celui
+            qui le lit vaut tous les « Rejoindre la liste » du monde.
+
+            Plus de carte autour : le titre porte déjà l'annonce, les
+            boutons n'ont plus besoin d'être présentés. */}
         <div className={styles.waitlist}>
-          <p className={styles.waitlistTitle}>{copy.waitlist.title}</p>
-          <p className={styles.waitlistLede}>{copy.waitlist.lede}</p>
           <div className={styles.waitlistActions}>
             <Link
               href="/preinscription?type=sender"

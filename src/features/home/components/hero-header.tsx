@@ -1,10 +1,8 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { SymboleZoumani } from "@/components/shared/symbole-zoumani";
 import { ZoumaniLogo } from "@/components/shared/zoumani-logo";
 
@@ -82,17 +80,17 @@ export function HeroHeader({
             language={language}
             onLanguageChange={onLanguageChange}
           />
-          <div className="hidden lg:block">
-            <Button asChild className="gap-2 px-6">
-              {/* Une route, pas une ancre : le bouton menait au bloc de
-                  téléchargement d'une application qui n'est pas publiée.
-                  Il mène désormais là où l'on peut réellement agir. */}
-              <Link href="/preinscription" data-cta="header">
-                {copy.downloadCta}
-                <ArrowRight className="size-5" />
-              </Link>
-            </Button>
-          </div>
+          {/* ═══ Pourquoi il n'y a plus de bouton ici ═══
+
+              La barre portait un « Rejoindre la liste » qui ne disait pas
+              ce qu'on rejoignait. Un bouton dont on ne devine pas la
+              destination ne convertit pas : il occupe la place et fait
+              douter.
+
+              Ce qu'il visait — /preinscription — reste atteignable par
+              l'entrée « Pré-inscription » de la navigation, et surtout
+              par les deux portes du hero, qui elles nomment l'intention :
+              « J'ai un colis à envoyer », « Je pars bientôt en voyage ». */}
           <MobileNavigation copy={copy} />
         </div>
       </div>
