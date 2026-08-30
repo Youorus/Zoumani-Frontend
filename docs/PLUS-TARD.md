@@ -47,18 +47,28 @@ campagne payante — le premier des deux.
 
 ## Mesure
 
-### Aucun conteneur GTM n'est configuré
+### Le conteneur GTM est branché, mais vide
 
-`NEXT_PUBLIC_GTM_ID` est vide. Tout est en place — Consent Mode v2,
-bandeau, treize événements — mais rien ne part.
+`NEXT_PUBLIC_GTM_ID` vaut `GTM-PMJC9J5Q` depuis le 30 août 2026, posé
+dans les *Build Args* et l'environnement Dokploy. Le conteneur se charge
+en production, le Consent Mode v2 le précède, le bandeau recueille la
+réponse et la mémorise. Toute la chaîne technique fonctionne.
 
-**Ce que ça coûte :** les visites, la profondeur de lecture, les abandons
-du tunnel et l'origine des campagnes ne sont mesurés nulle part. On
-saurait qu'une publicité ne convertit pas, sans savoir si les gens
-repartent au premier écran ou butent sur le formulaire.
-**Déclencheur :** avant la première campagne payante. L'identifiant se
-prend sur tagmanager.google.com et se pose dans les *Build Args* de
-Dokploy.
+Ce qui manque est **à l'intérieur du conteneur** : `gtm.js?id=GTM-PMJC9J5Q`
+renvoie `"tags":[]`. Aucune balise n'y est déclarée, donc aucune mesure
+GA4. Vérifié le 30 août 2026 en interrogeant directement le conteneur
+servi.
+
+**Ce que ça coûte :** exactement ce que coûtait l'absence d'identifiant.
+Les visites, la profondeur de lecture, les abandons du tunnel et
+l'origine des campagnes ne sont mesurés nulle part. La différence est
+qu'on peut désormais s'en croire équipé — le conteneur se charge, le
+bandeau s'affiche — alors que rien n'est enregistré.
+**Déclencheur :** avant la première campagne payante. Le geste est dans
+l'interface de Google Tag Manager, pas dans le code : créer une propriété
+GA4, ajouter une balise « Google Analytics : configuration GA4 » avec son
+identifiant `G-…`, la déclencher sur *All Pages*, puis **publier** le
+conteneur. Le site n'a rien à redéployer.
 
 ---
 
