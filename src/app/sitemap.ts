@@ -41,6 +41,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "yearly" as const,
       priority: 0.2,
     },
+    {
+      url: absoluteUrl("/mentions-legales"),
+      lastModified,
+      changeFrequency: "yearly" as const,
+      priority: 0.2,
+    },
     ...ENTRY_PAGES.map((page) => ({
       url: absoluteUrl(`/${page.slug}`),
       lastModified,

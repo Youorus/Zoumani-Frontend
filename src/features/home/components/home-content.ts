@@ -17,7 +17,9 @@ export type HomeSectionHref =
   | "#securite"
   | "#partenaires"
   | "#faq"
-  | "/preinscription";
+  | "/preinscription"
+  | "/confidentialite"
+  | "/mentions-legales";
 
 export interface HomeStep {
   number: string;
@@ -346,6 +348,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Aide",
           links: [
             { label: "Questions fréquentes", href: "#faq" },
+            { label: "Confidentialité", href: "/confidentialite" },
+            { label: "Mentions légales", href: "/mentions-legales" },
             { label: "Nous contacter sur WhatsApp", whatsapp: true },
           ],
         },
@@ -577,6 +581,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Help",
           links: [
             { label: "FAQ", href: "#faq" },
+            { label: "Privacy", href: "/confidentialite" },
+            { label: "Legal notice", href: "/mentions-legales" },
             { label: "Message us on WhatsApp", whatsapp: true },
           ],
         },
