@@ -90,3 +90,30 @@ describe("Consentement", () => {
     expect(readConsent()).toEqual({ analytics: true, marketing: false });
   });
 });
+
+describe("Convention d’émission", () => {
+  it("parle la convention GTM quand un conteneur est configuré", () => {
+    // Les tests tournent sans `NEXT_PUBLIC_GTM_ID`, donc sur le chemin
+    // `gtag`. Ce test décrit l'autre branche par son absence : quand
+    // `gtag` n'existe pas, on retombe sur le `dataLayer`, qui est la
+    // forme que GTM écoute.
+    delete (window as unknown as { gtag?: unknown }).gtag;
+    track(EVENTS.routeStarted, { corridor: "paris-douala" });
+
+    expect(couche()[0]).toMatchObject({ event: "route_started", corridor: "paris-douala" });
+  });
+
+  it("appelle gtag quand il est là, sinon GA4 n’entend rien", () => {
+    // `gtag.js` ignore `{ event: "..." }` dans le dataLayer : il ne lit
+    // que `gtag('event', nom, params)`. C'est ce qui faisait que les
+    // treize événements du tunnel n'atteignaient jamais GA4.
+    const appels: unknown[][] = [];
+    (window as unknown as { gtag: (...a: unknown[]) => void }).gtag = (...a) => appels.push(a);
+
+    track(EVENTS.prelaunchSuccess, { corridor: "paris-douala" });
+
+    expect(appels).toEqual([["event", "prelaunch_success", { corridor: "paris-douala" }]]);
+    expect(couche()).toHaveLength(0);
+    delete (window as unknown as { gtag?: unknown }).gtag;
+  });
+});

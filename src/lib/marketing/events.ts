@@ -97,6 +97,15 @@ export type EventParams = Record<string, string | number | boolean | undefined>;
  * inscription. C'est le sens de la hiérarchie — on collecte pour
  * comprendre, on n'empêche pas pour mesurer.
  */
+/**
+ * Y a-t-il un conteneur GTM ?
+ *
+ * Lu à la compilation, comme la règle de chargement : les deux décisions
+ * doivent être prises sur la même valeur, sans quoi on émettrait dans une
+ * convention que personne n'écoute.
+ */
+const GTM_ACTIF = Boolean(process.env.NEXT_PUBLIC_GTM_ID);
+
 export function track(event: EventName, params: EventParams = {}) {
   if (typeof window === "undefined") return;
 
@@ -115,12 +124,35 @@ export function track(event: EventName, params: EventParams = {}) {
     propre[k] = v;
   }
 
-  // `dataLayer` est la convention de Google Tag Manager : le poser ici
-  // suffira le jour où le conteneur sera ajouté, sans retoucher un seul
-  // composant.
-  const layer = (window as unknown as { dataLayer?: unknown[] }).dataLayer;
-  if (Array.isArray(layer)) {
-    layer.push({ event, ...propre });
+  // ═══ Deux conventions, et elles ne sont pas interchangeables ═══
+  //
+  // Pousser `{ event: "prelaunch_success", ... }` dans le `dataLayer` est
+  // la convention de **Google Tag Manager** : le conteneur y reconnaît un
+  // événement personnalisé et déclenche ce qui l'écoute.
+  //
+  // `gtag.js` chargé seul **ignore** cette forme. Il ne lit du `dataLayer`
+  // que les appels de la forme `gtag('event', nom, params)`. C'est ce qui
+  // faisait que les treize événements du tunnel restaient dans la couche
+  // sans jamais atteindre GA4 : seuls `page_view` et les événements
+  // collectés d'office arrivaient, et le tunnel paraissait muet alors
+  // qu'il parlait dans le vide.
+  //
+  // Le choix suit la même règle que le chargement : GTM l'emporte quand
+  // il est configuré, et lui seul reçoit. Sinon, on s'adresse à `gtag`.
+  // Faire les deux exposerait au double comptage le jour où un conteneur
+  // GTM porterait aussi une balise GA4.
+  const fenetre = window as unknown as {
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
+  };
+
+  if (!GTM_ACTIF && typeof fenetre.gtag === "function") {
+    fenetre.gtag("event", event, propre);
+    return;
+  }
+
+  if (Array.isArray(fenetre.dataLayer)) {
+    fenetre.dataLayer.push({ event, ...propre });
     return;
   }
 
