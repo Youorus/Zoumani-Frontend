@@ -14,7 +14,6 @@ export type HomeLanguage = "fr" | "en";
 export type HomeSectionHref =
   | "#telecharger"
   | "#fonctionnement"
-  | "#securite"
   | "#partenaires"
   | "#faq"
   | "/preinscription"
@@ -61,20 +60,6 @@ export interface HomeContent {
       travelerCta: string;
       note: string;
     };
-  };
-
-  /**
-   * Les trois garanties, en bande sous le hero.
-   *
-   * Elles étaient dans le hero, où elles concurrençaient les deux
-   * boutons. Elles portent maintenant l'ancre `#securite` de la
-   * navigation, qui pointait jusque-là sur une liste noyée dans
-   * l'en-tête.
-   */
-  safety: {
-    /** Nom de la section pour les lecteurs d’écran — elle n’a pas de titre visible. */
-    label: string;
-    items: ReadonlyArray<{ title: string; detail: string }>;
   };
 
   /** Les badges de magasin, partagés par le hero et le pied de page. */
@@ -140,7 +125,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
   fr: {
     navigation: [
       { href: "#fonctionnement", label: "Comment ça marche" },
-      { href: "#securite", label: "Sécurité" },
       { href: "#partenaires", label: "Partenaires" },
       { href: "#faq", label: "FAQ" },
       { href: "/preinscription", label: "Pré-inscription" },
@@ -168,24 +152,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         travelerCta: "Je pars bientôt en voyage",
         note: "Une minute, sans créer de compte.",
       },
-    },
-
-    safety: {
-      label: "Nos garanties",
-      items: [
-        {
-          title: "Voyageurs vérifiés",
-          detail: "Profils contrôlés pour votre tranquillité.",
-        },
-        {
-          title: "Colis sécurisés",
-          detail: "Chaque colis est suivi jusqu’à sa remise.",
-        },
-        {
-          title: "Communauté humaine",
-          detail: "Des échanges simples, respectueux et bienveillants.",
-        },
-      ],
     },
 
     stores: {
@@ -375,7 +341,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
   en: {
     navigation: [
       { href: "#fonctionnement", label: "How it works" },
-      { href: "#securite", label: "Safety" },
       { href: "#partenaires", label: "Partners" },
       { href: "#faq", label: "FAQ" },
       { href: "/preinscription", label: "Pre-register" },
@@ -398,24 +363,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         travelerCta: "I’m travelling soon",
         note: "One minute, no account needed.",
       },
-    },
-
-    safety: {
-      label: "Our guarantees",
-      items: [
-        {
-          title: "Verified travellers",
-          detail: "Profiles checked for your peace of mind.",
-        },
-        {
-          title: "Secure parcels",
-          detail: "Every parcel is tracked until handover.",
-        },
-        {
-          title: "A human community",
-          detail: "Simple, respectful and thoughtful exchanges.",
-        },
-      ],
     },
 
     stores: {

@@ -6,7 +6,6 @@ import { FaqSection } from "./faq/faq-section";
 import { HomeFooter } from "./footer/home-footer";
 import { Hero } from "./hero/hero";
 import { HeroHeader } from "./hero-header";
-import { SafetyStrip } from "./safety-strip";
 import { homeContent } from "./home-content";
 import type { HomeLanguage } from "./home-content";
 import { HowItWorks } from "./how-it-works/how-it-works";
@@ -82,7 +81,6 @@ export function HeroSection() {
         onLanguageChange={setLanguage}
       />
       <Hero copy={copy.hero} />
-      <SafetyStrip copy={copy.safety} />
       <TrustedPartners copy={copy.partners} />
       <HowItWorks copy={copy.howItWorks} />
       <FaqSection copy={copy.faq} whatsapp={copy.whatsapp} />

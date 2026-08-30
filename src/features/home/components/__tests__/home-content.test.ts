@@ -69,15 +69,6 @@ describe("le dictionnaire de la page d'accueil", () => {
     }
   });
 
-  it("propose trois garanties dans la bande sécurité", () => {
-    // `SafetyStrip` les dispose en trois colonnes et associe un
-    // pictogramme à chacune par son rang. Une quatrième sortirait de la
-    // grille sans pictogramme.
-    for (const langue of LANGUES) {
-      expect(homeContent[langue].safety.items).toHaveLength(3);
-    }
-  });
-
   it("donne deux parcours de trois étapes à « Comment ça marche »", () => {
     // Les étapes sont posées sur un rail à trois colonnes, et les deux
     // onglets doivent décrire le même nombre d'étapes : sinon le panneau
