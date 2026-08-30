@@ -19,6 +19,18 @@
  */
 
 export const EVENTS = {
+  // ── La visite ──
+  //
+  // Ce qu'on cherche à savoir : combien arrivent, combien lisent, et où
+  // ils s'arrêtent. La profondeur de défilement et le temps passé sont
+  // les deux seules mesures qui distinguent un visiteur d'un rebond
+  // quand personne ne clique.
+  landingViewed: "landing_viewed",
+  scrollDepth: "scroll_depth",
+  timeOnPage: "time_on_page",
+  sectionViewed: "section_viewed",
+  ctaClicked: "cta_clicked",
+  // ── Le tunnel ──
   prelaunchViewed: "prelaunch_viewed",
   prelaunchIntentSelected: "prelaunch_intent_selected",
   prelaunchRouteCompleted: "prelaunch_route_completed",

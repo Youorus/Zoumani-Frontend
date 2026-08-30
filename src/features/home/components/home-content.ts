@@ -49,27 +49,22 @@ export interface HomeContent {
     descriptionAccent: string;
     /** Les trois garanties du bandeau bas, en réponse au doute immédiat. */
     trust: ReadonlyArray<{ title: string; detail: string }>;
-    /** L'introduction du bloc qui porte les deux badges de magasin. */
-    downloadTitle: string;
     /** L’écran d’application montré dans le téléphone. */
-    phone: {
-      senderTab: string;
-      travelerTab: string;
-      fromLabel: string;
-      fromValue: string;
-      toLabel: string;
-      toValue: string;
-      dateLabel: string;
-      dateValue: string;
-      submit: string;
-      resultsTitle: string;
-      resultsMeta: string;
-      results: ReadonlyArray<{
-        name: string;
-        detail: string;
-        price: string;
-        verified: boolean;
-      }>;
+    /**
+     * L'appel à rejoindre la liste de lancement.
+     *
+     * Il a remplacé le téléphone en trompe-l'œil et ses trois voyageurs.
+     * Ceux-là s'appelaient Alex D., Fatou N. et Samuel K., affichaient des
+     * prix et une pastille « vérifié » : personne n'existait. Montrer une
+     * offre qu'on n'a pas est le plus court chemin vers la déception au
+     * premier vrai écran.
+     */
+    waitlist: {
+      title: string;
+      lede: string;
+      senderCta: string;
+      travelerCta: string;
+      note: string;
     };
   };
 
@@ -152,7 +147,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       title: "Navigation",
       description: "Retrouvez les sections de la page.",
     },
-    downloadCta: "Télécharger l’app",
+    downloadCta: "Rejoindre la liste",
 
     hero: {
       eyebrow: "France · Afrique · Le monde",
@@ -175,39 +170,12 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           detail: "Des échanges simples, respectueux et bienveillants.",
         },
       ],
-      downloadTitle: "Tout se passe dans l’app Zoumani",
-      phone: {
-        senderTab: "J’envoie",
-        travelerTab: "Je voyage",
-        fromLabel: "Départ",
-        fromValue: "Paris, France",
-        toLabel: "Arrivée",
-        toValue: "Douala, Cameroun",
-        dateLabel: "Avant le",
-        dateValue: "15 mai 2026",
-        submit: "Voir les voyageurs",
-        resultsTitle: "3 voyageurs vérifiés",
-        resultsMeta: "Mai 2026",
-        results: [
-          {
-            name: "Alex D.",
-            detail: "14 mai · 8 kg disponibles",
-            price: "45 €",
-            verified: true,
-          },
-          {
-            name: "Fatou N.",
-            detail: "15 mai · 5 kg disponibles",
-            price: "38 €",
-            verified: true,
-          },
-          {
-            name: "Samuel K.",
-            detail: "18 mai · 12 kg disponibles",
-            price: "52 €",
-            verified: false,
-          },
-        ],
+      waitlist: {
+        title: "Zoumani ouvre bientôt",
+        lede: "Dites-nous votre trajet. Nous vous prévenons dès qu’il s’ouvre.",
+        senderCta: "J’ai un colis à envoyer",
+        travelerCta: "Je pars bientôt en voyage",
+        note: "Une minute, sans créer de compte.",
       },
     },
 
@@ -410,7 +378,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       title: "Navigation",
       description: "Jump to a section of the page.",
     },
-    downloadCta: "Get the app",
+    downloadCta: "Join the waitlist",
 
     hero: {
       eyebrow: "France · Africa · Worldwide",
@@ -433,39 +401,12 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           detail: "Simple, respectful and thoughtful exchanges.",
         },
       ],
-      downloadTitle: "Everything happens in the Zoumani app",
-      phone: {
-        senderTab: "I’m sending",
-        travelerTab: "I’m travelling",
-        fromLabel: "From",
-        fromValue: "Paris, France",
-        toLabel: "To",
-        toValue: "Douala, Cameroon",
-        dateLabel: "Before",
-        dateValue: "15 May 2026",
-        submit: "See travellers",
-        resultsTitle: "3 verified travellers",
-        resultsMeta: "May 2026",
-        results: [
-          {
-            name: "Alex D.",
-            detail: "14 May · 8 kg available",
-            price: "€45",
-            verified: true,
-          },
-          {
-            name: "Fatou N.",
-            detail: "15 May · 5 kg available",
-            price: "€38",
-            verified: true,
-          },
-          {
-            name: "Samuel K.",
-            detail: "18 May · 12 kg available",
-            price: "€52",
-            verified: false,
-          },
-        ],
+      waitlist: {
+        title: "Zoumani opens soon",
+        lede: "Tell us your route. We’ll let you know as soon as it opens.",
+        senderCta: "I have a parcel to send",
+        travelerCta: "I’m travelling soon",
+        note: "One minute, no account needed.",
       },
     },
 

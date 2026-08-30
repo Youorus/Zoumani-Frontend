@@ -53,7 +53,9 @@ export function MobileNavigation({ copy }: { copy: HomeContent }) {
 
         <div className="mt-auto grid gap-3 pt-8">
           <Button asChild className="w-full">
-            <a href="#telecharger">{copy.downloadCta}</a>
+            <Link href="/preinscription" data-cta="mobile-menu">
+              {copy.downloadCta}
+            </Link>
           </Button>
         </div>
       </DrawerContent>

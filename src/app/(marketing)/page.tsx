@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { JsonLd } from "@/components/seo/json-ld";
 import { HeroSection } from "@/features/home/components/hero-section";
+import { PageInstrumentation } from "@/features/home/components/page-instrumentation";
 import { homeContent } from "@/features/home/components/home-content";
 import { siteConfig } from "@/lib/seo/site";
 import {
@@ -27,6 +28,8 @@ export default function MarketingHomePage() {
   return (
     <main className="min-h-screen bg-background">
       <HeroSection />
+      {/* Ne rend rien : elle écoute, et ne parle qu'au `dataLayer`. */}
+      <PageInstrumentation />
       <JsonLd
         schema={buildGraph(
           serviceSchema,

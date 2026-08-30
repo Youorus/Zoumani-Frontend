@@ -80,7 +80,7 @@ export function HeroSection() {
         language={language}
         onLanguageChange={setLanguage}
       />
-      <Hero copy={copy.hero} stores={copy.stores} />
+      <Hero copy={copy.hero} />
       <TrustedPartners copy={copy.partners} />
       <HowItWorks copy={copy.howItWorks} />
       <FaqSection copy={copy.faq} whatsapp={copy.whatsapp} />

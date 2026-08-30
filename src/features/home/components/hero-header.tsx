@@ -1,6 +1,6 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -84,10 +84,13 @@ export function HeroHeader({
           />
           <div className="hidden lg:block">
             <Button asChild className="gap-2 px-6">
-              <a href="#telecharger">
-                <Download className="size-5" />
+              {/* Une route, pas une ancre : le bouton menait au bloc de
+                  téléchargement d'une application qui n'est pas publiée.
+                  Il mène désormais là où l'on peut réellement agir. */}
+              <Link href="/preinscription" data-cta="header">
                 {copy.downloadCta}
-              </a>
+                <ArrowRight className="size-5" />
+              </Link>
             </Button>
           </div>
           <MobileNavigation copy={copy} />

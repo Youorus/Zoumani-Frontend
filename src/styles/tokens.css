@@ -9,7 +9,9 @@
   --vert-whatsapp: #25d366;
 
   --font-body: var(--font-manrope), "Avenir Next", sans-serif;
-  --font-display: var(--font-cormorant), "Iowan Old Style", serif;
+  /* La même famille que le corps, en plus gras — comme dans
+     l'application, où `ManropeExtraBold` tient le rôle du display. */
+  --font-display: var(--font-manrope), "Avenir Next", sans-serif;
 
   --lagoon-depth: #0f766e;
   --oasis-foam: #d9fff8;

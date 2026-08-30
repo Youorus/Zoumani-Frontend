@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import {
   Globe2,
   MapPin,
@@ -9,17 +10,13 @@ import {
 
 import type { HomeContent } from "../home-content";
 import styles from "./hero.module.css";
-import { PhoneMockup } from "./phone-mockup";
-import { StoreBadges } from "./store-badges";
 
 const TRUST_ICONS = [ShieldCheck, PackageCheck, UsersRound] as const;
 
 export function Hero({
   copy,
-  stores,
 }: {
   copy: HomeContent["hero"];
-  stores: HomeContent["stores"];
 }) {
   const [beforeAccent, afterAccent] = copy.description.split("{accent}");
 
@@ -75,28 +72,39 @@ export function Hero({
           })}
         </ul>
 
-        <div className={styles.downloadCard}>
-          <div className={styles.downloadIntro}>
-            <p>{copy.downloadTitle}</p>
-          </div>
-          <svg
-            viewBox="0 0 72 44"
-            fill="none"
-            aria-hidden="true"
-            className={styles.downloadArrow}
-          >
-            <path d="M3 12C22 1 45 2 57 14c6 6 7 12 7 18" />
-            <path d="m54 26 10 7-11 6" />
-          </svg>
-          <StoreBadges
-            copy={stores}
-            alwaysInline
-            className={styles.storeBadges}
-          />
-        </div>
+        {/* ═══ Ce qui a remplacé le téléphone ═══
 
-        <div className={styles.phoneStage}>
-          <PhoneMockup />
+            Le hero montrait une maquette d'application avec trois
+            voyageurs — Alex D., Fatou N., Samuel K. — leurs prix et une
+            pastille « vérifié ». Personne n'existait. Montrer une offre
+            qu'on n'a pas est le plus court chemin vers la déception au
+            premier vrai écran, et vers un magasin d'applications où rien
+            n'est encore publié.
+
+            À la place, la seule chose qu'on puisse honnêtement demander
+            aujourd'hui : votre trajet. Deux portes, parce que les deux
+            versants du marché ne se reconnaissent pas dans les mêmes
+            mots. */}
+        <div className={styles.waitlist}>
+          <p className={styles.waitlistTitle}>{copy.waitlist.title}</p>
+          <p className={styles.waitlistLede}>{copy.waitlist.lede}</p>
+          <div className={styles.waitlistActions}>
+            <Link
+              href="/preinscription?type=sender"
+              className={styles.waitlistPrimary}
+              data-cta="hero-sender"
+            >
+              {copy.waitlist.senderCta}
+            </Link>
+            <Link
+              href="/preinscription?type=traveler"
+              className={styles.waitlistSecondary}
+              data-cta="hero-traveler"
+            >
+              {copy.waitlist.travelerCta}
+            </Link>
+          </div>
+          <p className={styles.waitlistNote}>{copy.waitlist.note}</p>
         </div>
       </div>
 

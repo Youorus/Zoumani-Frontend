@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Manrope } from "next/font/google";
 import type { PropsWithChildren } from "react";
 
 import "./globals.css";
@@ -10,16 +10,31 @@ import { buildGraph, organizationSchema, websiteSchema } from "@/lib/seo/structu
 
 import { AppProviders } from "./providers";
 
+/**
+ * Manrope, et elle seule.
+ *
+ * ═══ Pourquoi le serif est parti ═══
+ *
+ * Les titres étaient en Cormorant Garamond. L'application mobile, elle,
+ * n'utilise que Manrope — corps et titres, jusqu'à l'ExtraBold. Deux
+ * typographies pour une seule marque : le site et l'application ne se
+ * ressemblaient pas, et c'est le genre d'écart qu'on ne sait pas nommer
+ * mais qu'on ressent.
+ *
+ * ═══ Ce qu'on y gagne au passage ═══
+ *
+ * Une famille au lieu de deux : une requête de moins, quelques dizaines
+ * de kilo-octets de moins, et un basculement de police en moins au
+ * premier affichage — ce que les Core Web Vitals comptent en CLS.
+ *
+ * Manrope couvre tout le registre nécessaire, du 400 au 800, et c'est une
+ * police pensée pour l'écran : hauteur d'x généreuse, formes ouvertes,
+ * excellente à petite taille sur un téléphone — d'où la majorité du
+ * trafic viendra.
+ */
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
-  display: "swap",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  variable: "--font-cormorant",
   display: "swap",
 });
 
@@ -137,7 +152,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html
       lang="fr"
-      className={`${manrope.variable} ${cormorant.variable}`}
+      className={manrope.variable}
       suppressHydrationWarning
     >
       <body>

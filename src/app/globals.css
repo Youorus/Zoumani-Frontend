@@ -29,7 +29,11 @@
   h2,
   h3,
   h4 {
-    font-family: var(--font-display), serif;
+    font-family: var(--font-display), sans-serif;
+    /* 800 : c'est `ManropeExtraBold` qui tient le rôle du display dans
+       l'application. Sans cette graisse, les titres perdraient le poids
+       que le serif leur donnait, et la page paraîtrait plate. */
+    font-weight: 800;
     letter-spacing: -0.03em;
   }
 
