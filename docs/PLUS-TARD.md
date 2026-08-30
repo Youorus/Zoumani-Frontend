@@ -72,6 +72,53 @@ conteneur. Le site n'a rien à redéployer.
 
 ---
 
+### Aucun profil social n'est déclaré à Google
+
+`siteConfig.social` est vide, et `sameAs` ne figure donc pas dans le
+JSON-LD. Il contenait quatre adresses devinées à partir du nom, dont
+`instagram.com/zoumani` — le compte personnel d'une personne réelle,
+sans lien avec la marque. Retirées le 30 août 2026.
+
+**Ce que ça coûte :** Google ne peut pas relier le site à des profils
+officiels, ce qui affaiblit le panneau de connaissances le jour où il
+s'en construit un. C'est un manque, pas une faute — contrairement à ce
+qui s'y trouvait.
+**Déclencheur :** l'ouverture d'un compte réellement contrôlé par
+Zoumani. N'ajouter dans `social` qu'une adresse dont on possède les
+identifiants : `sameAs` est une déclaration d'identité, pas une liste de
+liens.
+
+### Les pages de corridor n'existent pas
+
+L'architecture les accepte : `ENTRY_PAGES` produit les pages d'entrée à
+la compilation, et `dynamicParams = false` fait rendre 404 à toute
+adresse non déclarée. Ajouter `/envoyer-colis/paris-douala` est une
+entrée dans ce tableau, plus le contenu qui va avec.
+
+Elles n'ont pas été créées, et c'est délibéré. Aucun corridor n'est
+ouvert : neuf pages qui répéteraient la même promesse en changeant deux
+noms de ville seraient du contenu mince, que Google traite comme un
+signal de mauvaise qualité **pour le domaine entier**, pas seulement pour
+les pages concernées.
+
+**Ce que ça coûte :** les requêtes « envoyer un colis à Douala » ne sont
+pas couvertes. C'est le gisement principal du référencement de Zoumani.
+**Déclencheur :** un corridor réellement desservi, avec de quoi écrire
+une page qui ne ressemble à aucune autre — délais constatés, prix
+observés, douane locale, voyageurs présents. Une page par corridor
+réel, pas une par combinaison possible.
+
+### Il n'y a pas de fil d'Ariane
+
+Le site est plat : huit pages, toutes à un seul niveau de l'accueil. Un
+fil d'Ariane décrirait une profondeur qui n'existe pas.
+
+**Ce que ça coûte :** rien aujourd'hui.
+**Déclencheur :** la première page de corridor, qui créera le niveau
+`Accueil > Envoyer un colis > Cameroun > Paris–Douala`. Y ajouter alors
+un `BreadcrumbList` en JSON-LD, en même temps que le fil visible — jamais
+l'un sans l'autre.
+
 ## Contenu
 
 ### Les badges de magasin ne mènent nulle part
