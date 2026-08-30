@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { ENTRY_PAGES } from "@/features/prelaunch/model/entry-pages";
 import { absoluteUrl } from "@/lib/seo/site";
 
 /**
@@ -29,5 +30,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    // Les deux pages d'entrée, construites depuis `ENTRY_PAGES` : le jour
+    // où un corridor mérite la sienne, elle entre ici sans que ce fichier
+    // change.
+    ...ENTRY_PAGES.map((page) => ({
+      url: absoluteUrl(`/${page.slug}`),
+      lastModified,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })),
   ];
 }

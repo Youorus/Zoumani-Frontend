@@ -1,6 +1,9 @@
 # Zoumani — Vitrine
 
-Le site public. Une page, aucun appel réseau, aucun secret.
+Le site public. Aucun secret, et **un seul** appel réseau — celui qui
+enregistre les préinscriptions.
+
+Les directives de développement sont dans [`AGENTS.md`](AGENTS.md).
 
 Ce dépôt portait aussi l'espace connecté — envois, voyages, paiements,
 suivi, vérification d'identité — et l'administration. Le 20 août 2026, les
@@ -10,18 +13,37 @@ et qui en garde l'historique.
 
 ## Ce qu'il contient
 
-Une seule route : `/`. Promesse, fonctionnement, confiance, partenaires,
-pied de page — et l'appel à télécharger l'application.
+- `/` — promesse, fonctionnement, confiance, partenaires, FAQ.
+- `/preinscription` — le tunnel : qui attend le service, et sur quel
+  trajet.
+- `/envoyer-un-colis` et `/proposer-un-voyage` — deux pages d'entrée.
+  « Envoyer un colis » et « rentabiliser ses kilos » ne sont pas la même
+  recherche, ne se formulent pas dans les mêmes mots, et ne s'achètent
+  pas dans la même campagne.
 
 Vérifiable d'une commande : `npm run build` marque **toutes** les routes
-`○ (Static)`. S'il en apparaît une en `ƒ (Dynamic)`, c'est qu'un appel
-serveur s'est réintroduit.
+`○ (Static)` ou `● (SSG)`. S'il en apparaît une en `ƒ (Dynamic)`, c'est
+qu'un appel serveur s'est réintroduit.
 
-## Ce qu'il ne contient plus, et pourquoi ça compte
+## La préinscription, et ce qu'elle coûte
 
-Ni connexion, ni inscription, ni recherche de trajets. Le formulaire du
-hero interrogeait l'API — c'était le dernier fil entre cette vitrine et le
-serveur. En le coupant, le site est devenu :
+Elle ramène un appel réseau, là où il n'y en avait plus aucun. C'est
+assumé : il faut bien enregistrer quelque part qui attend le service, et
+sans corridor collecté on ne sait pas où ouvrir en premier.
+
+Ce qui est préservé : **seul le tunnel appelle**. La vitrine reste
+statique et muette. Si l'API tombe, la page s'affiche entière et seul le
+formulaire échoue, en le disant.
+
+`NEXT_PUBLIC_API_URL` est facultative et validée au démarrage. Absente,
+le tunnel refuse d'envoyer plutôt que de faire croire à un
+enregistrement — une inscription perdue qu'on croit acquise coûte plus
+cher qu'une inscription refusée.
+
+## Ce qu'il ne contient toujours pas, et pourquoi ça compte
+
+Ni connexion, ni inscription, ni recherche de trajets. Ils sont partis
+avec l'espace connecté. Le site en garde :
 
 - **insensible aux pannes de l'API.** Elle tombe, la vitrine reste debout.
 - **déployable n'importe où.** Pas de proxy, pas de `API_URL`, pas de
