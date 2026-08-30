@@ -47,28 +47,53 @@ campagne payante — le premier des deux.
 
 ## Mesure
 
-### Le conteneur GTM est branché, mais vide
+### `prelaunch_success` n'est pas marqué comme événement clé
 
-`NEXT_PUBLIC_GTM_ID` vaut `GTM-PMJC9J5Q` depuis le 30 août 2026, posé
-dans les *Build Args* et l'environnement Dokploy. Le conteneur se charge
-en production, le Consent Mode v2 le précède, le bandeau recueille la
-réponse et la mémorise. Toute la chaîne technique fonctionne.
+GA4 mesure depuis le 30 août 2026 : `G-DYN8TLDTJ0` est posé en direct,
+et les dix événements du tunnel arrivent — vérifié sur le trafic réel,
+`prelaunch_success` compris, avec ses paramètres `intent_role`,
+`origin`, `destination` et `already_known`.
 
-Ce qui manque est **à l'intérieur du conteneur** : `gtm.js?id=GTM-PMJC9J5Q`
-renvoie `"tags":[]`. Aucune balise n'y est déclarée, donc aucune mesure
-GA4. Vérifié le 30 août 2026 en interrogeant directement le conteneur
-servi.
+Il n'est pas marqué **événement clé** dans GA4. Il compte donc comme un
+événement ordinaire, pas comme une conversion.
 
-**Ce que ça coûte :** exactement ce que coûtait l'absence d'identifiant.
-Les visites, la profondeur de lecture, les abandons du tunnel et
-l'origine des campagnes ne sont mesurés nulle part. La différence est
-qu'on peut désormais s'en croire équipé — le conteneur se charge, le
-bandeau s'affiche — alors que rien n'est enregistré.
-**Déclencheur :** avant la première campagne payante. Le geste est dans
-l'interface de Google Tag Manager, pas dans le code : créer une propriété
-GA4, ajouter une balise « Google Analytics : configuration GA4 » avec son
-identifiant `G-…`, la déclencher sur *All Pages*, puis **publier** le
-conteneur. Le site n'a rien à redéployer.
+**Ce que ça coûte :** les rapports d'acquisition n'affichent aucun taux
+de conversion, et aucune campagne payante ne pourra optimiser sur cet
+objectif — c'est précisément ce pour quoi la mesure a été posée.
+**Déclencheur :** immédiat, et c'est trois clics. GA4 → Admin →
+Événements clés → activer `prelaunch_success`. Reporté par Marc le
+30 août 2026.
+
+### GTM a été retiré au profit de GA4 direct
+
+`NEXT_PUBLIC_GTM_ID` valait `GTM-PMJC9J5Q`, mais le conteneur est resté
+vide — `gtm.js` renvoyait `"tags":[]`. La balise ne pouvant être créée
+que depuis l'interface Google, GA4 a été branché directement, par
+`NEXT_PUBLIC_GA_MEASUREMENT_ID`.
+
+Le code garde les deux chemins et la règle qui les sépare : GTM l'emporte
+quand il est configuré, sinon `gtag` reçoit. Elle vaut pour le chargement
+**et** pour l'émission des événements — `gtag.js` ignore la forme
+`{ event: "..." }` que comprend GTM.
+
+**Ce que ça coûte :** aucun pixel publicitaire ne peut être ajouté sans
+redéploiement. Meta, TikTok et Google Ads passeraient par GTM, qui est
+fait pour ça.
+**Déclencheur :** la première campagne payante. Reposer
+`NEXT_PUBLIC_GTM_ID`, retirer `NEXT_PUBLIC_GA_MEASUREMENT_ID`, et
+déplacer la balise GA4 dans le conteneur — le code bascule seul.
+
+### Le jeton d'export Clarity doit être révoqué
+
+Un jeton d'API *Data Export* Clarity a été généré le 30 août 2026 et
+transmis dans une conversation. Le site n'en a **aucun besoin** : seul
+`NEXT_PUBLIC_CLARITY_PROJECT_ID` sert au chargement. D'après son
+contenu, il n'expire qu'en 2126.
+
+**Ce que ça coûte :** un jeton d'export en circulation donne accès aux
+enregistrements de session à qui le détient, pour un siècle.
+**Déclencheur :** immédiat. Clarity → Settings → Data Export → révoquer.
+N'en générer un que le jour d'un export réel vers un outil tiers.
 
 ---
 
