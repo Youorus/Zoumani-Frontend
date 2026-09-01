@@ -47,6 +47,38 @@ campagne payante — le premier des deux.
 
 ## Mesure
 
+### BIMI est préparé, mais bloqué en amont
+
+`public/bimi/logo.svg` existe et respecte le profil SVG Tiny PS exigé :
+`version="1.2"`, `baseProfile="tiny-ps"`, `<title>`, cadre carré, aucun
+élément interdit, aucune référence externe, 25,5 ko — sous la limite
+conseillée de 32 ko. Il est servi sur
+`https://zoumani.fr/bimi/logo.svg`.
+
+L'enregistrement DNS n'a **pas** été créé, et ce n'est pas un oubli.
+BIMI exige une politique DMARC **à l'application** — `p=quarantine` ou
+`p=reject`, avec `pct=100`. `zoumani.fr` est à `p=none`, qui observe
+sans rien bloquer : un enregistrement `default._bimi` posé maintenant
+échouerait à la validation de tous les fournisseurs, et donnerait
+l'illusion que la chose est faite.
+
+Et l'application de DMARC suppose elle-même DKIM, qui n'est pas activé
+sur le domaine — aucun sélecteur n'est publié.
+
+**Ce que ça coûte :** rien aujourd'hui. Le logo dans la liste des
+messages est un signal de légitimité, pas une fonction.
+**Déclencheur :** l'ordre est contraint, et l'inverser coupe les envois.
+1. Activer DKIM chez OVH.
+2. Observer les rapports DMARC deux à quatre semaines.
+3. Passer `p=quarantine`, puis `p=reject`.
+4. Alors seulement créer `default._bimi.zoumani.fr`.
+
+**Réserve :** Gmail et Apple Mail n'affichent le logo qu'avec un VMC —
+un certificat adossé à une **marque déposée**, facturé de l'ordre de
+1 000 à 1 500 € par an. Sans dépôt de la marque Zoumani, l'affichage
+restera limité aux fournisseurs acceptant le BIMI auto-déclaré, ce qui
+exclut la majorité des destinataires.
+
 ### `prelaunch_success` n'est pas marqué comme événement clé
 
 GA4 mesure depuis le 30 août 2026 : `G-DYN8TLDTJ0` est posé en direct,
