@@ -89,3 +89,33 @@
     padding-top: 4.5rem;
   }
 }
+
+/* ── Les petits écrans ──
+ *
+ * Sur un iPhone SE — 568 px de haut — le titre, le chapeau et leurs
+ * marges repoussaient le premier champ du tunnel à 602 px : tout le
+ * formulaire commençait sous la ligne de flottaison, et la barre
+ * d'action collante elle-même ne pouvait pas remonter plus haut que son
+ * formulaire.
+ *
+ * On resserre donc ce qui précède, sans rien retirer : le titre et le
+ * chapeau restent, ils sont ce qui explique où l'on est. */
+@media (max-width: 30rem) {
+  .page {
+    padding-top: 1.5rem;
+  }
+
+  .header {
+    margin-bottom: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.65rem;
+  }
+
+  .lede {
+    margin-top: 0.6rem;
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+}

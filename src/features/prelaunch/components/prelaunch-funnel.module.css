@@ -274,13 +274,59 @@
 }
 
 @media (max-width: 30rem) {
+  /* Le même resserrement que la page qui l'entoure : sur 568 px de haut,
+     chaque interligne gagné rapproche le premier champ du pouce. */
+  .wrap {
+    gap: 1.25rem;
+  }
+}
+
+/* ── La barre d'action, sur téléphone ──
+ *
+ * ═══ Le problème mesuré ═══
+ *
+ * Le bouton « Continuer » tombait sous la ligne de flottaison dès la
+ * première étape : haut du bouton à 755 px pour une fenêtre de 664 px sur
+ * iPhone 13, à 811 px pour 568 px sur iPhone SE. Il fallait faire défiler
+ * pour franchir l'étape la plus importante du tunnel — celle dont dépend
+ * tout le reste.
+ *
+ * Et quand la liste de villes était ouverte, elle recouvrait le bouton de
+ * 41 px sur les trois appareils testés : le premier appui sélectionnait
+ * une suggestion au lieu de valider. Il en fallait deux.
+ *
+ * ═══ Le choix, et ce qu'il coûte ═══
+ *
+ * La barre devient collante en bas de la fenêtre. Le bouton est donc
+ * toujours à portée de pouce, sans que rien du tunnel ne change : mêmes
+ * étapes, mêmes champs, mêmes questions.
+ *
+ * Le `z-index` la place **au-dessus** de la liste de suggestions (20).
+ * C'est ce qui répare l'interception : un appui sur le bouton atteint le
+ * bouton. En contrepartie, une suggestion peut passer derrière la barre —
+ * mais le champ visé est ramené à l'écran par le navigateur au focus, et
+ * la liste s'ouvre alors au milieu de l'écran, pas contre le bas.
+ *
+ * `env(safe-area-inset-bottom)` la tient au-dessus de la barre de
+ * gestes des iPhone récents, où elle serait sinon à moitié inatteignable.
+ *
+ * Les deux boutons restent côte à côte : empilés, la barre ferait
+ * 118 px de haut et mangerait un cinquième d'un écran d'iPhone SE.
+ * « Retour » n'a pas besoin de toute la largeur. */
+@media (max-width: 47.99rem) {
   .actions {
-    flex-wrap: wrap;
+    position: sticky;
+    z-index: 30;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    padding: 0.6rem;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--shape-radius-md);
+    box-shadow: var(--elevation-lifted);
   }
 
-  .back,
-  .next {
-    flex: 1 1 100%;
+  .back {
+    padding-inline: 1rem;
   }
 }
 
