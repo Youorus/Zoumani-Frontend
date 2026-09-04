@@ -37,6 +37,31 @@ import { TrustedPartners } from "./trusted-partners";
  * plus haut ferait basculer le layout racine en composant client, et la
  * page cesserait d'être pré-calculée.
  */
+/**
+ * La section des logos est-elle affichée ?
+ *
+ * ═══ Pourquoi elle ne l'est pas ═══
+ *
+ * Elle montre treize marques — La Poste, DHL, UPS, FedEx, Chronopost,
+ * Mondial Relay, Colis Privé, Asendia, AXA, Allianz, Chubb, Curacel,
+ * Secursus — sous le titre « Zoumani s'appuie sur les acteurs de
+ * l'acheminement et de l'assurance ». Aucun de ces partenariats n'est
+ * conclu. L'avertissement existe, mais il est en petit et sous les logos.
+ *
+ * Une régie publicitaire refuse une annonce dont la page laisse croire à
+ * un partenariat qui n'existe pas — et le refus tombe à l'examen de
+ * l'annonce, c'est-à-dire au moment précis où l'on veut lancer. Le risque
+ * de mise en demeure, lui, ne dépend d'aucune campagne.
+ *
+ * ═══ Pourquoi masquer plutôt que supprimer ═══
+ *
+ * Le composant, les logos et leurs sources restent en place : le jour
+ * où un partenariat est signé, la section revient en repassant cette
+ * valeur à `true` et en corrigeant le titre pour ne nommer que les
+ * partenaires réels. Supprimer le travail obligerait à le refaire.
+ */
+const AFFICHER_PARTENAIRES = false;
+
 export function HeroSection() {
   const [language, setLanguage] = useState<HomeLanguage>("fr");
   const copy = homeContent[language];
@@ -81,7 +106,7 @@ export function HeroSection() {
         onLanguageChange={setLanguage}
       />
       <Hero copy={copy.hero} />
-      <TrustedPartners copy={copy.partners} />
+      {AFFICHER_PARTENAIRES && <TrustedPartners copy={copy.partners} />}
       <HowItWorks copy={copy.howItWorks} />
       <FaqSection copy={copy.faq} whatsapp={copy.whatsapp} />
       <HomeFooter
