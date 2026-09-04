@@ -46,7 +46,8 @@ const SECTIONS = [
     corps: [
       "**Si vous rejoignez la liste de lancement** : votre prénom, une adresse e-mail ou un numéro de téléphone, et le trajet qui vous intéresse — ville de départ, destination, période approximative, et selon le cas le type de colis ou les kilos disponibles.",
       "Le trajet est la seule donnée qui ait une valeur d’analyse : il nous dit sur quelles liaisons se trouvent en même temps des colis et des voyageurs, donc où ouvrir le service en premier. Le contact sert à vous prévenir quand c’est le cas.",
-      "**Si vous acceptez la mesure d’audience** : des statistiques de visite, par Google Analytics via Google Tag Manager. Rien n’est déposé avant votre accord, et le refus n’enlève rien au site.",
+      "**Si vous acceptez la mesure d’audience** : des statistiques de visite par Google Analytics, et l’enregistrement du déroulement de votre visite — défilement, appuis — par Microsoft Clarity. Le texte que vous saisissez dans les champs n’est pas capturé : la coupure est faite dans votre navigateur, avant tout envoi.",
+      "**Si vous acceptez la publicité** : le pixel Meta rattache une pré-inscription à l’annonce qui l’a amenée. Il ne reçoit ni votre prénom, ni votre adresse e-mail, ni votre téléphone — un filtre les écarte avant tout envoi. Les deux finalités se refusent séparément, et refuser n’enlève rien au site.",
       "**L’origine de votre visite** : les paramètres de campagne présents dans l’adresse par laquelle vous êtes arrivé. Ils nous disent quelle publicité fonctionne, et rien de vous.",
     ],
   },
@@ -61,13 +62,14 @@ const SECTIONS = [
     titre: "Combien de temps",
     corps: [
       "Les préinscriptions sont conservées **jusqu’à l’ouverture du service sur votre trajet, et au plus deux ans**. Passé ce délai sans ouverture, elles sont effacées : une liste qu’on n’a pas su servir en deux ans ne sert plus personne.",
-      "Le choix relatif à la mesure d’audience est retenu **six mois** dans votre navigateur, puis la question vous est reposée.",
+      "Vos réponses sur les cookies restent dans votre navigateur jusqu’à ce que vous effaciez les données de ce site. Les durées de chaque cookie déposé sont détaillées sur la page **Cookies**.",
     ],
   },
   {
     titre: "Qui y a accès",
     corps: [
-      "L’équipe Zoumani, et notre hébergeur, situé dans l’Union européenne. Les e-mails partent par notre prestataire d’envoi. La mesure d’audience, si vous l’acceptez, implique Google — dont les traitements peuvent sortir de l’Union européenne.",
+      "L’équipe Zoumani, et notre hébergeur, situé dans l’Union européenne. Les e-mails partent par notre prestataire d’envoi.",
+      "Si vous acceptez la mesure d’audience : Google Ireland Limited et Microsoft Ireland Operations Limited. Si vous acceptez la publicité : Meta Platforms Ireland Limited. Ces trois sociétés sont établies dans l’Union européenne et appartiennent à des groupes américains ; les données peuvent donc être transférées hors de l’Union, dans le cadre prévu par leurs conditions respectives.",
     ],
   },
   {
@@ -108,7 +110,7 @@ export default function ConfidentialitePage() {
           </section>
         ))}
 
-        <p className={styles.updated}>Dernière mise à jour : 30 août 2026.</p>
+        <p className={styles.updated}>Dernière mise à jour : 4 septembre 2026.</p>
       </main>
       <SiteFooter />
     </>
