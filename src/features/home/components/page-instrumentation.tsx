@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-import { captureAttribution } from "@/lib/marketing/attribution";
+import { readAttribution } from "@/lib/marketing/attribution";
 import { EVENTS, track } from "@/lib/marketing/events";
 
 /**
@@ -39,7 +39,11 @@ const INSTANTS = [10, 30, 60] as const;
 
 export function PageInstrumentation() {
   useEffect(() => {
-    const attribution = captureAttribution();
+    // La campagne a déjà été retenue par `AnalyticsRuntime`, monté plus
+    // haut dans le gabarit racine : on se contente de la relire. La
+    // capture se fait désormais à un seul endroit, pour toutes les pages
+    // d'arrivée et non plus pour les deux qui y pensaient.
+    const attribution = readAttribution();
     track(EVENTS.landingViewed, {
       utm_source: attribution.utm_source,
       utm_campaign: attribution.utm_campaign,

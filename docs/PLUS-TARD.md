@@ -82,7 +82,7 @@ exclut la majorité des destinataires.
 ### `prelaunch_success` n'est pas marqué comme événement clé
 
 GA4 mesure depuis le 30 août 2026 : `G-DYN8TLDTJ0` est posé en direct,
-et les dix événements du tunnel arrivent — vérifié sur le trafic réel,
+et les événements du tunnel arrivent — vérifié sur le trafic réel,
 `prelaunch_success` compris, avec ses paramètres `intent_role`,
 `origin`, `destination` et `already_known`.
 
@@ -94,7 +94,8 @@ de conversion, et aucune campagne payante ne pourra optimiser sur cet
 objectif — c'est précisément ce pour quoi la mesure a été posée.
 **Déclencheur :** immédiat, et c'est trois clics. GA4 → Admin →
 Événements clés → activer `prelaunch_success`. Reporté par Marc le
-30 août 2026.
+30 août 2026, et **toujours à faire au 4 septembre 2026** : c'est la
+dernière action hors code avant le micro-test.
 
 ### GTM a été retiré au profit de GA4 direct
 
@@ -108,12 +109,127 @@ quand il est configuré, sinon `gtag` reçoit. Elle vaut pour le chargement
 **et** pour l'émission des événements — `gtag.js` ignore la forme
 `{ event: "..." }` que comprend GTM.
 
-**Ce que ça coûte :** aucun pixel publicitaire ne peut être ajouté sans
-redéploiement. Meta, TikTok et Google Ads passeraient par GTM, qui est
-fait pour ça.
-**Déclencheur :** la première campagne payante. Reposer
-`NEXT_PUBLIC_GTM_ID`, retirer `NEXT_PUBLIC_GA_MEASUREMENT_ID`, et
-déplacer la balise GA4 dans le conteneur — le code bascule seul.
+Le pixel Meta a été posé le 4 septembre 2026 **sans** GTM, par un
+composant dédié (`components/analytics/meta-pixel.tsx`), sur le modèle de
+Clarity. C'était le choix le moins risqué avant une campagne : rebrancher
+GTM aurait fait changer de convention d'émission aux dix-huit événements
+du tunnel, et il aurait fallu tout revérifier.
+
+**Ce que ça coûte :** un troisième pixel — TikTok, Google Ads — demandera
+soit un composant de plus, soit la bascule vers GTM, et un redéploiement
+dans les deux cas.
+**Déclencheur :** une deuxième régie publicitaire. Reposer
+`NEXT_PUBLIC_GTM_ID`, retirer `NEXT_PUBLIC_GA_MEASUREMENT_ID`, déplacer
+la balise GA4 et le pixel dans le conteneur — le code bascule seul, mais
+la vérification des dix-huit événements est à refaire.
+
+### Le suivi des pages repose sur un réglage de la propriété GA4
+
+Le site est une application à navigation client, et il paraît évident
+qu'il faille émettre soi-même un `page_view` à chaque changement de
+route. On l'a écrit, puis retiré : la mesure a montré que **GA4 le fait
+déjà**, par sa « mesure améliorée ». Il l'envoie simplement en différé,
+au premier signal d'engagement qui suit la navigation — reconnaissable au
+paramètre `ae=a`. Une observation trop courte après le clic ne le voit
+pas.
+
+Vérifié le 4 septembre 2026 sur les deux versions : la production, sans
+aucun appel manuel, émet bien un `page_view` portant
+`dl=https://zoumani.fr/preinscription?type=sender` ; la version locale
+avec l'appel manuel en émettait **deux** pour la même page.
+
+Le suivi dépend donc de : Admin › Flux de données › Mesure améliorée ›
+« Changements de page basés sur les événements de l'historique du
+navigateur ». Il est actif.
+
+**Ce que ça coûte :** si quelqu'un le désactive, `/preinscription`
+disparaît des rapports de pages sans que rien n'échoue. Le tunnel, lui,
+resterait mesuré : `prelaunch_view` et `funnel_step_viewed` partent
+immédiatement et ne dépendent d'aucun réglage.
+**Déclencheur :** constater que les navigations n'apparaissent plus.
+`page()` reste exportée dans `lib/marketing/events.ts` ; il suffit de la
+rebrancher dans `AnalyticsRuntime`, avec une garde sur le premier
+passage.
+
+### La Conversions API de Meta n'est pas branchée
+
+Le pixel envoie `Lead` avec un `eventID` — l'identifiant de la
+préinscription rendu par le serveur. C'est exactement celui que la
+Conversions API réutiliserait, et le poser maintenant coûtait une chaîne
+de caractères.
+
+Rien d'autre n'est fait : ni route serveur, ni jeton, ni envoi.
+
+**Ce que ça coûte :** les conversions perdues par les bloqueurs de
+publicité et par l'ITP d'iOS ne remontent pas. Sur un test à 25 €, le
+volume ne permettrait de toute façon rien d'en conclure.
+**Déclencheur :** une campagne qui dépasse quelques centaines d'euros, ou
+un écart constaté entre les leads en base et les `Lead` vus par Meta. Le
+backend stocke déjà `fbclid` sur chaque préinscription : c'est la moitié
+du travail.
+
+### Le choix de consentement n'expire pas
+
+`zoumani.consent.v2` reste dans le navigateur jusqu'à ce que la personne
+efface les données du site. La CNIL recommande de reposer la question au
+bout de six mois ; rien ne le fait, et la page `/cookies` le dit
+désormais tel quel plutôt que d'annoncer une durée qu'on ne tient pas.
+
+**Ce que ça coûte :** un manquement à une recommandation, pas à une
+obligation. Mais c'est aussi un consentement qui vieillit sans être
+revalidé, et l'on ne peut pas prouver qu'il est encore éclairé.
+**Déclencheur :** peu de travail — un horodatage dans la valeur stockée,
+et `readConsent` qui rend `null` au-delà de six mois. À faire avant que
+la première cohorte de visiteurs n'atteigne cet âge, soit mars 2027.
+
+### La section des logos partenaires est masquée, pas supprimée
+
+`AFFICHER_PARTENAIRES` vaut `false` dans
+`features/home/components/hero-section.tsx`. La section montrait treize
+marques — La Poste, DHL, UPS, FedEx, AXA, Allianz… — sous « Zoumani
+s'appuie sur les acteurs de l'acheminement et de l'assurance », alors
+qu'aucun partenariat n'est conclu. L'avertissement existait, en petit et
+sous les logos.
+
+Une régie refuse une annonce dont la page laisse croire à un partenariat
+qui n'existe pas, et le refus tombe à l'examen de l'annonce — au moment
+précis où l'on veut lancer.
+
+**Ce que ça coûte :** la page perd un argument de réassurance, qui n'en
+était pas vraiment un puisqu'il n'était pas vrai.
+**Déclencheur :** un partenariat réellement signé. Repasser la valeur à
+`true`, ne garder que les marques concernées, et réécrire le titre pour
+qu'il dise ce qui est.
+
+### Les pages d'entrée ne mesurent toujours pas les clics
+
+`/envoyer-un-colis` et `/proposer-un-voyage` retiennent désormais
+l'attribution — `AnalyticsRuntime` s'en charge pour toutes les pages —
+mais elles n'ont ni `PageInstrumentation`, ni `data-cta` sur leur bouton.
+On sait donc qu'une visite y arrive, et qu'elle finit ou non en
+préinscription, mais pas où elle s'arrête sur la page elle-même.
+
+**Ce que ça coûte :** si une créa vise ces pages et convertit mal, on ne
+saura pas si le bouton n'a pas été vu ou pas été voulu.
+**Déclencheur :** une campagne qui les vise. Pour le premier test, toutes
+les annonces pointent sur `/`, où la mesure est complète.
+
+### Trois événements d'intention ne se déclenchent presque jamais
+
+`intent_selected`, `sender_selected` et `traveler_selected` n'existent
+que si l'on arrive sur `/preinscription` **sans** `?type=`. Or les cinq
+liens du site le portent. `route_started` est par ailleurs émis dans le
+même effet que `prelaunch_view`, et `contact_started` dans le même clic
+que `details_completed` : deux noms pour un seul fait, chaque fois.
+
+Ils sont conservés tels quels, délibérément : les renommer ou les
+supprimer couperait en deux l'historique GA4 commencé le 30 août.
+
+**Ce que ça coûte :** une taxonomie qui porte trois événements morts et
+deux doublons, dans laquelle quelqu'un finira par définir une audience
+qui renverra zéro.
+**Déclencheur :** la fin du micro-test, quand on saura quels événements
+servent réellement. C'est le moment de renommer, pas avant.
 
 ### Le jeton d'export Clarity doit être révoqué
 

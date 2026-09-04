@@ -117,3 +117,84 @@ describe("Convention d’émission", () => {
     delete (window as unknown as { gtag?: unknown }).gtag;
   });
 });
+
+describe("Consentement transmis en cours de visite", () => {
+  it("appelle gtag('consent','update') quand gtag est là", () => {
+    // Le défaut relevé en production le 4 septembre 2026 : la mise à
+    // jour partait en `dataLayer.push({0:…,1:…,2:…,length:3})`, la
+    // convention de GTM. `gtag.js` chargé seul ne la reconnaît pas, et
+    // GA4 restait en « refusé » pendant toute la première visite —
+    // c'est-à-dire chez la totalité du trafic publicitaire.
+    const appels: unknown[][] = [];
+    (window as unknown as { gtag: (...a: unknown[]) => void }).gtag = (...a) => appels.push(a);
+
+    writeConsent({ analytics: true, marketing: true });
+
+    expect(appels).toEqual([
+      [
+        "consent",
+        "update",
+        {
+          analytics_storage: "granted",
+          ad_storage: "granted",
+          ad_user_data: "granted",
+          ad_personalization: "granted",
+        },
+      ],
+    ]);
+    // Et rien en double dans la couche : les deux chemins s'excluent.
+    expect(couche().find((e) => e[1] === "update")).toBeUndefined();
+    delete (window as unknown as { gtag?: unknown }).gtag;
+  });
+
+  it("transmet un refus aussi clairement qu’un accord", () => {
+    // Un refus qui ne part pas laisse les balises dans l'état par
+    // défaut — qui se trouve être « refusé » aujourd'hui, mais qui ne
+    // le sera plus le jour où quelqu'un changera l'amorçage.
+    const appels: unknown[][] = [];
+    (window as unknown as { gtag: (...a: unknown[]) => void }).gtag = (...a) => appels.push(a);
+
+    writeConsent(CONSENT_NONE);
+
+    expect(appels[0][2]).toEqual({
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+    });
+    delete (window as unknown as { gtag?: unknown }).gtag;
+  });
+
+  it("retombe sur la convention GTM si gtag manque", () => {
+    delete (window as unknown as { gtag?: unknown }).gtag;
+    writeConsent({ analytics: true, marketing: false });
+
+    const maj = couche().find((e) => e[1] === "update")?.[2] as Record<string, string>;
+    expect(maj.analytics_storage).toBe("granted");
+    expect(maj.ad_storage).toBe("denied");
+  });
+});
+
+describe("Le tunnel", () => {
+  it("nomme l’arrivée sur une étape funnel_step_viewed", () => {
+    // Sans lui, on comptait les franchissements et jamais les
+    // abandons : quelqu'un bloqué sur une étape ne se distinguait pas
+    // de quelqu'un qui n'y était jamais arrivé.
+    expect(EVENTS.funnelStepViewed).toBe("funnel_step_viewed");
+  });
+
+  it("porte de quoi lire un abandon", () => {
+    track(EVENTS.funnelStepViewed, {
+      intent_role: "traveler",
+      step: "contact",
+      step_index: 4,
+    });
+
+    expect(couche()[0]).toMatchObject({
+      event: "funnel_step_viewed",
+      intent_role: "traveler",
+      step: "contact",
+      step_index: 4,
+    });
+  });
+});

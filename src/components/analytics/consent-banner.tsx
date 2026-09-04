@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import { env } from "@/lib/env/env";
 import {
   CONSENT_ALL,
   CONSENT_NONE,
-  type ConsentChoice,
-  readConsent,
+  consentServerSnapshot,
+  consentSnapshot,
+  subscribeConsent,
   writeConsent,
 } from "@/lib/marketing/consent";
 import styles from "./consent-banner.module.css";
@@ -44,10 +45,33 @@ import styles from "./consent-banner.module.css";
  * besoin le jour où l'on mesure vraiment.
  */
 export function ConsentBanner() {
-  // L'état initial est lu paresseusement : un `setState` en effet
-  // déclencherait un rendu en cascade, et le bandeau clignoterait.
-  const [choice, setChoice] = useState<ConsentChoice | null | "pending">(() =>
-    typeof window === "undefined" ? "pending" : readConsent(),
+  /**
+   * ═══ Pourquoi la réponse n'est plus lue au premier rendu ═══
+   *
+   * Elle l'était, dans un initialiseur paresseux : `typeof window ===
+   * "undefined" ? "pending" : readConsent()`. Le serveur rendait donc
+   * `"pending"` — c'est-à-dire rien — et le navigateur, au tout premier
+   * rendu, rendait le bandeau. React trouvait deux arbres différents et
+   * jetait le sien pour tout refaire côté client : c'est l'erreur
+   * `#418` relevée en production sur **chaque** chargement.
+   *
+   * Une erreur d'hydratation n'est pas seulement un message dans la
+   * console. Elle fait re-rendre l'application entière au chargement, et
+   * surtout elle masque les vraies erreurs : pendant une campagne, c'est
+   * le bruit dans lequel un défaut réel passerait inaperçu.
+   *
+   * Le stockage est donc lu dans un effet, qui ne s'exécute que sur le
+   * navigateur et après l'hydratation. Serveur et premier rendu client
+   * sont identiques : `"pending"`, qui n'affiche rien.
+   *
+   * Le rendu supplémentaire que cela coûte est réel, et sans
+   * conséquence : le bandeau n'apparaît qu'après, et rien ne se déplace
+   * — il est en surimpression.
+   */
+  const choice = useSyncExternalStore(
+    subscribeConsent,
+    consentSnapshot,
+    consentServerSnapshot,
   );
   const [panneau, setPanneau] = useState(false);
   const [mesure, setMesure] = useState(true);
@@ -56,16 +80,18 @@ export function ConsentBanner() {
   const mesurable =
     env.NEXT_PUBLIC_GTM_ID ||
     env.NEXT_PUBLIC_GA_MEASUREMENT_ID ||
-    env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
+    env.NEXT_PUBLIC_CLARITY_PROJECT_ID ||
+    env.NEXT_PUBLIC_META_PIXEL_ID;
   if (!mesurable) return null;
-  // `pending` : rendu serveur. On n'affiche rien plutôt que de faire
-  // apparaître puis disparaître le bandeau chez qui a déjà répondu.
+  // `undefined` : rendu serveur et hydratation. On n'affiche rien plutôt
+  // que de faire apparaître puis disparaître le bandeau chez qui a déjà
+  // répondu — et surtout plutôt que de rendre deux arbres différents.
   if (choice !== null) return null;
 
-  function repondre(valeur: ConsentChoice) {
-    writeConsent(valeur);
-    setChoice(valeur);
-  }
+  // Pas de `setState` : `writeConsent` écrit dans le stockage et émet
+  // l'événement, dont l'abonnement ci-dessus fait redescendre la valeur.
+  // Une seule source de vérité, et elle est hors de React.
+  const repondre = writeConsent;
 
   return (
     <aside
@@ -76,8 +102,9 @@ export function ConsentBanner() {
     >
       <p className={styles.text}>
         Nous aimerions mesurer les visites pour comprendre ce qui est utile sur ce
-        site. Rien n’est déposé sans votre accord, et vous pouvez refuser sans rien
-        perdre.{" "}
+        site, et savoir quelles annonces nous font connaître. Rien n’est déposé sans
+        votre accord, les deux se refusent séparément, et refuser n’enlève rien au
+        site.{" "}
         <Link href="/cookies" className={styles.link}>
           En savoir plus
         </Link>
@@ -103,7 +130,8 @@ export function ConsentBanner() {
               <strong className={styles.rowTitle}>Mesure d’audience</strong>
               <span className={styles.rowText}>
                 Combien de personnes viennent, ce qu’elles lisent, où elles
-                s’arrêtent. Jamais votre nom, votre e-mail ni votre téléphone.
+                s’arrêtent. Google Analytics et Microsoft Clarity. Jamais votre nom,
+                votre e-mail ni votre téléphone.
               </span>
             </div>
             <input
@@ -118,8 +146,9 @@ export function ConsentBanner() {
             <div>
               <strong className={styles.rowTitle}>Publicité</strong>
               <span className={styles.rowText}>
-                Mesurer quelles campagnes amènent du monde, et ne pas vous montrer
-                deux fois la même annonce. Rien n’est branché aujourd’hui.
+                Rattacher une pré-inscription à l’annonce qui l’a amenée, pour
+                savoir laquelle sert à quelque chose. Pixel Meta. Ni votre prénom,
+                ni votre e-mail, ni votre téléphone ne lui sont transmis.
               </span>
             </div>
             <input

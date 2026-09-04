@@ -70,7 +70,17 @@ export function ConsentDefaults() {
   // fois n'est pas faux, mais la seconde masquerait la première dans le
   // `dataLayer` et rendrait un débogage illisible.
   if (env.NEXT_PUBLIC_GTM_ID) return null;
-  if (!env.NEXT_PUBLIC_GA_MEASUREMENT_ID && !env.NEXT_PUBLIC_CLARITY_PROJECT_ID) return null;
+  if (
+    !env.NEXT_PUBLIC_GA_MEASUREMENT_ID &&
+    !env.NEXT_PUBLIC_CLARITY_PROJECT_ID &&
+    // Meta ne lit pas le Consent Mode. Mais ce script définit aussi
+    // `gtag`, dont `pushConsentUpdate` a besoin pour transmettre une
+    // réponse en cours de visite : sans lui, un site qui n'aurait que le
+    // pixel n'aurait plus de canal pour dire « refusé ».
+    !env.NEXT_PUBLIC_META_PIXEL_ID
+  ) {
+    return null;
+  }
 
   return (
     <script

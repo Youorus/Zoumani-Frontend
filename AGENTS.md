@@ -178,9 +178,19 @@ Tout passe par `src/lib/marketing/events.ts`. Aucun appel direct à une
 régie dans un composant : il partirait sans attendre le consentement,
 échapperait au nommage commun, et se dupliquerait à la première copie.
 
-Aucune régie n'est branchée aujourd'hui — la couche pousse dans
-`dataLayer` si un conteneur existe, et se contente de la console sinon.
-Le jour où l'une arrive, elle se branche dans `send`, à un seul endroit.
+Trois régies sont branchées, et chacune par un seul fichier :
+
+- **GA4**, en direct (`components/analytics/google-analytics.tsx`), sous
+  le consentement de mesure. Il reçoit tous les événements.
+- **Microsoft Clarity**, sous le même consentement, mais **pas chargé du
+  tout** tant qu'il n'est pas donné : il n'implémente pas le Consent
+  Mode.
+- **Le pixel Meta** (`components/analytics/meta-pixel.tsx`), sous le
+  consentement **publicitaire**, qui est une catégorie distincte. Il ne
+  reçoit que `PageView` et `Lead` — cette traduction vit dans
+  `lib/marketing/meta.ts`, et nulle part ailleurs.
+
+Une quatrième régie se brancherait dans `track`, à un seul endroit.
 
 Un événement porte toujours de quoi lire un abandon : `intent_role`,
 `origin`, `destination`. Sans eux, on sait que des gens partent, sans

@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 
-import { captureAttribution, readAttribution } from "@/lib/marketing/attribution";
-import { EVENTS, track } from "@/lib/marketing/events";
+import { readAttribution } from "@/lib/marketing/attribution";
+import { EVENTS, PARAM_EVENT_ID, track } from "@/lib/marketing/events";
 import {
   PrelaunchUnavailable,
   registerLead,
@@ -98,14 +98,41 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
    *  d'avoir agi. */
   const [tried, setTried] = useState(false);
 
-  // Ne touche aucun état React : la campagne est retenue dans le
-  // stockage de session, et la mesure part vers l'extérieur. C'est
+  // Ne touche aucun état React : la mesure part vers l'extérieur. C'est
   // exactement ce à quoi un effet sert.
+  //
+  // La campagne, elle, n'est plus captée ici : `AnalyticsRuntime` s'en
+  // charge pour toutes les pages, celle-ci comprise. La capturer une
+  // seconde fois ne serait pas faux — la fonction est idempotente — mais
+  // deux endroits qui font la même chose finissent par diverger.
   useEffect(() => {
-    captureAttribution();
     track(EVENTS.prelaunchView, { intent_role: initialIntent ?? "none" });
     track(EVENTS.routeStarted, { intent_role: initialIntent ?? "none" });
   }, [initialIntent]);
+
+  /**
+   * L'arrivée sur une étape.
+   *
+   * ═══ Pourquoi un effet, et pas un appel dans `forward()` ═══
+   *
+   * `forward()` sait qu'on **quitte** une étape ; il ne sait pas qu'on
+   * arrive sur la suivante — et il ne voit rien du retour en arrière, ni
+   * de l'arrivée sur la première étape. Un effet sur l'étape courante
+   * couvre les trois cas d'un seul geste.
+   *
+   * Il ne dit rien tant qu'aucune intention n'est choisie : l'écran
+   * « Que voulez-vous faire ? » n'est pas une étape du tunnel, c'est ce
+   * qui le précède. Et rien non plus une fois l'inscription faite : la
+   * confirmation n'est pas une cinquième étape.
+   */
+  useEffect(() => {
+    if (!state.intention || done) return;
+    track(EVENTS.funnelStepViewed, {
+      intent_role: state.intention,
+      step,
+      step_index: STEPS.indexOf(step) + 1,
+    });
+  }, [state.intention, step, done]);
 
   const update = useCallback((patch: Partial<FunnelState>) => {
     setState((current) => {
@@ -181,7 +208,21 @@ export function PrelaunchFunnel({ initialIntent }: { initialIntent: Intention | 
     track(EVENTS.prelaunchSubmit, context);
     try {
       const lead = await registerLead(toLeadDraft(state), readAttribution());
-      track(EVENTS.prelaunchSuccess, { ...context, already_known: lead.alreadyKnown });
+      // ═══ L'identifiant rendu par le serveur sert d'`eventID` Meta ═══
+      //
+      // Il est unique, opaque, et c'est celui que la Conversions API
+      // réutiliserait le jour où elle enverra le même `Lead` depuis le
+      // serveur : Meta saurait alors qu'il s'agit d'un seul et même
+      // événement. Il ne part pas vers GA4, qui n'en a aucun usage.
+      //
+      // C'est aussi ce qui rend l'événement idempotent : deux envois de
+      // la même préinscription — un double clic, un remontage — portent
+      // le même identifiant, et le second est écarté.
+      track(EVENTS.prelaunchSuccess, {
+        ...context,
+        already_known: lead.alreadyKnown,
+        [PARAM_EVENT_ID]: lead.id,
+      });
       clearDraft();
       setDone(lead);
     } catch (cause) {

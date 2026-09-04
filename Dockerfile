@@ -40,6 +40,10 @@ ARG NEXT_PUBLIC_GA_MEASUREMENT_ID
 # Projet Microsoft Clarity. Il n'implemente pas le Consent Mode : le
 # script n'est demande qu'apres acceptation de la mesure d'audience.
 ARG NEXT_PUBLIC_CLARITY_PROJECT_ID
+# Pixel Meta. Il n'implemente pas le Consent Mode de Google : le script
+# n'est demande qu'apres acceptation de la PUBLICITE — une categorie
+# distincte de la mesure d'audience.
+ARG NEXT_PUBLIC_META_PIXEL_ID
 # Cle IndexNow. NON prefixee NEXT_PUBLIC_ : elle ne doit jamais entrer
 # dans le paquet servi. Elle est lue ici pour ecrire public/{cle}.txt
 # avant la construction, et au demarrage pour signer les envois.
@@ -56,6 +60,7 @@ ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL} \
     NEXT_PUBLIC_GTM_ID=${NEXT_PUBLIC_GTM_ID} \
     NEXT_PUBLIC_GA_MEASUREMENT_ID=${NEXT_PUBLIC_GA_MEASUREMENT_ID} \
     NEXT_PUBLIC_CLARITY_PROJECT_ID=${NEXT_PUBLIC_CLARITY_PROJECT_ID} \
+    NEXT_PUBLIC_META_PIXEL_ID=${NEXT_PUBLIC_META_PIXEL_ID} \
     INDEXNOW_KEY=${INDEXNOW_KEY} \
     NEXT_PUBLIC_WHATSAPP_NUMBER=${NEXT_PUBLIC_WHATSAPP_NUMBER} \
     NEXT_PUBLIC_SEO_INDEXABLE=${NEXT_PUBLIC_SEO_INDEXABLE} \

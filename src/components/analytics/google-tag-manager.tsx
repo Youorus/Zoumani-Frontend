@@ -21,6 +21,13 @@ import { env } from "@/lib/env/env";
  * `wait_for_update` laisse 500 ms à la réponse enregistrée d'un visiteur
  * connu, pour qu'il n'ait pas à re-cliquer.
  *
+ * Ce script relit `zoumani.consent.v2` — la clé actuelle, qui porte les
+ * deux finalités. Il lisait `zoumani.consent.analytics`, l'ancienne, à
+ * une seule valeur : un visiteur connu de GTM aurait dû re-répondre, et
+ * son refus de la publicité n'aurait pas été reconduit. Sans effet
+ * aujourd'hui — aucun conteneur n'est configuré — mais c'est le genre de
+ * détail qu'on ne retrouve pas le jour où l'on rebranche GTM.
+ *
  * ═══ Pourquoi `afterInteractive` ═══
  *
  * GTM ne doit pas entrer dans le chemin critique du premier affichage :
@@ -59,7 +66,7 @@ export function GoogleTagManager() {
           __html: `window.dataLayer=window.dataLayer||[];
 function gtag(){dataLayer.push(arguments);}
 gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
-try{var c=localStorage.getItem('zoumani.consent.analytics');if(c==='granted'){gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});}}catch(e){}`,
+try{var c=JSON.parse(localStorage.getItem('zoumani.consent.v2')||'null');if(c&&(c.analytics||c.marketing)){gtag('consent','update',{analytics_storage:c.analytics?'granted':'denied',ad_storage:c.marketing?'granted':'denied',ad_user_data:c.marketing?'granted':'denied',ad_personalization:c.marketing?'granted':'denied'});}}catch(e){}`,
         }}
       />
       <Script id="gtm" strategy="afterInteractive">

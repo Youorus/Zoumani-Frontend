@@ -77,6 +77,29 @@ const publicEnvSchema = z.object({
       .regex(/^[a-z0-9]{6,15}$/, "Identifiant Clarity attendu, alphanumérique minuscule")
       .optional(),
   ),
+  /**
+   * Identifiant du pixel Meta — quinze ou seize chiffres.
+   *
+   * ═══ Il est soumis au consentement publicitaire, pas à celui de la
+   * mesure ═══
+   *
+   * Meta n'implémente pas le Consent Mode de Google : chargé, il mesure.
+   * Le composant qui le pose attend donc l'accord sur la catégorie
+   * `marketing`, exactement comme Clarity attend celui sur `analytics`.
+   *
+   * Absent, aucun script Meta n'est demandé et le domaine
+   * `connect.facebook.net` n'est jamais contacté.
+   *
+   * Figé au build (voir Dockerfile) : le changer demande de reconstruire
+   * l'image.
+   */
+  NEXT_PUBLIC_META_PIXEL_ID: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z
+      .string()
+      .regex(/^\d{15,16}$/, "Identifiant de pixel Meta attendu, 15 ou 16 chiffres")
+      .optional(),
+  ),
   NEXT_PUBLIC_API_URL: z.preprocess(
     (value) => (value === "" ? undefined : value),
     z.string().url().optional(),
@@ -95,6 +118,7 @@ const parsedPublicEnv = publicEnvSchema.safeParse({
   NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID,
   NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   NEXT_PUBLIC_CLARITY_PROJECT_ID: process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID,
+  NEXT_PUBLIC_META_PIXEL_ID: process.env.NEXT_PUBLIC_META_PIXEL_ID,
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   NEXT_PUBLIC_WHATSAPP_NUMBER: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER,
 });

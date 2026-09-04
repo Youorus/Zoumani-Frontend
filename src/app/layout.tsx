@@ -8,10 +8,12 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { siteConfig, siteUrl, isIndexable } from "@/lib/seo/site";
 import { buildGraph, organizationSchema, websiteSchema } from "@/lib/seo/structured-data";
 
+import { AnalyticsRuntime } from "@/components/analytics/analytics-runtime";
 import { ConsentBanner } from "@/components/analytics/consent-banner";
 import { MicrosoftClarity } from "@/components/analytics/clarity";
 import { ConsentDefaults, GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { GoogleTagManager } from "@/components/analytics/google-tag-manager";
+import { MetaPixel } from "@/components/analytics/meta-pixel";
 import { AppProviders } from "./providers";
 
 /**
@@ -172,9 +174,15 @@ export default function RootLayout({ children }: PropsWithChildren) {
         <ConsentDefaults />
         <GoogleTagManager />
         <GoogleAnalytics />
+        {/* Avant les pages : son effet retient la campagne d'arrivée
+            aussitôt, et les effets d'un frère précédent sont vidés avant
+            ceux qui suivent. C'est ce qui garantit que `landing_viewed`
+            trouve l'attribution déjà en place. */}
+        <AnalyticsRuntime />
         <AppProviders>{children}</AppProviders>
         <ConsentBanner />
         <MicrosoftClarity />
+        <MetaPixel />
         <JsonLd schema={buildGraph(organizationSchema, websiteSchema)} />
       </body>
     </html>
