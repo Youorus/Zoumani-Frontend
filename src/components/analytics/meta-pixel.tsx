@@ -76,6 +76,23 @@ export function MetaPixel() {
       const script = document.createElement("script");
       script.id = "meta-pixel";
       script.async = true;
+      // ═══ `autoConfig: false`, avant `init` ═══
+      //
+      // Sans cette ligne, le pixel se met à observer la page de
+      // lui-même : mesuré en production le 4 septembre 2026, il envoyait
+      // quatre `SubscribedButtonClick` par parcours, chacun portant le
+      // texte du bouton, la structure du formulaire — identifiants, noms
+      // de champs, types, textes indicatifs — et le titre de la page.
+      //
+      // Aucune valeur saisie n'y figurait, vérifié : ni le prénom, ni
+      // l'adresse électronique. Ce n'est donc pas une fuite. Mais c'est
+      // une collecte qu'on n'a pas demandée, qui décrit le formulaire à
+      // un tiers, et qui double ce que `cta_clicked` et
+      // `funnel_step_viewed` disent déjà — mieux, et sans quitter GA4.
+      //
+      // On ne mesure que ce qui sert à décider. Le reste est de la
+      // surveillance sans usage, y compris quand c'est la régie qui la
+      // fait toute seule.
       script.innerHTML = `!function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -84,6 +101,7 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window,document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
+fbq('set','autoConfig',false,'${id}');
 fbq('init','${id}');`;
       document.head.appendChild(script);
 

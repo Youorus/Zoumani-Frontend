@@ -82,11 +82,9 @@ const TRACEURS = [
  * défaut qui n'est pas toujours celle qui s'applique. Une durée annoncée
  * qu'on n'a pas vérifiée est une affirmation de plus à défendre.
  *
- * **Exception, et elle est dite comme telle :** `_fbp` n'a pas pu être
- * relevé — le pixel n'avait pas encore d'identifiant réel au moment de
- * la rédaction, et Meta ne pose pas le cookie pour un identifiant
- * inconnu. La valeur donnée est celle que Meta documente, et le texte le
- * dit. À vérifier une fois le vrai pixel posé.
+ * `_fbp` a d'abord été annoncé sur la seule foi de la documentation de
+ * Meta, faute de pixel réel à observer. Il a été relevé depuis, sur la
+ * production, et vaut bien 90 jours.
  */
 const OUTILS = [
   {
@@ -109,8 +107,7 @@ const OUTILS = [
     editeur: "Meta Platforms Ireland Limited",
     finalite: "publicité",
     role: "Rattache une pré-inscription à l’annonce qui l’a amenée, pour savoir laquelle sert à quelque chose. Nous ne lui transmettons ni votre nom, ni votre adresse électronique, ni votre téléphone.",
-    cookies:
-      "_fbp — déposé sur zoumani.fr. Meta annonce une durée de 90 jours ; nous ne l\u2019avons pas encore relevée nous-mêmes.",
+    cookies: "_fbp — déposé sur zoumani.fr, 90 jours.",
   },
 ];
 
