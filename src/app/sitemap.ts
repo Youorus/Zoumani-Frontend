@@ -50,7 +50,8 @@ const MODIFIE_LE: Readonly<Record<string, string>> = {
   "/envoyer-un-colis": "2026-08-29",
   "/proposer-un-voyage": "2026-08-29",
   "/cgu": "2026-08-30",
-  "/confidentialite": "2026-08-30",
+  "/confidentialite": "2026-09-16",
+  "/suppression-compte": "2026-09-16",
   "/cookies": "2026-08-30",
   "/mentions-legales": "2026-08-30",
 };
@@ -62,6 +63,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...ENTRY_PAGES.map((page) => `/${page.slug}`),
     "/cgu",
     "/confidentialite",
+    "/suppression-compte",
     "/cookies",
     "/mentions-legales",
   ];

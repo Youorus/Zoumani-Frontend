@@ -76,6 +76,7 @@ const SECTIONS = [
     titre: "Vos droits",
     corps: [
       "Accès, rectification, effacement, opposition, portabilité, retrait du consentement. Écrivez-nous : nous répondons sous un mois, et l’effacement est immédiat.",
+      "**Si vous avez un compte dans l’application**, vous pouvez le supprimer vous-même, avec les données qui y sont rattachées, depuis votre profil dans l’application ou depuis la page [Supprimer mon compte](/suppression-compte) — sans installer l’application. Cette page détaille ce qui est effacé, ce qui est conservé et pourquoi, et les délais.",
       "Vous pouvez aussi saisir la CNIL si notre réponse ne vous satisfait pas.",
     ],
   },
@@ -99,18 +100,23 @@ export default function ConfidentialitePage() {
               <p
                 key={paragraphe.slice(0, 40)}
                 className={styles.paragraph}
-                // Le gras est écrit en Markdown dans le contenu ci-dessus ;
-                // il n'y en a pas d'autre balise, et le texte vient d'une
-                // constante du code — jamais d'une saisie.
+                // Le gras et les liens internes sont écrits en Markdown dans
+                // le contenu ci-dessus ; il n'y a pas d'autre balise, et le
+                // texte vient d'une constante du code — jamais d'une saisie.
                 dangerouslySetInnerHTML={{
-                  __html: paragraphe.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>"),
+                  __html: paragraphe
+                    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+                    .replace(
+                      /\[(.+?)\]\((\/[a-z-]+)\)/g,
+                      `<a class="${styles.link}" href="$2">$1</a>`,
+                    ),
                 }}
               />
             ))}
           </section>
         ))}
 
-        <p className={styles.updated}>Dernière mise à jour : 4 septembre 2026.</p>
+        <p className={styles.updated}>Dernière mise à jour : 16 septembre 2026.</p>
       </main>
       <SiteFooter />
     </>

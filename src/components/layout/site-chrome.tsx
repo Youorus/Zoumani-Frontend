@@ -41,6 +41,7 @@ const CONTRACTUEL = [
   { href: "/confidentialite", label: "Confidentialité" },
   { href: "/cookies", label: "Cookies" },
   { href: "/mentions-legales", label: "Mentions légales" },
+  { href: "/suppression-compte", label: "Supprimer mon compte" },
 ] as const;
 
 export function SiteHeader() {

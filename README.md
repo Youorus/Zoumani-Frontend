@@ -1,7 +1,9 @@
 # Zoumani — Vitrine
 
-Le site public. Aucun secret, et **un seul** appel réseau — celui qui
-enregistre les préinscriptions.
+Le site public. Aucun secret, et **deux** appels réseau : celui qui
+enregistre les préinscriptions, et celui de la page `/suppression-compte`
+— exigée par Google Play — qui prouve l'adresse par code puis efface le
+compte.
 
 Les directives de développement sont dans [`AGENTS.md`](AGENTS.md).
 

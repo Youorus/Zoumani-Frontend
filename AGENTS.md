@@ -100,14 +100,16 @@ fait foi, et il est **recopié de l'application mobile**
 d'abord, puis ici. Seule `opengraph-image.tsx` échappe à la règle : elle
 est produite hors du navigateur, où aucune variable CSS n'est résolue.
 
-## 5. Le réseau : une exception, et une seule
+## 5. Le réseau : deux exceptions, et pas une de plus
 
 Ce site a longtemps n'appelé personne, et le `README.md` en faisait une
 qualité — l'API tombe, la vitrine reste debout.
 
-La préinscription ramène **un** appel, et il reste seul. La vitrine est
-statique et muette ; si l'API tombe, la page s'affiche entière et seul le
-formulaire échoue, en le disant.
+La préinscription ramène **un** appel. La page `/suppression-compte`,
+exigée par Google Play, en ramène un second — la preuve de l'adresse par
+code, puis la confirmation. La vitrine reste statique et muette ; si
+l'API tombe, chaque page s'affiche entière et seul son formulaire
+échoue, en le disant.
 
 `NEXT_PUBLIC_API_URL` est facultative et validée. Absente, le tunnel
 **refuse d'envoyer** plutôt que de faire croire à un enregistrement : une
