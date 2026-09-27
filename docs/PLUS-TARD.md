@@ -201,6 +201,28 @@ précis où l'on veut lancer.
 `true`, ne garder que les marques concernées, et réécrire le titre pour
 qu'il dise ce qui est.
 
+Depuis le 27 septembre 2026, l'ancre `#partenaires` est tenue par
+`NetworkSection`, qui ne nomme que ce qui fonctionne : les entreprises de
+fret vérifiées et le dépôt en point relais Mondial Relay — **par son nom,
+sans logo** : un logo se lit comme un partenariat, et il n'y en a pas
+avec Mondial Relay, dont on utilise le réseau à travers Sendcloud.
+Réactiver les logos impose donc de choisir une autre ancre, ou de les
+fondre dans cette section.
+
+### L'assurance est annoncée au futur, sans assureur nommé
+
+La carte « Assurance » de `NetworkSection` et la réponse de la FAQ disent
+« pas encore ». La FAQ affirmait jusque-là qu'une protection « peut être
+ajoutée à l'envoi, auprès d'assureurs partenaires » — faux tant que
+l'assurance est éteinte côté serveur (`INSURANCE__ENABLED=false`, voir
+`zoumani_api/docs/PLUS-TARD.md`).
+
+**Ce que ça coûte :** un argument de réassurance en moins, pour un
+expéditeur qui hésite sur un colis de valeur.
+**Déclencheur :** un contrat signé avec un assureur **et** l'assurance
+activée en production. Passer `soon` à `false`, écrire la carte au
+présent, et réécrire la réponse de la FAQ avec les garanties réelles.
+
 ### Les pages d'entrée ne mesurent toujours pas les clics
 
 `/envoyer-un-colis` et `/proposer-un-voyage` retiennent désormais

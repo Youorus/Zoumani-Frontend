@@ -9,6 +9,7 @@ import { HeroHeader } from "./hero-header";
 import { homeContent } from "./home-content";
 import type { HomeLanguage } from "./home-content";
 import { HowItWorks } from "./how-it-works/how-it-works";
+import { NetworkSection } from "./network/network-section";
 import { TrustedPartners } from "./trusted-partners";
 
 /**
@@ -16,10 +17,11 @@ import { TrustedPartners } from "./trusted-partners";
  *
  * ═══ Quatre sections, et rien d'autre ═══
  *
- * Le slogan et les magasins ; à qui l'on fait confiance ; comment ça
- * marche ; les questions que l'on se pose. Puis le pied de page. Chaque
+ * Le slogan et les magasins ; comment ça marche ; avec qui le colis
+ * avance ; les questions que l'on se pose. Puis le pied de page. Chaque
  * section répond à une question qu'un visiteur se pose vraiment, dans
- * l'ordre où elle lui vient.
+ * l'ordre où elle lui vient — et « avec qui » ne se pose qu'une fois
+ * qu'on a compris le principe.
  *
  * ═══ Ce qui a disparu ═══
  *
@@ -59,6 +61,11 @@ import { TrustedPartners } from "./trusted-partners";
  * où un partenariat est signé, la section revient en repassant cette
  * valeur à `true` et en corrigeant le titre pour ne nommer que les
  * partenaires réels. Supprimer le travail obligerait à le refaire.
+ *
+ * ⚠️ Elle porte l'ancre `#partenaires`, aujourd'hui tenue par
+ * `NetworkSection`. La réactiver demande d'en choisir une autre, ou de
+ * la fondre dans le réseau : deux sections au même `id` casseraient le
+ * menu.
  */
 const AFFICHER_PARTENAIRES = false;
 
@@ -108,6 +115,7 @@ export function HeroSection() {
       <Hero copy={copy.hero} />
       {AFFICHER_PARTENAIRES && <TrustedPartners copy={copy.partners} />}
       <HowItWorks copy={copy.howItWorks} />
+      <NetworkSection copy={copy.network} />
       <FaqSection copy={copy.faq} whatsapp={copy.whatsapp} />
       <HomeFooter
         copy={copy.footer}

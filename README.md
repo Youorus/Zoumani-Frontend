@@ -15,7 +15,7 @@ et qui en garde l'historique.
 
 ## Ce qu'il contient
 
-- `/` — promesse, fonctionnement, confiance, partenaires, FAQ.
+- `/` — promesse, fonctionnement, réseau (fret, relais, assurance à venir), FAQ.
 - `/preinscription` — le tunnel : qui attend le service, et sur quel
   trajet.
 - `/envoyer-un-colis` et `/proposer-un-voyage` — deux pages d'entrée.

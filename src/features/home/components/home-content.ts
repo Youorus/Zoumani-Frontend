@@ -81,6 +81,31 @@ export interface HomeContent {
     disclaimer: string;
   };
 
+  /**
+   * Avec qui le colis avance : les entreprises de fret, le réseau de
+   * relais, et l'assurance qui viendra.
+   *
+   * Distinct de `partners`, qui montre des logos de partenariats non
+   * conclus et reste masqué. Ici, on ne nomme que ce qui fonctionne — et
+   * ce qui ne fonctionne pas encore porte `soon`, pour être écrit au
+   * futur et marqué comme tel.
+   */
+  network: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    /** L'étiquette posée sur une carte `soon`. */
+    soonLabel: string;
+    cards: ReadonlyArray<{
+      id: "fret" | "relais" | "assurance";
+      tag: string;
+      title: string;
+      detail: string;
+      soon: boolean;
+    }>;
+    trademark: string;
+  };
+
   howItWorks: {
     eyebrow: string;
     title: string;
@@ -125,7 +150,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
   fr: {
     navigation: [
       { href: "#fonctionnement", label: "Comment ça marche" },
-      { href: "#partenaires", label: "Partenaires" },
+      { href: "#partenaires", label: "Réseau" },
       { href: "#faq", label: "FAQ" },
       { href: "/preinscription", label: "Pré-inscription" },
     ],
@@ -171,6 +196,42 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       listLabel: "Écosystème de transport et d’assurance",
       disclaimer:
         "Partenariats, garanties, plafonds et exclusions présentés à titre exploratoire, sous réserve d’accord et des conditions du contrat sélectionné.",
+    },
+
+    network: {
+      eyebrow: "Le réseau Zoumani",
+      title: "Des voyageurs, des entreprises, et des relais près de chez vous.",
+      description:
+        "Votre colis ne dépend pas d’une seule personne. Voici avec qui il avance, et ce qui arrive bientôt.",
+      soonLabel: "Bientôt",
+      cards: [
+        {
+          id: "fret",
+          tag: "Entreprises de fret",
+          title: "Des compagnies de fret, vérifiées",
+          detail:
+            "Aux côtés des voyageurs, des entreprises de transport de fret publient leurs vols. Chacune passe une vérification complète : l’identité de son représentant, puis un extrait d’immatriculation de moins de trois mois. Leur offre porte la mention « entreprise vérifiée ».",
+          soon: false,
+        },
+        {
+          id: "relais",
+          tag: "Mondial Relay",
+          title: "Un point relais plutôt qu’un long trajet",
+          detail:
+            "Le voyageur habite loin de chez vous ? Vous déposez votre colis dans un point relais Mondial Relay proche de chez vous, avec l’étiquette créée dans l’application. Le prix de cet acheminement s’affiche avant le paiement.",
+          soon: false,
+        },
+        {
+          id: "assurance",
+          tag: "Assurance",
+          title: "Une assurance pour votre colis",
+          detail:
+            "Nous préparons une protection contre la perte, le vol et les dommages, à ajouter au moment de réserver. Elle sera proposée dès qu’un accord avec un assureur sera signé — pas avant.",
+          soon: true,
+        },
+      ],
+      trademark:
+        "Mondial Relay est une marque de son propriétaire. Zoumani utilise son réseau de points relais pour acheminer les colis jusqu’au voyageur.",
     },
 
     howItWorks: {
@@ -275,7 +336,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         {
           question: "Mon colis est-il assuré ?",
           answer:
-            "Une protection contre la perte, le vol et les dommages peut être ajoutée à l’envoi, auprès d’assureurs partenaires. Les garanties, les plafonds et les exclusions dépendent de l’option retenue et du contrat de l’assureur.",
+            "Pas encore. Une protection contre la perte, le vol et les dommages est en préparation : elle sera proposée au moment de réserver dès qu’un accord avec un assureur sera signé. En attendant, le voyageur n’est payé qu’une fois le colis remis au destinataire.",
         },
         {
           question: "L’application est-elle disponible sur iPhone et Android ?",
@@ -294,7 +355,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Zoumani",
           links: [
             { label: "Comment ça marche", href: "#fonctionnement" },
-            { label: "Partenaires", href: "#partenaires" },
+            { label: "Notre réseau", href: "#partenaires" },
             { label: "Se pré-inscrire", href: "/preinscription" },
           ],
         },
@@ -341,7 +402,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
   en: {
     navigation: [
       { href: "#fonctionnement", label: "How it works" },
-      { href: "#partenaires", label: "Partners" },
+      { href: "#partenaires", label: "Network" },
       { href: "#faq", label: "FAQ" },
       { href: "/preinscription", label: "Pre-register" },
     ],
@@ -382,6 +443,42 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       listLabel: "Shipping and insurance ecosystem",
       disclaimer:
         "Partnerships, cover, limits and exclusions shown for illustration, subject to agreement and to the terms of the selected policy.",
+    },
+
+    network: {
+      eyebrow: "The Zoumani network",
+      title: "Travellers, companies, and pickup points near you.",
+      description:
+        "Your parcel does not depend on a single person. Here is who moves it, and what is coming soon.",
+      soonLabel: "Soon",
+      cards: [
+        {
+          id: "fret",
+          tag: "Freight companies",
+          title: "Verified freight carriers",
+          detail:
+            "Alongside travellers, freight transport companies publish their flights. Each one goes through a full check: the identity of its representative, then a company registration extract less than three months old. Their offer carries a “verified company” label.",
+          soon: false,
+        },
+        {
+          id: "relais",
+          tag: "Mondial Relay",
+          title: "A pickup point instead of a long trip",
+          detail:
+            "The traveller lives far from you? Drop your parcel at a Mondial Relay pickup point near you, with the label created in the app. The price of that leg is shown before you pay.",
+          soon: false,
+        },
+        {
+          id: "assurance",
+          tag: "Insurance",
+          title: "Insurance for your parcel",
+          detail:
+            "We are preparing cover against loss, theft and damage, to add when you book. It will be offered as soon as an agreement with an insurer is signed — not before.",
+          soon: true,
+        },
+      ],
+      trademark:
+        "Mondial Relay is a trademark of its owner. Zoumani uses its pickup point network to carry parcels to the traveller.",
     },
 
     howItWorks: {
@@ -486,7 +583,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         {
           question: "Is my parcel insured?",
           answer:
-            "Cover against loss, theft and damage can be added to a shipment through partner insurers. The guarantees, limits and exclusions depend on the option chosen and on the insurer’s policy.",
+            "Not yet. Cover against loss, theft and damage is being prepared: it will be offered when you book as soon as an agreement with an insurer is signed. Until then, the traveller is only paid once the parcel has been handed over.",
         },
         {
           question: "Is the app available on iPhone and Android?",
@@ -505,7 +602,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Zoumani",
           links: [
             { label: "How it works", href: "#fonctionnement" },
-            { label: "Partners", href: "#partenaires" },
+            { label: "Our network", href: "#partenaires" },
             { label: "Pre-register", href: "/preinscription" },
           ],
         },
