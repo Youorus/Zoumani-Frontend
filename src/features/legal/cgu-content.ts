@@ -23,8 +23,8 @@
  * engagent la plateforme et doivent l'être.
  */
 
-export const CGU_VERSION = "2026-08-v2";
-export const CGU_UPDATED = "30 août 2026";
+export const CGU_VERSION = "2026-09-v3";
+export const CGU_UPDATED = "27 septembre 2026";
 
 export const CGU_MARKDOWN = `## 1. Objet
 
@@ -41,6 +41,20 @@ Elle n'a à aucun moment la garde matérielle des biens acheminés.
 Personne n'« est » voyageur ou expéditeur. Ces mots désignent une
 **position dans une transaction**, jamais une qualité de la personne :
 un même compte est le voyageur d'un trajet et l'expéditeur d'un envoi.
+
+### 1.2 Les entreprises de fret
+
+Une entreprise de fret aérien peut proposer sur Zoumani l'espace
+disponible sur ses vols. Elle utilise **le même type de compte** qu'un
+particulier, ouvert par une personne physique qui la représente. Être une
+entreprise n'est pas une qualité déclarée : c'est un fait **vérifié** par
+Zoumani, dans les conditions de la §2.3.
+
+Une entreprise vérifiée est signalée comme telle aux autres utilisateurs,
+par son nom commercial et un badge distinct. Ce qui la dispense de
+certaines vérifications (§3.1), de la limite de trajets (§3.2) et du
+plafond de poids (§3.3) est dit dans chaque article concerné. Elle reste,
+pour tout le reste, soumise aux présentes conditions.
 
 ---
 
@@ -76,6 +90,18 @@ par Apple ou Google atteste un identifiant, jamais une identité.
 L'adresse déclarée lors de la vérification détermine la position
 géographique du compte, qui conditionne le mode de remise (§5.2).
 
+Une entreprise de fret déclare, **en plus** de l'identité de la personne
+qui la représente — pièce d'identité et photo comprises —, sa raison
+sociale, son nom commercial, son pays et son numéro d'immatriculation,
+l'adresse de son siège et, le cas échéant, son numéro de TVA. Elle
+fournit un extrait d'immatriculation — extrait Kbis, extrait RCCM ou
+équivalent — **daté de moins de trois mois**. Le dossier est examiné par
+Zoumani comme celui d'un particulier ; l'entreprise n'est reconnue comme
+telle qu'après validation.
+
+Le nom commercial est affiché aux autres utilisateurs tel qu'il a été
+déclaré et validé, en entier. Il est limité à quarante caractères.
+
 ### 2.4 Suppression
 
 Le compte se supprime à tout moment depuis les réglages. La suppression
@@ -102,11 +128,20 @@ automatique exploitable, une vérification humaine intervient sur pièces
 
 Un trajet non vérifié ne peut recevoir aucun colis.
 
+Le trajet d'une **entreprise de fret vérifiée** est vérifié par le statut
+de son déclarant : le vol est déclaré et confronté au programme des vols
+comme tout autre, mais aucun billet ni carte d'embarquement n'est demandé,
+et aucune vérification humaine n'intervient. L'engagement souscrit à la
+transmission (§8) reste exigé.
+
 ### 3.2 Limite
 
 Un voyageur ne peut avoir plus de **dix trajets en cours** simultanément.
 Cette limite est un garde-fou contre les publications de masse ; elle
 n'est pas négociable au cas par cas.
+
+Elle ne s'applique pas à une entreprise de fret vérifiée : ses vols sont
+son activité, et c'est sa vérification qui tient lieu de garde-fou.
 
 ### 3.3 Offre de transport
 
@@ -115,6 +150,10 @@ Le voyageur publie l'espace qu'il propose, en kilogrammes, et fixe
 Zoumani n'impose ni prix, ni catégorie obligatoire.
 
 Il indique également s'il accepte la **remise en main propre** (§5.2).
+
+L'espace proposé par un voyageur est limité à **64 kg** par trajet, ce
+qui correspond à deux bagages en soute. Une entreprise de fret vérifiée
+propose l'espace de sa soute, sans cette limite.
 
 ### 3.4 Annulation
 
@@ -288,6 +327,11 @@ Les coordonnées bancaires sont **chiffrées** au repos et ne sont jamais
 affichées en clair, ni dans l'application, ni dans les journaux, ni dans
 les messages d'erreur.
 
+Une entreprise de fret est rémunérée dans les mêmes conditions, sur un
+compte bancaire dont elle est titulaire. Elle est seule responsable de ses
+obligations comptables, fiscales et déclaratives au titre des sommes
+perçues.
+
 ---
 
 ## 8. Obligations du voyageur
@@ -303,6 +347,13 @@ Le voyageur s'engage à :
 Il demeure **personnellement responsable**, au regard des autorités, du
 contenu de ses bagages. L'attestation de conformité (§5.5) est le moment
 prévu pour refuser ce qui ne lui convient pas.
+
+Une entreprise de fret prend les mêmes engagements pour chaque vol qu'elle
+déclare. Elle demeure responsable du respect de la réglementation
+applicable à son activité de transport, y compris les règles de sûreté du
+fret aérien. La vérification par Zoumani atteste de son immatriculation
+et de l'identité de son représentant ; elle ne se substitue à aucun
+agrément ni autorisation dont l'entreprise aurait besoin par ailleurs.
 
 ---
 
@@ -348,6 +399,10 @@ l'attestation du voyageur (§5.5).
 À l'issue d'un acheminement, chaque partie peut évaluer l'autre. Les
 avis sont rattachés à une transaction réelle : il n'est pas possible
 d'évaluer une personne avec qui l'on n'a rien échangé.
+
+Le programme de points de fidélité s'adresse aux particuliers. Une
+entreprise de fret vérifiée n'y participe pas : ses vols ne lui rapportent
+aucun point, et n'en retirent aucun.
 
 ---
 
