@@ -25,11 +25,14 @@ import { AppStoreBadge } from "./store-badges";
  * Les étiquettes posées dessus sont des faits du produit, pas des
  * slogans.
  *
- * ═══ La bande des trajets ═══
+ * ═══ La bande des corridors ═══
  *
- * Ce sont les trajets réellement demandés — préinscriptions, voyages
- * publiés, agences démarchées — pas une liste de pays inventée. Le
- * libellé le dit : « qu'on nous demande le plus », pas « desservis ».
+ * Les grandes liaisons de la diaspora, des capitales et métropoles
+ * d'Europe vers celles d'Afrique. Le libellé dit « corridors », pas
+ * « desservis » : Zoumani fonctionne partout où quelqu'un publie un
+ * trajet, et cette bande dit où l'on va, pas ce qui est garanti. La
+ * durée du défilement suit la longueur de la liste, pour garder une
+ * vitesse de lecture constante.
  */
 export function Hero({
   copy,
@@ -108,7 +111,10 @@ export function Hero({
       <div className={styles.ticker}>
         <p className={styles.tickerLabel}>{copy.tickerLabel}</p>
         <div className={styles.tickerViewport}>
-          <ul className={`marquee ${styles.tickerTrack}`}>
+          <ul
+            className={`marquee ${styles.tickerTrack}`}
+            style={{ "--marquee-duration": `${copy.ticker.length * 4}s` } as React.CSSProperties}
+          >
             {[...copy.ticker, ...copy.ticker].map((trajet, index) => (
               <li
                 key={`${trajet}-${index}`}
