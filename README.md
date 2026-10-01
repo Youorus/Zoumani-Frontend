@@ -16,8 +16,6 @@ et qui en garde l'historique.
 ## Ce qu'il contient
 
 - `/` — le slogan et l'application (App Store), quatre indicateurs datés, les réseaux de transport, trois chapitres (expéditeur, voyageur, entreprise de fret), fonctionnement, réseau (fret, vols confirmés, relais, assurance à venir), FAQ, téléchargement.
-- `/preinscription` — le tunnel : qui attend un départ sur quel trajet, et
-  qui veut être prévenu de la sortie Android.
 - `/envoyer-un-colis` et `/proposer-un-voyage` — deux pages d'entrée.
   « Envoyer un colis » et « rentabiliser ses kilos » ne sont pas la même
   recherche, ne se formulent pas dans les mêmes mots, et ne s'achètent

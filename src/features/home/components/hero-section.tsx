@@ -83,7 +83,7 @@ export function HeroSection() {
       <HowItWorks copy={copy.howItWorks} />
       <NetworkSection copy={copy.network} />
       <FaqSection copy={copy.faq} whatsapp={copy.whatsapp} />
-      <DownloadBand copy={copy.download} stores={copy.stores} />
+      <DownloadBand copy={copy.download} stores={copy.stores} whatsapp={copy.whatsapp} />
       <HomeFooter copy={copy.footer} stores={copy.stores} whatsapp={copy.whatsapp} />
     </>
   );

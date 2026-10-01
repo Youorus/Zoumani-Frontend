@@ -25,6 +25,13 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        // La pré-inscription est retirée pour l'instant : l'adresse a été
+        // indexée et partagée, elle mène à l'accueil plutôt qu'à une 404.
+        source: "/preinscription",
+        destination: "/",
+        permanent: false,
+      },
+      {
         // Une seule adresse canonique : www redirige en 301 vers le domaine nu.
         // Evite que le meme contenu soit servi sous deux hotes differents.
         source: "/:path*",

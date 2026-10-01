@@ -17,7 +17,6 @@ export type HomeSectionHref =
   | "#fonctionnement"
   | "#partenaires"
   | "#faq"
-  | "/preinscription"
   | "/envoyer-un-colis"
   | "/proposer-un-voyage"
   | "/confidentialite"
@@ -215,6 +214,8 @@ export interface HomeContent {
     message: string;
     /** Le message préécrit d'une entreprise de fret. */
     businessMessage: string;
+    /** Le message préécrit de qui veut être prévenu de la sortie Android. */
+    androidMessage: string;
   };
 }
 
@@ -560,7 +561,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         {
           question: "L’application est-elle disponible sur iPhone et Android ?",
           answer:
-            "Zoumani est disponible dès maintenant sur l’App Store, pour iPhone. La version Android est en préparation : laissez votre trajet sur la page de pré-inscription et vous serez prévenu le jour de sa sortie sur Google Play.",
+            "Zoumani est disponible dès maintenant sur l’App Store, pour iPhone. La version Android est en préparation : écrivez-nous sur WhatsApp et vous serez prévenu le jour de sa sortie sur Google Play.",
         },
         {
           question: "Comment envoyer un colis avec un voyageur ?",
@@ -635,7 +636,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
             { label: "Comment ça marche", href: "#fonctionnement" },
             { label: "Le réseau", href: "#partenaires" },
             { label: "Questions fréquentes", href: "#faq" },
-            { label: "Être prévenu sur Android", href: "/preinscription" },
+            { label: "Être prévenu sur Android", whatsapp: true },
           ],
         },
         {
@@ -674,6 +675,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       message: "Bonjour Zoumani, j’ai une question sur le service.",
       businessMessage:
         "Bonjour Zoumani, je représente une entreprise de fret et je souhaite publier mes vols sur la plateforme.",
+      androidMessage:
+        "Bonjour Zoumani, je suis sur Android : prévenez-moi le jour de la sortie de l’application.",
     },
   },
 
@@ -1015,7 +1018,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         {
           question: "Is the app available on iPhone and Android?",
           answer:
-            "Zoumani is available now on the App Store, for iPhone. The Android version is in preparation: leave your route on the pre-registration page and you will be told the day it reaches Google Play.",
+            "Zoumani is available now on the App Store, for iPhone. The Android version is in preparation: message us on WhatsApp and you will be told the day it reaches Google Play.",
         },
         {
           question: "How do I send a parcel with a traveller?",
@@ -1090,7 +1093,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
             { label: "How it works", href: "#fonctionnement" },
             { label: "The network", href: "#partenaires" },
             { label: "FAQ", href: "#faq" },
-            { label: "Get notified on Android", href: "/preinscription" },
+            { label: "Get notified on Android", whatsapp: true },
           ],
         },
         {
@@ -1129,6 +1132,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       message: "Hello Zoumani, I have a question about the service.",
       businessMessage:
         "Hello Zoumani, I represent a freight company and would like to publish my flights on the platform.",
+      androidMessage:
+        "Hello Zoumani, I’m on Android: let me know the day the app is released.",
     },
   },
 };

@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { buildWhatsAppUrl } from "@/lib/contact/build-whatsapp-url";
+
 import { SymboleZoumani } from "@/components/shared/symbole-zoumani";
 import { ZoumaniLogo } from "@/components/shared/zoumani-logo";
 
@@ -33,8 +35,13 @@ import styles from "./site-chrome.module.css";
 const PORTES = [
   { href: "/envoyer-un-colis", label: "Envoyer un colis" },
   { href: "/proposer-un-voyage", label: "Proposer un voyage" },
-  { href: "/preinscription", label: "Être prévenu sur Android" },
 ] as const;
+
+/** La pré-inscription est retirée : on écrit à l'équipe sur WhatsApp. */
+const WHATSAPP = {
+  label: "Nous écrire sur WhatsApp",
+  href: buildWhatsAppUrl("Bonjour Zoumani, j’ai une question sur le service."),
+};
 
 const CONTRACTUEL = [
   { href: "/cgu", label: "Conditions générales" },
@@ -58,6 +65,9 @@ export function SiteHeader() {
               {porte.label}
             </Link>
           ))}
+          <a href={WHATSAPP.href} target="_blank" rel="noreferrer" className={styles.headerLink}>
+            {WHATSAPP.label}
+          </a>
         </nav>
       </div>
     </header>
@@ -75,6 +85,9 @@ export function SiteFooter() {
               {porte.label}
             </Link>
           ))}
+          <a href={WHATSAPP.href} target="_blank" rel="noreferrer" className={styles.footerLink}>
+            {WHATSAPP.label}
+          </a>
         </nav>
 
         <nav className={styles.group} aria-label="Informations légales">

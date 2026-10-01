@@ -67,7 +67,7 @@ export default function NotFound() {
       <p className={styles.more}>
         Ou revenez à <Link href="/">l’accueil</Link>, lisez la{" "}
         <Link href="/cgu">notice du service</Link>, ou{" "}
-        <Link href="/preinscription">dites-nous votre trajet</Link>.
+        <a href="https://wa.me/33758426474">écrivez-nous sur WhatsApp</a>.
       </p>
     </main>
   );

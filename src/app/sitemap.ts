@@ -46,7 +46,6 @@ import { absoluteUrl } from "@/lib/seo/site";
  */
 const MODIFIE_LE: Readonly<Record<string, string>> = {
   "/": "2026-08-30",
-  "/preinscription": "2026-08-30",
   "/envoyer-un-colis": "2026-08-29",
   "/proposer-un-voyage": "2026-08-29",
   "/cgu": "2026-08-30",
@@ -59,7 +58,6 @@ const MODIFIE_LE: Readonly<Record<string, string>> = {
 export default function sitemap(): MetadataRoute.Sitemap {
   const chemins = [
     "/",
-    "/preinscription",
     ...ENTRY_PAGES.map((page) => `/${page.slug}`),
     "/cgu",
     "/confidentialite",

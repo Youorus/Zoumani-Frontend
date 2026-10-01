@@ -5,6 +5,7 @@ import { SiteFooter, SiteHeader } from "@/components/layout/site-chrome";
 import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/seo/json-ld";
+import { buildWhatsAppUrl } from "@/lib/contact/build-whatsapp-url";
 import { ENTRY_PAGES, entryPageBySlug } from "@/features/prelaunch/model/entry-pages";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { buildGraph, faqSchema, serviceSchema } from "@/lib/seo/structured-data";
@@ -26,6 +27,17 @@ import styles from "./page.module.css";
  */
 
 export const dynamicParams = false;
+
+/**
+ * Le message préécrit de l'appel principal, par intention.
+ *
+ * La pré-inscription est retirée pour l'instant : l'appel ouvre une
+ * conversation WhatsApp avec l'équipe, qui oriente vers l'application.
+ */
+const MESSAGES = {
+  sender: "Bonjour Zoumani, j’ai un colis à envoyer et je voudrais savoir comment faire.",
+  traveler: "Bonjour Zoumani, je pars bientôt en voyage et je voudrais rentabiliser mes kilos.",
+} as const;
 
 export function generateStaticParams() {
   return ENTRY_PAGES.map((page) => ({ intention: page.slug }));
@@ -67,9 +79,15 @@ export default async function EntryPage({
           <h1 className={styles.title}>{page.h1}</h1>
           <p className={styles.lede}>{page.lede}</p>
 
-          <Link href={`/preinscription?type=${page.intention}`} className={styles.cta}>
+          <a
+            href={buildWhatsAppUrl(MESSAGES[page.intention])}
+            target="_blank"
+            rel="noreferrer"
+            className={styles.cta}
+            data-cta={`entry-${page.intention}`}
+          >
             {page.cta}
-          </Link>
+          </a>
 
           <ul className={styles.benefits}>
             {page.benefits.map((benefit) => (

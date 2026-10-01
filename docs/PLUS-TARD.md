@@ -307,6 +307,23 @@ l'un sans l'autre.
 
 ## Contenu
 
+### La pré-inscription est retirée, pas supprimée
+
+Depuis le 1er octobre 2026, `/preinscription` redirige vers l'accueil
+(`next.config.ts`) et tous les appels qui y menaient — bandeau Android,
+pied de page, pages d'entrée, page introuvable — ouvrent une conversation
+WhatsApp avec l'équipe, à la demande de Marc. Le code du tunnel
+(`features/prelaunch`) reste en place, et l'API conserve sa route.
+
+**Ce que ça coûte :** la liste d'attente Android ne se remplit plus
+qu'à la main, dans WhatsApp ; aucune préinscription ne porte plus de
+corridor ni d'attribution de campagne. Le chiffre « +2 000 personnes
+veulent expédier » de l'accueil vient de Marc, pas de cette table.
+**Déclencheur :** le besoin de mesurer à nouveau une campagne par
+corridor. Remettre la page, c'est retirer la redirection et rebrancher
+quatre liens.
+
+
 ### Les badges de magasin ne mènent nulle part
 
 Ils portent la mention « Bientôt », ce qui est honnête, mais restent

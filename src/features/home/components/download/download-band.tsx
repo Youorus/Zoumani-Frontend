@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { Container } from "@/components/layout/container";
+import { buildWhatsAppUrl } from "@/lib/contact/build-whatsapp-url";
 
 import { Emphasis } from "../emphasis";
 import type { HomeContent } from "../home-content";
@@ -16,14 +15,16 @@ import styles from "./download-band.module.css";
  * convaincu ou non ; dans les deux cas, il sait quoi faire.
  *
  * Android n'a pas encore sa fiche : on le dit, et on propose d'être
- * prévenu — le tunnel de préinscription sert à cela désormais.
+ * prévenu par WhatsApp — la pré-inscription est retirée pour l'instant.
  */
 export function DownloadBand({
   copy,
   stores,
+  whatsapp,
 }: {
   copy: HomeContent["download"];
   stores: HomeContent["stores"];
+  whatsapp: HomeContent["whatsapp"];
 }) {
   return (
     <section className={styles.section} data-story-section aria-labelledby="download-title">
@@ -39,10 +40,16 @@ export function DownloadBand({
           <AppStoreBadge copy={stores} cta="band-store" className={styles.badge} />
           <p className={styles.android}>
             {copy.android}{" "}
-            <Link href="/preinscription" className={`focus-ring ${styles.androidLink}`} data-cta="band-android">
+            <a
+              href={buildWhatsAppUrl(whatsapp.androidMessage)}
+              target="_blank"
+              rel="noreferrer"
+              className={`focus-ring ${styles.androidLink}`}
+              data-cta="band-android"
+            >
               {copy.androidCta}
               <span aria-hidden="true">→</span>
-            </Link>
+            </a>
           </p>
         </div>
       </Container>
