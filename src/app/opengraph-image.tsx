@@ -183,12 +183,12 @@ export default async function OpengraphImage() {
               color: CREME_ATTENUE,
             }}
           >
-            Expéditeurs, voyageurs et compagnies de fret entre l’Europe et l’Afrique.
-            Identités vérifiées, vol confirmé, argent retenu jusqu’à la remise.
+            La place de marché qui relie expéditeurs, voyageurs et compagnies de fret
+            entre l’Europe et l’Afrique. Identités vérifiées, vols confirmés.
           </div>
         </div>
 
-        {/* Le pied : le domaine, et les trajets qu'on nous demande. */}
+        {/* Le pied : le domaine, et où trouver l'application. */}
         <div
           style={{
             display: "flex",
@@ -201,16 +201,7 @@ export default async function OpengraphImage() {
           }}
         >
           <div style={{ display: "flex", fontWeight: 600, color: CREME }}>zoumani.fr</div>
-          <div style={{ display: "flex", gap: 28 }}>
-            {["Paris → Douala", "Paris → Dakar", "Paris → Abidjan"].map((trajet) => (
-              <div key={trajet} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div
-                  style={{ display: "flex", width: 8, height: 8, borderRadius: 9999, background: ORANGE }}
-                />
-                {trajet}
-              </div>
-            ))}
-          </div>
+          <div style={{ display: "flex" }}>Sur iPhone aujourd’hui · Android bientôt</div>
         </div>
       </div>
     </div>,

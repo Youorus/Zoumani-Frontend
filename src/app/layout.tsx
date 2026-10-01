@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     alternateLocale: ["en_US"],
     images: [
       {
-        url: "/opengraph-image?v=2",
+        url: "/opengraph-image?v=3",
         width: 1200,
         height: 630,
         alt: `${siteConfig.name} — ${siteConfig.shortDescription}`,
@@ -98,7 +98,7 @@ export const metadata: Metadata = {
     ...(siteConfig.twitter
       ? { site: siteConfig.twitter, creator: siteConfig.twitter }
       : {}),
-    images: ["/opengraph-image?v=2"],
+    images: ["/opengraph-image?v=3"],
   },
 
   // Tant qu'aucun domaine public n'est configure, le site reste hors index.
