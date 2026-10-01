@@ -57,8 +57,6 @@ export interface HomeContent {
     descriptionAccent: string;
     secondaryCta: string;
     note: string;
-    /** Les étiquettes posées sur le téléphone : des faits, pas des slogans. */
-    chips: readonly string[];
     /** La bande qui défile sous le hero. */
     tickerLabel: string;
     ticker: readonly string[];
@@ -247,7 +245,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       descriptionAccent: "Identités vérifiées, vols confirmés, entreprises établies.",
       secondaryCta: "Je suis une entreprise de fret",
       note: "Gratuit pour les particuliers. Sans engagement.",
-      chips: ["Identité vérifiée", "Payé à la remise", "Suivi étape par étape"],
       tickerLabel: "Corridors Europe → Afrique",
       ticker: [
         "Paris → Dakar",
@@ -707,7 +704,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       descriptionAccent: "Verified identities, confirmed flights, established companies.",
       secondaryCta: "I’m a freight company",
       note: "Free for individuals. No commitment.",
-      chips: ["Verified identity", "Paid on handover", "Step-by-step tracking"],
       tickerLabel: "Europe → Africa corridors",
       ticker: [
         "Paris → Dakar",

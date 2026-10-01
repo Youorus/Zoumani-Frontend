@@ -155,43 +155,152 @@
 .stage {
   position: relative;
   display: grid;
-  min-height: 34rem;
+  min-height: 36rem;
   place-items: center;
+  perspective: 1800px;
   animation: reveal 900ms cubic-bezier(0.2, 0.8, 0.2, 1) 160ms both;
+}
+
+.orbits {
+  position: absolute;
+  width: min(44rem, 120%);
+  height: auto;
+  fill: none;
+  stroke: color-mix(in srgb, var(--inverse-foreground) 9%, transparent);
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.satellite,
+.satelliteSlow {
+  fill: var(--secondary);
+  stroke: none;
+  transform-box: view-box;
+  transform-origin: 300px 300px;
+  animation: orbit 26s linear infinite;
+}
+
+.satelliteSlow {
+  fill: var(--primary);
+  animation-duration: 44s;
+  animation-direction: reverse;
+}
+
+/* L'inclinaison au repos, plus celle du pointeur. */
+.tilt {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  position: relative;
+  transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: rotateY(calc(-14deg + var(--tilt-y))) rotateX(calc(5deg + var(--tilt-x)));
+  transform-style: preserve-3d;
 }
 
 .glow {
   position: absolute;
-  width: 26rem;
-  height: 26rem;
+  width: 30rem;
+  height: 30rem;
   border-radius: var(--shape-radius-full);
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--primary) 55%, transparent),
-    transparent 68%
+    color-mix(in srgb, var(--primary) 50%, transparent),
+    transparent 66%
   );
-  filter: blur(10px);
-  opacity: 0.6;
+  filter: blur(14px);
+  opacity: 0.55;
 }
 
+/*
+ * Le cadre, en trois couches.
+ *
+ * La tranche : un dégradé métallique sombre, avec un liseré clair sur
+ * l'arête éclairée (`::before`). La lunette : un anneau noir, en ombre
+ * interne. L'écran : la capture, aux coins calés sur ceux du cadre.
+ * L'inclinaison est en perspective — rotation sur Y et X — et non un
+ * simple pivot : c'est ce qui donne l'épaisseur.
+ */
 .device {
   position: relative;
-  width: clamp(15rem, 19vw, 19rem);
+  width: clamp(16rem, 20vw, 20.5rem);
   aspect-ratio: 1290 / 2796;
   margin: 0;
-  padding: 0.55rem;
-  border: 1px solid var(--hero-glass-border);
-  border-radius: 3.1rem;
+  padding: 0.7rem;
+  border-radius: 3.4rem;
   background: linear-gradient(
     160deg,
-    color-mix(in srgb, var(--noir-ebene) 70%, var(--inverse-foreground)),
-    var(--noir-ebene) 40%,
-    color-mix(in srgb, var(--noir-ebene) 80%, var(--hero-canvas))
+    color-mix(in srgb, var(--noir-ebene) 55%, var(--inverse-foreground)) 0%,
+    color-mix(in srgb, var(--noir-ebene) 88%, var(--inverse-foreground)) 18%,
+    var(--noir-ebene) 50%,
+    color-mix(in srgb, var(--noir-ebene) 86%, var(--inverse-foreground)) 100%
   );
   box-shadow:
-    0 50px 80px -30px color-mix(in srgb, var(--hero-canvas) 90%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--inverse-foreground) 8%, transparent) inset;
-  transform: rotate(-5deg) translateY(0.5rem);
+    inset 0 0 0 1px color-mix(in srgb, var(--inverse-foreground) 14%, transparent),
+    0 70px 120px -40px color-mix(in srgb, var(--hero-canvas) 95%, transparent),
+    0 40px 60px -30px color-mix(in srgb, var(--primary) 35%, transparent),
+    0 2px 0 0 color-mix(in srgb, var(--inverse-foreground) 10%, transparent);
+  transform: rotateZ(-3deg);
+  transform-style: preserve-3d;
+  animation: hover 7s ease-in-out infinite;
+}
+
+/* Le liseré de l'arête éclairée. */
+.device::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--inverse-foreground) 55%, transparent) 0%,
+    transparent 28%,
+    transparent 72%,
+    color-mix(in srgb, var(--inverse-foreground) 22%, transparent) 100%
+  );
+  content: "";
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Les boutons, en relief sur la tranche. */
+.buttonMute,
+.buttonVolumeUp,
+.buttonVolumeDown,
+.buttonPower {
+  position: absolute;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--noir-ebene) 70%, var(--inverse-foreground)),
+    var(--noir-ebene)
+  );
+}
+
+.buttonMute {
+  top: 17%;
+  left: -3px;
+  height: 4%;
+}
+
+.buttonVolumeUp {
+  top: 24%;
+  left: -3px;
+  height: 7%;
+}
+
+.buttonVolumeDown {
+  top: 32.5%;
+  left: -3px;
+  height: 7%;
+}
+
+.buttonPower {
+  top: 26%;
+  right: -3px;
+  height: 11%;
 }
 
 .screen {
@@ -199,8 +308,9 @@
   overflow: hidden;
   width: 100%;
   height: 100%;
-  border-radius: 2.6rem;
+  border-radius: 2.75rem;
   background: var(--background);
+  box-shadow: inset 0 0 0 0.3rem var(--noir-ebene);
 }
 
 .screenImage {
@@ -208,62 +318,17 @@
   object-position: top;
 }
 
-.chips {
+/* Le reflet de la vitre : une diagonale claire, très légère. */
+.glare {
   position: absolute;
   inset: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  background: linear-gradient(
+    115deg,
+    color-mix(in srgb, var(--inverse-foreground) 16%, transparent) 0%,
+    color-mix(in srgb, var(--inverse-foreground) 4%, transparent) 28%,
+    transparent 42%
+  );
   pointer-events: none;
-}
-
-.chip {
-  position: absolute;
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.6rem 0.9rem;
-  border: 1px solid var(--hero-glass-border);
-  border-radius: var(--shape-radius-full);
-  background: color-mix(in srgb, var(--inverse-surface) 72%, transparent);
-  box-shadow: var(--elevation-lifted);
-  color: var(--inverse-foreground);
-  font-size: 0.82rem;
-  font-weight: 600;
-  white-space: nowrap;
-  backdrop-filter: blur(12px);
-  animation: float 6s ease-in-out infinite;
-}
-
-.chip[data-index="0"] {
-  top: 14%;
-  left: 2%;
-}
-
-.chip[data-index="1"] {
-  top: 52%;
-  right: 0;
-  animation-delay: -2s;
-}
-
-.chip[data-index="2"] {
-  bottom: 10%;
-  left: 8%;
-  animation-delay: -4s;
-}
-
-.chipIcon {
-  width: 1.1rem;
-  height: 1.1rem;
-  fill: var(--primary);
-  stroke: var(--inverse-foreground);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.chipIcon circle {
-  stroke: none;
 }
 
 /* ═══ La bande des trajets ═══ */
@@ -334,14 +399,20 @@
   }
 }
 
-@keyframes float {
+@keyframes hover {
   0%,
   100% {
     translate: 0 0;
   }
 
   50% {
-    translate: 0 -0.5rem;
+    translate: 0 -0.7rem;
+  }
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -373,30 +444,23 @@
     padding-block: 2.5rem 1rem;
   }
 
-  .device {
-    width: 15.5rem;
-    transform: rotate(-4deg);
-  }
-
   .glow {
     width: 20rem;
     height: 20rem;
   }
 
-  .chip[data-index="0"] {
-    top: 8%;
-    left: 0;
+  .device {
+    width: 16rem;
   }
 
-  .chip[data-index="1"] {
-    top: 46%;
-    right: 0;
+  .tilt {
+    transform: rotateY(-8deg) rotateX(3deg);
   }
 
-  .chip[data-index="2"] {
-    bottom: 6%;
-    left: 4%;
+  .orbits {
+    width: 30rem;
   }
+
 
   .ticker {
     grid-template-columns: minmax(0, 1fr);
@@ -418,10 +482,6 @@
     align-items: flex-start;
   }
 
-  .chip {
-    font-size: 0.74rem;
-    padding: 0.5rem 0.75rem;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -430,8 +490,14 @@
     animation: none;
   }
 
-  .chip,
+  .device,
+  .satellite,
+  .satelliteSlow,
   .pulse::after {
     animation: none;
+  }
+
+  .tilt {
+    transition: none;
   }
 }

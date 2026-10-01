@@ -5,6 +5,7 @@ import { buildWhatsAppUrl } from "@/lib/contact/build-whatsapp-url";
 import { Emphasis } from "../emphasis";
 import type { HomeContent } from "../home-content";
 import styles from "./hero.module.css";
+import { DeviceTilt } from "./device-tilt";
 import { AppStoreBadge } from "./store-badges";
 
 /**
@@ -22,8 +23,14 @@ import { AppStoreBadge } from "./store-badges";
  * Il avait été retiré parce que l'application n'existait pas : montrer
  * une offre qu'on n'a pas est le plus court chemin vers la déception.
  * Elle existe maintenant, sur l'App Store, et l'écran montré est le sien.
- * Les étiquettes posées dessus sont des faits du produit, pas des
- * slogans.
+ *
+ * Le cadre est dessiné en CSS, en trois couches — tranche, lunette,
+ * écran — avec ses boutons, un reflet sur la vitre et une inclinaison en
+ * perspective : c'est ce qui le fait lire comme un objet et non comme
+ * une capture dans un rectangle arrondi. Il flotte lentement, suit le
+ * pointeur de quelques degrés, et trois orbites fines tournent derrière
+ * lui. Rien d'autre : les étiquettes qui le survolaient cachaient
+ * l'écran et disaient ce que le reste de la page dit mieux.
  *
  * ═══ La bande des corridors ═══
  *
@@ -80,31 +87,36 @@ export function Hero({
           <p className={styles.note}>{copy.note}</p>
         </div>
 
-        <div className={styles.stage} aria-hidden="false">
+        <div className={styles.stage}>
+          {/* Les orbites : trois cercles fins derrière le téléphone, comme
+              des trajets autour d'un point. Décoratifs, et seuls. */}
+          <svg className={styles.orbits} viewBox="0 0 600 600" aria-hidden="true">
+            <circle cx="300" cy="300" r="150" />
+            <circle cx="300" cy="300" r="220" />
+            <circle cx="300" cy="300" r="290" />
+            <circle className={styles.satellite} cx="300" cy="80" r="4" />
+            <circle className={styles.satelliteSlow} cx="300" cy="10" r="3" />
+          </svg>
           <div className={styles.glow} aria-hidden="true" />
-          <figure className={styles.device}>
-            <div className={styles.screen}>
-              <Image
-                src="/images/hero/zoumani-app-screen.webp"
-                alt={copy.phoneAlt}
-                fill
-                priority
-                sizes="(max-width: 64rem) 16rem, 20rem"
-                className={styles.screenImage}
-              />
-            </div>
-          </figure>
-          <ul className={styles.chips} aria-label={copy.eyebrow}>
-            {copy.chips.map((chip, index) => (
-              <li key={chip} className={styles.chip} data-index={index}>
-                <svg viewBox="0 0 20 20" aria-hidden="true" className={styles.chipIcon}>
-                  <circle cx="10" cy="10" r="9" />
-                  <path d="m6 10.5 2.6 2.5L14 7.5" />
-                </svg>
-                {chip}
-              </li>
-            ))}
-          </ul>
+          <DeviceTilt className={styles.tilt}>
+            <figure className={styles.device}>
+              <span className={styles.buttonMute} aria-hidden="true" />
+              <span className={styles.buttonVolumeUp} aria-hidden="true" />
+              <span className={styles.buttonVolumeDown} aria-hidden="true" />
+              <span className={styles.buttonPower} aria-hidden="true" />
+              <div className={styles.screen}>
+                <Image
+                  src="/images/hero/zoumani-app-screen.webp"
+                  alt={copy.phoneAlt}
+                  fill
+                  priority
+                  sizes="(max-width: 64rem) 17rem, 21rem"
+                  className={styles.screenImage}
+                />
+                <span className={styles.glare} aria-hidden="true" />
+              </div>
+            </figure>
+          </DeviceTilt>
         </div>
       </div>
 
