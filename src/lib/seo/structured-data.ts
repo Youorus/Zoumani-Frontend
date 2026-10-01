@@ -39,7 +39,7 @@ export const organizationSchema = {
     height: 512,
     caption: siteConfig.name,
   },
-  image: absoluteUrl("/opengraph-image"),
+  image: absoluteUrl("/opengraph-image?v=2"),
   ...(sameAs.length > 0 ? { sameAs } : {}),
 } as const;
 

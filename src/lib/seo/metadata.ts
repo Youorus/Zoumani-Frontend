@@ -77,7 +77,7 @@ export function pageMetadata({
       images: [
         {
           // Générée par `src/app/opengraph-image.tsx`, en 1200×630.
-          url: absoluteUrl("/opengraph-image"),
+          url: absoluteUrl("/opengraph-image?v=2"),
           width: 1200,
           height: 630,
           alt: `${siteConfig.name} — ${siteConfig.shortDescription}`,
@@ -88,7 +88,7 @@ export function pageMetadata({
       card: "summary_large_image",
       title: partageTitre,
       description: partageTexte,
-      images: [absoluteUrl("/opengraph-image")],
+      images: [absoluteUrl("/opengraph-image?v=2")],
     },
   };
 }
