@@ -414,22 +414,37 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "Vous avez les vols. Nous avons les {em}.",
           titleEmphasis: "expéditeurs",
           lede:
-            "Les particuliers qui cherchent à envoyer un colis vers l’Afrique ouvrent Zoumani. Publiez vos départs et vos kilos disponibles là où ils regardent, avec la mention « entreprise vérifiée » que personne d’autre ne porte.",
+            "Les particuliers qui cherchent à envoyer un colis vers l’Afrique ouvrent Zoumani. Publiez vos départs là où ils regardent — et laissez la plateforme encaisser, suivre et répondre à votre place.",
           points: [
+            {
+              title: "Des expéditeurs qui viennent à vous",
+              detail:
+                "Vos vols et vos kilos disponibles apparaissent là où les expéditeurs cherchent, avec la mention « entreprise vérifiée » que personne d’autre ne porte.",
+            },
             {
               title: "Publiez sans friction",
               detail:
                 "Vos vols en série, sans preuve de billet ni plafond de kilos. Une offre de fret se publie en quelques minutes depuis l’application.",
             },
             {
-              title: "Soyez reconnu",
+              title: "Fini les impayés et les avances",
               detail:
-                "Un dossier d’entreprise vérifié — représentant et extrait d’immatriculation — et votre offre porte un badge que les expéditeurs voient avant le prix.",
+                "Le paiement est garanti par Zoumani à la réservation et versé par virement à la remise. Plus de relances, plus d’argent à courir.",
             },
             {
-              title: "Encaissez sans courir",
+              title: "Les demandes au même endroit",
               detail:
-                "Le paiement est garanti par Zoumani à la réservation et versé à la remise. Plus de relances, plus d’impayés.",
+                "Chaque réservation arrive avec le contenu déclaré et photographié, et la conversation se tient dans l’application. Plus de fils WhatsApp à trier.",
+            },
+            {
+              title: "Vos clients savent où en est leur colis",
+              detail:
+                "Le suivi étape par étape et la remise constatée par les deux parties répondent à votre place aux « il est où, mon colis ? ».",
+            },
+            {
+              title: "Les colis viennent à vous, les litiges non",
+              detail:
+                "L’expéditeur dépose en point relais Mondial Relay et le colis arrive à votre adresse, sans collecte. Un désaccord est instruit par l’équipe Zoumani, pas sur votre téléphone.",
             },
           ],
           cta: { label: "Parler à l’équipe", kind: "whatsapp" },
@@ -870,22 +885,37 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           title: "You have the flights. We have the {em}.",
           titleEmphasis: "senders",
           lede:
-            "People looking to send a parcel to Africa open Zoumani. Publish your departures and available kilos where they are looking, with a “verified company” label nobody else carries.",
+            "People looking to send a parcel to Africa open Zoumani. Publish your departures where they are looking — and let the platform collect, track and answer on your behalf.",
           points: [
+            {
+              title: "Senders who come to you",
+              detail:
+                "Your flights and available kilos appear where senders are searching, with a “verified company” label nobody else carries.",
+            },
             {
               title: "Publish without friction",
               detail:
                 "Your flights in series, with no ticket proof and no kilo cap. A freight offer goes live in minutes from the app.",
             },
             {
-              title: "Be recognised",
+              title: "No more unpaid invoices or advances",
               detail:
-                "A verified company file — representative and registration extract — and your offer carries a badge senders see before the price.",
+                "Payment is guaranteed by Zoumani at booking and paid out by bank transfer on handover. No more reminders, no more chasing money.",
             },
             {
-              title: "Get paid without chasing",
+              title: "Every request in one place",
               detail:
-                "Payment is guaranteed by Zoumani at booking and paid out on handover. No more reminders, no more unpaid invoices.",
+                "Each booking arrives with contents declared and photographed, and the conversation happens in the app. No more WhatsApp threads to sort.",
+            },
+            {
+              title: "Your customers know where their parcel is",
+              detail:
+                "Step-by-step tracking and a handover confirmed by both parties answer “where is my parcel?” for you.",
+            },
+            {
+              title: "Parcels come to you, disputes don’t",
+              detail:
+                "The sender drops the parcel at a Mondial Relay point and it reaches your address, no collection run. A disagreement is handled by the Zoumani team, not on your phone.",
             },
           ],
           cta: { label: "Talk to the team", kind: "whatsapp" },
