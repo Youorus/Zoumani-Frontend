@@ -333,7 +333,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         "De Paris à Lisbonne, des familles ont un colis à faire partir vers l’Afrique. Avant, il attendait quelqu’un du quartier qui prenne l’avion. Avec Zoumani, il rejoint le voyageur vérifié qui part cette semaine — où que vous habitiez.",
       senders: {
         label: "Des expéditeurs partout en Europe",
-        cities: ["Paris", "Bruxelles", "Lyon", "Marseille", "Genève", "Londres", "Lisbonne", "Madrid", "Milan"],
+        cities: ["Paris", "Bruxelles", "Lyon", "Marseille", "Londres", "Lisbonne", "Madrid", "Milan", "Rome"],
       },
       relay: {
         label: "Le point relais",
@@ -791,7 +791,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         "From Paris to Lisbon, families have a parcel to send to Africa. It used to wait for someone from the neighbourhood to fly. With Zoumani, it reaches the verified traveller leaving this week — wherever you live.",
       senders: {
         label: "Senders all over Europe",
-        cities: ["Paris", "Brussels", "Lyon", "Marseille", "Geneva", "London", "Lisbon", "Madrid", "Milan"],
+        cities: ["Paris", "Brussels", "Lyon", "Marseille", "London", "Lisbon", "Madrid", "Milan", "Rome"],
       },
       relay: {
         label: "The pickup point",

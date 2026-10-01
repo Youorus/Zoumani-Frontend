@@ -1,17 +1,36 @@
 .section {
+  position: relative;
+  overflow: hidden;
   padding-block: clamp(4rem, 8vw, 7rem);
-  border-top: 1px solid var(--border);
-  background: var(--surface);
+  background:
+    radial-gradient(
+      50% 60% at 80% 30%,
+      color-mix(in srgb, var(--primary) 18%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(180deg, var(--chapter-business-canvas), var(--hero-canvas));
+  color: var(--inverse-foreground);
+  isolation: isolate;
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(2.5rem, 5vw, 4rem);
+.section::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  content: "";
+  mix-blend-mode: soft-light;
+  opacity: 0.18;
+  pointer-events: none;
 }
 
-.intro {
-  max-width: 44rem;
+.grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(2.5rem, 6vw, 6rem);
+  align-items: center;
 }
 
 .eyebrow {
@@ -25,9 +44,9 @@
 
 .title {
   margin: 1rem 0 0;
-  color: var(--foreground);
+  color: var(--inverse-foreground);
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(2.2rem, 4.4vw, 3.6rem);
+  font-size: clamp(2.2rem, 4.2vw, 3.5rem);
   font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 1.02;
@@ -40,190 +59,160 @@
 }
 
 .description {
-  margin: 1.1rem 0 0;
-  color: var(--muted-foreground);
+  margin: 1.2rem 0 0;
+  color: var(--inverse-muted-foreground);
   font-size: 1.05rem;
   line-height: 1.6;
   text-wrap: pretty;
 }
 
-.figure {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  margin: 0;
-  padding: clamp(1.25rem, 3vw, 2.5rem);
-  border: 1px solid var(--border);
-  border-radius: var(--shape-radius-lg);
-  background:
-    radial-gradient(
-      60% 80% at 85% 50%,
-      color-mix(in srgb, var(--primary) 10%, transparent),
-      transparent 70%
-    ),
-    var(--background);
+.steps {
+  margin: 2.25rem 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.columns {
+.step {
   display: grid;
-  grid-template-columns: 2fr 1.4fr 1.6fr;
-  color: var(--muted-foreground);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  padding-block: 1.1rem;
+  border-top: 1px solid var(--hero-glass-border);
 }
 
-.columns span:nth-child(2) {
-  text-align: center;
+.step:last-child {
+  border-bottom: 1px solid var(--hero-glass-border);
 }
 
-.columns span:nth-child(3) {
-  text-align: right;
+.stepIndex {
+  color: var(--primary);
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
-.diagram {
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-
-.line {
-  fill: none;
-  stroke: color-mix(in srgb, var(--foreground) 22%, transparent);
-  stroke-width: 1.4;
-}
-
-.trunk {
-  fill: none;
-  stroke: var(--primary);
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-
-.sender circle {
-  fill: var(--foreground);
-}
-
-.sender text {
-  fill: var(--foreground);
-  font-family: var(--font-body), sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.pulse {
-  fill: var(--primary);
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: pulse 3.2s ease-out infinite;
-}
-
-.relay circle {
-  fill: var(--surface-elevated);
-  stroke: var(--foreground);
-  stroke-width: 2;
-}
-
-.relay path,
-.traveler path {
-  fill: none;
-  stroke: var(--foreground);
-  stroke-width: 2;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-.traveler circle {
-  fill: var(--primary);
-  stroke: none;
-}
-
-.traveler path {
-  fill: var(--primary-foreground);
-  stroke: var(--primary-foreground);
-  stroke-width: 1.2;
-}
-
-.parcel {
-  fill: var(--primary);
-  stroke: var(--background);
-  stroke-width: 2;
-}
-
-.legend {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.5rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--border);
-}
-
-.legendTitle {
+.stepTitle {
   margin: 0;
-  color: var(--foreground);
+  color: var(--inverse-foreground);
   font-size: 1.02rem;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
-.legendDetail {
-  margin: 0.35rem 0 0;
-  color: var(--muted-foreground);
+.stepDetail {
+  margin: 0.3rem 0 0;
+  color: var(--inverse-muted-foreground);
   font-size: 0.93rem;
   line-height: 1.55;
 }
 
 .caption {
-  margin: 0;
-  color: var(--muted-foreground);
+  margin: 1.25rem 0 0;
+  color: color-mix(in srgb, var(--inverse-foreground) 55%, transparent);
   font-size: 0.78rem;
   line-height: 1.5;
 }
 
-@keyframes pulse {
+/* ═══ La carte ═══ */
+.map {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: 820 / 830;
+  margin: 0;
+  background-image: url("/images/carte-europe-afrique.svg");
+  background-position: top center;
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.arc {
+  fill: none;
+  stroke: url(#reach-arc);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.parcel {
+  fill: var(--secondary);
+  filter: drop-shadow(0 0 6px var(--primary));
+}
+
+.sender circle:not([fill]) {
+  fill: var(--primary);
+}
+
+.sender text,
+.destination text {
+  fill: var(--inverse-foreground);
+  font-family: var(--font-body), sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  paint-order: stroke;
+  stroke: var(--hero-canvas);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+.destination circle {
+  fill: var(--inverse-foreground);
+}
+
+.destination text {
+  fill: var(--inverse-muted-foreground);
+  font-weight: 500;
+}
+
+.ping {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ping 3.6s ease-out infinite;
+}
+
+@keyframes ping {
   0% {
-    opacity: 0.6;
+    opacity: 0.8;
     transform: scale(1);
   }
 
   70%,
   100% {
     opacity: 0;
-    transform: scale(3.2);
+    transform: scale(4);
   }
 }
 
-@media (max-width: 47.99rem) {
-  .columns {
-    font-size: 0.62rem;
-  }
-
-  /* Le schéma est réduit de moitié sur un téléphone : les étiquettes et
-     les traits grossissent pour rester lisibles à cette échelle. */
-  .sender text {
-    font-size: 26px;
-  }
-
-  .line {
-    stroke-width: 2.2;
-  }
-
-  .trunk {
-    stroke-width: 4;
-  }
-
-  .legend {
+@media (max-width: 63.99rem) {
+  .grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .map {
+    max-width: 34rem;
+    margin-inline: auto;
+  }
+
+  .sender text,
+  .destination text {
+    font-size: 19px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pulse {
-    animation: none;
-  }
-
+  .ping,
   .parcel {
     display: none;
   }
