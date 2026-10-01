@@ -243,8 +243,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       titleEmphasis: "Rentabilisez vos voyages.",
       description:
         "La place de marché qui relie expéditeurs, voyageurs et compagnies de fret entre l’Europe et l’Afrique. {accent}",
-      descriptionAccent:
-        "Identités vérifiées, vol confirmé, argent retenu jusqu’à la remise.",
+      descriptionAccent: "Identités vérifiées, vols confirmés, entreprises établies.",
       secondaryCta: "Je suis une entreprise de fret",
       note: "Gratuit pour les particuliers. Sans engagement.",
       chips: ["Identité vérifiée", "Payé à la remise", "Suivi étape par étape"],
@@ -291,12 +290,12 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     signals: {
       items: [
         {
-          value: "60+",
+          value: "+60",
           label: "agences approchées",
           detail: "Transporteurs et agences GP France–Afrique identifiés et contactés pour publier leurs départs.",
         },
         {
-          value: "15+",
+          value: "+15",
           label: "pays de destination",
           detail: "Du Sénégal à Madagascar : les pays vers lesquels on nous demande d’envoyer.",
         },
@@ -306,9 +305,9 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           detail: "Identité contrôlée et vol confronté au programme des compagnies avant toute publication.",
         },
         {
-          value: "0 €",
-          label: "pour les particuliers",
-          detail: "Envoyer ou voyager ne coûte rien de plus que le prix affiché avant de réserver.",
+          value: "+2 000",
+          label: "personnes veulent expédier",
+          detail: "Des expéditeurs qui attendent un départ vers l’Afrique — et la liste grandit chaque jour.",
         },
       ],
       asOf: "Chiffres relevés le 1er octobre 2026.",
@@ -330,7 +329,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       title: "Partout en Europe, un colis veut partir. Il trouve son {em}.",
       titleEmphasis: "voyageur",
       description:
-        "De Paris à Lisbonne, des familles ont un colis à faire partir vers l’Afrique. Avant, il attendait quelqu’un du quartier qui prenne l’avion. Avec Zoumani, il rejoint le voyageur vérifié qui part cette semaine — où que vous habitiez.",
+        "De Paris à Lisbonne, des familles ont un colis à faire partir vers l’Afrique. Avant, il attendait quelqu’un du quartier qui prenne l’avion. Avec Zoumani, il rejoint le voyageur vérifié ou la compagnie de fret établie qui part cette semaine — où que vous habitiez.",
       senders: {
         label: "Des expéditeurs partout en Europe",
         cities: ["Paris", "Bruxelles", "Lyon", "Marseille", "Londres", "Lisbonne", "Madrid", "Milan", "Rome"],
@@ -342,10 +341,10 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           "Vous déposez le colis avec l’étiquette créée dans l’application. Il rejoint le voyageur sans que vous traversiez la ville.",
       },
       traveler: {
-        label: "Le voyageur",
-        title: "Vérifié, vol confirmé",
+        label: "Le départ",
+        title: "Un voyageur vérifié, ou une compagnie de fret établie",
         detail:
-          "Il part cette semaine vers Dakar, Douala ou Abidjan. Il est payé à la remise, et vous suivez chaque étape.",
+          "Les deux publient leurs départs côte à côte, identité et vol contrôlés. Vous choisissez, et vous suivez chaque étape jusqu’à la remise.",
       },
       caption:
         "Le réseau Mondial Relay couvre la France, la Belgique, le Luxembourg, les Pays-Bas, l’Espagne et le Portugal. Ailleurs en Europe, le colis se remet en main propre au voyageur.",
@@ -702,7 +701,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       titleEmphasis: "Make your trips pay.",
       description:
         "The marketplace connecting senders, travellers and freight companies between Europe and Africa. {accent}",
-      descriptionAccent: "Verified identities, confirmed flights, money held until handover.",
+      descriptionAccent: "Verified identities, confirmed flights, established companies.",
       secondaryCta: "I’m a freight company",
       note: "Free for individuals. No commitment.",
       chips: ["Verified identity", "Paid on handover", "Step-by-step tracking"],
@@ -749,12 +748,12 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     signals: {
       items: [
         {
-          value: "60+",
+          value: "+60",
           label: "agencies approached",
           detail: "France–Africa carriers and luggage-courier agencies identified and contacted to publish their departures.",
         },
         {
-          value: "15+",
+          value: "+15",
           label: "destination countries",
           detail: "From Senegal to Madagascar: the countries people ask us to send to.",
         },
@@ -764,9 +763,9 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           detail: "Identity checked and flight matched against airline schedules before anything is published.",
         },
         {
-          value: "€0",
-          label: "for individuals",
-          detail: "Sending or travelling costs nothing beyond the price shown before you book.",
+          value: "+2,000",
+          label: "people want to send",
+          detail: "Senders waiting for a departure to Africa — and the list grows every day.",
         },
       ],
       asOf: "Figures as of 1 October 2026.",
@@ -788,7 +787,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       title: "All over Europe, a parcel wants to leave. It finds its {em}.",
       titleEmphasis: "traveller",
       description:
-        "From Paris to Lisbon, families have a parcel to send to Africa. It used to wait for someone from the neighbourhood to fly. With Zoumani, it reaches the verified traveller leaving this week — wherever you live.",
+        "From Paris to Lisbon, families have a parcel to send to Africa. It used to wait for someone from the neighbourhood to fly. With Zoumani, it reaches the verified traveller or the established freight company leaving this week — wherever you live.",
       senders: {
         label: "Senders all over Europe",
         cities: ["Paris", "Brussels", "Lyon", "Marseille", "London", "Lisbon", "Madrid", "Milan", "Rome"],
@@ -800,10 +799,10 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           "Drop the parcel with the label created in the app. It reaches the traveller without you crossing town.",
       },
       traveler: {
-        label: "The traveller",
-        title: "Verified, flight confirmed",
+        label: "The departure",
+        title: "A verified traveller, or an established freight company",
         detail:
-          "Leaving this week for Dakar, Douala or Abidjan. Paid on handover, and you follow every step.",
+          "Both publish their departures side by side, identity and flight checked. You choose, and you follow every step through to the handover.",
       },
       caption:
         "The Mondial Relay network covers France, Belgium, Luxembourg, the Netherlands, Spain and Portugal. Elsewhere in Europe, the parcel is handed to the traveller in person.",
