@@ -98,6 +98,24 @@ export interface HomeContent {
   };
 
   /**
+   * Le colis qui n'attend plus : des expéditeurs partout en Europe, un
+   * point relais près de chez eux, le voyageur qui part. Dessiné, pas
+   * seulement dit.
+   */
+  reach: {
+    eyebrow: string;
+    title: string;
+    titleEmphasis: string;
+    description: string;
+    /** Les trois colonnes du schéma. */
+    senders: { label: string; cities: readonly string[] };
+    relay: { label: string; title: string; detail: string };
+    traveler: { label: string; title: string; detail: string };
+    /** La phrase posée sous le schéma. */
+    caption: string;
+  };
+
+  /**
    * Les trois chapitres : à qui le service s'adresse, et ce qu'il lui
    * apporte. Chacun a son canevas, sa voix et son appel.
    */
@@ -307,6 +325,32 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         "Les marques citées appartiennent à leurs propriétaires. Zoumani utilise les réseaux de transport par l’étiquetage de l’application ; les couvertures d’assurance sont présentées à titre exploratoire, sous réserve d’accord.",
     },
 
+    reach: {
+      eyebrow: "Le colis n’attend plus",
+      title: "Partout en Europe, un colis veut partir. Il trouve son {em}.",
+      titleEmphasis: "voyageur",
+      description:
+        "De Paris à Lisbonne, des familles ont un colis à faire partir vers l’Afrique. Avant, il attendait quelqu’un du quartier qui prenne l’avion. Avec Zoumani, il rejoint le voyageur vérifié qui part cette semaine — où que vous habitiez.",
+      senders: {
+        label: "Des expéditeurs partout en Europe",
+        cities: ["Paris", "Bruxelles", "Lyon", "Marseille", "Genève", "Londres", "Lisbonne", "Madrid", "Milan"],
+      },
+      relay: {
+        label: "Le point relais",
+        title: "Mondial Relay, près de chez vous",
+        detail:
+          "Vous déposez le colis avec l’étiquette créée dans l’application. Il rejoint le voyageur sans que vous traversiez la ville.",
+      },
+      traveler: {
+        label: "Le voyageur",
+        title: "Vérifié, vol confirmé",
+        detail:
+          "Il part cette semaine vers Dakar, Douala ou Abidjan. Il est payé à la remise, et vous suivez chaque étape.",
+      },
+      caption:
+        "Le réseau Mondial Relay couvre la France, la Belgique, le Luxembourg, les Pays-Bas, l’Espagne et le Portugal. Ailleurs en Europe, le colis se remet en main propre au voyageur.",
+    },
+
     audiences: {
       eyebrow: "Pour qui",
       title: "Trois façons d’entrer. Une seule place de marché.",
@@ -394,8 +438,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           cta: { label: "Parler à l’équipe", kind: "whatsapp" },
           secondaryCta: { label: "Créer mon compte entreprise", kind: "store" },
           offers: {
-            intro: "L’offre entreprise",
-            trial: "Un essai gratuit de 30 jours, puis un abonnement mensuel ou annuel. Les tarifs vous sont communiqués par l’équipe.",
+            intro: "60 jours offerts",
+            trial: "60 jours gratuits, sans engagement, puis un abonnement mensuel ou annuel. Les tarifs vous sont communiqués par l’équipe.",
             today: "Les premières compagnies publient aujourd’hui sans abonnement.",
           },
         },
@@ -552,7 +596,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         {
           question: "Je suis une entreprise de fret : que m’apporte Zoumani ?",
           answer:
-            "Des expéditeurs qui cherchent exactement ce que vous proposez, sans que vous ayez à les trouver. Vous créez votre compte dans l’application, votre dossier d’entreprise est vérifié, puis vous publiez vos vols et vos kilos disponibles — sans preuve de billet ni plafond. Vos offres portent le badge « entreprise vérifiée », le paiement est garanti à la réservation et versé à la remise.",
+            "Des expéditeurs qui cherchent exactement ce que vous proposez, sans que vous ayez à les trouver. Vous créez votre compte dans l’application, votre dossier d’entreprise est vérifié, puis vous publiez vos vols et vos kilos disponibles — sans preuve de billet ni plafond. Vos offres portent le badge « entreprise vérifiée », le paiement est garanti à la réservation et versé à la remise. Les 60 premiers jours sont offerts.",
         },
         {
           question: "Mon colis est-il assuré ?",
@@ -739,6 +783,32 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         "Brands belong to their owners. Zoumani uses carrier networks through in-app labelling; insurance cover is shown for exploration only, subject to agreement.",
     },
 
+    reach: {
+      eyebrow: "The parcel no longer waits",
+      title: "All over Europe, a parcel wants to leave. It finds its {em}.",
+      titleEmphasis: "traveller",
+      description:
+        "From Paris to Lisbon, families have a parcel to send to Africa. It used to wait for someone from the neighbourhood to fly. With Zoumani, it reaches the verified traveller leaving this week — wherever you live.",
+      senders: {
+        label: "Senders all over Europe",
+        cities: ["Paris", "Brussels", "Lyon", "Marseille", "Geneva", "London", "Lisbon", "Madrid", "Milan"],
+      },
+      relay: {
+        label: "The pickup point",
+        title: "Mondial Relay, near you",
+        detail:
+          "Drop the parcel with the label created in the app. It reaches the traveller without you crossing town.",
+      },
+      traveler: {
+        label: "The traveller",
+        title: "Verified, flight confirmed",
+        detail:
+          "Leaving this week for Dakar, Douala or Abidjan. Paid on handover, and you follow every step.",
+      },
+      caption:
+        "The Mondial Relay network covers France, Belgium, Luxembourg, the Netherlands, Spain and Portugal. Elsewhere in Europe, the parcel is handed to the traveller in person.",
+    },
+
     audiences: {
       eyebrow: "Who it’s for",
       title: "Three ways in. One marketplace.",
@@ -823,8 +893,8 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
           cta: { label: "Talk to the team", kind: "whatsapp" },
           secondaryCta: { label: "Create my company account", kind: "store" },
           offers: {
-            intro: "The company plan",
-            trial: "A free 30-day trial, then a monthly or yearly subscription. Pricing is shared by the team.",
+            intro: "60 days free",
+            trial: "60 days free, no commitment, then a monthly or yearly subscription. Pricing is shared by the team.",
             today: "The first companies publish today without a subscription.",
           },
         },
@@ -981,7 +1051,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         {
           question: "I’m a freight company: what does Zoumani bring me?",
           answer:
-            "Senders looking for exactly what you offer, without you having to find them. You create your account in the app, your company file is verified, then you publish your flights and available kilos — no ticket proof, no cap. Your offers carry the “verified company” badge, payment is guaranteed at booking and paid out on handover.",
+            "Senders looking for exactly what you offer, without you having to find them. You create your account in the app, your company file is verified, then you publish your flights and available kilos — no ticket proof, no cap. Your offers carry the “verified company” badge, payment is guaranteed at booking and paid out on handover. The first 60 days are free.",
         },
         {
           question: "Is my parcel insured?",

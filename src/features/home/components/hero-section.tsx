@@ -12,6 +12,7 @@ import { homeContent } from "./home-content";
 import type { HomeLanguage } from "./home-content";
 import { HowItWorks } from "./how-it-works/how-it-works";
 import { NetworkSection } from "./network/network-section";
+import { ReachSection } from "./reach/reach-section";
 import { SignalsStrip } from "./proof/signals-strip";
 import { TrustedPartners } from "./trusted-partners";
 
@@ -77,6 +78,7 @@ export function HeroSection() {
       <Hero copy={copy.hero} stores={copy.stores} whatsapp={copy.whatsapp} />
       <SignalsStrip copy={copy.signals} />
       <TrustedPartners copy={copy.partners} />
+      <ReachSection copy={copy.reach} />
       <Audiences copy={copy.audiences} stores={copy.stores} whatsapp={copy.whatsapp} />
       <HowItWorks copy={copy.howItWorks} />
       <NetworkSection copy={copy.network} />

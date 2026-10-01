@@ -1,0 +1,230 @@
+.section {
+  padding-block: clamp(4rem, 8vw, 7rem);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+.intro {
+  max-width: 44rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 1rem 0 0;
+  color: var(--foreground);
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.2rem, 4.4vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.title em {
+  color: var(--primary);
+  font-style: normal;
+}
+
+.description {
+  margin: 1.1rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.figure {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 0;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  border: 1px solid var(--border);
+  border-radius: var(--shape-radius-lg);
+  background:
+    radial-gradient(
+      60% 80% at 85% 50%,
+      color-mix(in srgb, var(--primary) 10%, transparent),
+      transparent 70%
+    ),
+    var(--background);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 2fr 1.4fr 1.6fr;
+  color: var(--muted-foreground);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.columns span:nth-child(2) {
+  text-align: center;
+}
+
+.columns span:nth-child(3) {
+  text-align: right;
+}
+
+.diagram {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--foreground) 22%, transparent);
+  stroke-width: 1.4;
+}
+
+.trunk {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.sender circle {
+  fill: var(--foreground);
+}
+
+.sender text {
+  fill: var(--foreground);
+  font-family: var(--font-body), sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pulse {
+  fill: var(--primary);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse 3.2s ease-out infinite;
+}
+
+.relay circle {
+  fill: var(--surface-elevated);
+  stroke: var(--foreground);
+  stroke-width: 2;
+}
+
+.relay path,
+.traveler path {
+  fill: none;
+  stroke: var(--foreground);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.traveler circle {
+  fill: var(--primary);
+  stroke: none;
+}
+
+.traveler path {
+  fill: var(--primary-foreground);
+  stroke: var(--primary-foreground);
+  stroke-width: 1.2;
+}
+
+.parcel {
+  fill: var(--primary);
+  stroke: var(--background);
+  stroke-width: 2;
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.legendTitle {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.legendDetail {
+  margin: 0.35rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+
+.caption {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .columns {
+    font-size: 0.62rem;
+  }
+
+  /* Le schéma est réduit de moitié sur un téléphone : les étiquettes et
+     les traits grossissent pour rester lisibles à cette échelle. */
+  .sender text {
+    font-size: 26px;
+  }
+
+  .line {
+    stroke-width: 2.2;
+  }
+
+  .trunk {
+    stroke-width: 4;
+  }
+
+  .legend {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+  }
+
+  .parcel {
+    display: none;
+  }
+}

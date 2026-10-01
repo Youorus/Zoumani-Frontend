@@ -77,6 +77,7 @@ describe("le dictionnaire de la page d'accueil", () => {
       const titres = [
         contenu.hero.title,
         contenu.download.title,
+        contenu.reach.title,
         ...contenu.audiences.chapters.map((chapitre) => chapitre.title),
       ];
       for (const titre of titres) {
