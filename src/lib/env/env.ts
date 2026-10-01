@@ -104,12 +104,21 @@ const publicEnvSchema = z.object({
     (value) => (value === "" ? undefined : value),
     z.string().url().optional(),
   ),
+  /**
+   * Le numéro WhatsApp de Zoumani, au format international.
+   *
+   * Avec une valeur par défaut, et c'est voulu : la variable n'était
+   * posée dans aucun environnement, et chaque lien « Poser une question »
+   * ouvrait WhatsApp sans destinataire. Un numéro de contact est public
+   * et stable — le figer ici garantit qu'un déploiement sans la variable
+   * reste joignable. L'environnement peut toujours le remplacer.
+   */
   NEXT_PUBLIC_WHATSAPP_NUMBER: z.preprocess(
     (value) => (value === "" ? undefined : value),
     z
       .string()
       .regex(/^\+?[1-9]\d{7,14}$/)
-      .optional(),
+      .default("+33759650005"),
   ),
 });
 
