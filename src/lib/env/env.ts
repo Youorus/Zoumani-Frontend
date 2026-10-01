@@ -118,7 +118,7 @@ const publicEnvSchema = z.object({
     z
       .string()
       .regex(/^\+?[1-9]\d{7,14}$/)
-      .default("+33759650005"),
+      .default("+33758426474"),
   ),
 });
 
