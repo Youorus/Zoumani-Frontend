@@ -1,5 +1,5 @@
 .section {
-  padding-block: 6.25rem;
+  padding-block: clamp(4.5rem, 8vw, 7rem);
   border-top: 1px solid var(--border);
   background: var(--surface);
   scroll-margin-top: 5rem;
@@ -14,7 +14,7 @@
 
 .intro {
   position: sticky;
-  top: 7rem;
+  top: 6rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -30,11 +30,11 @@
 
 .title {
   margin-top: 1.125rem;
-  color: var(--wordmark);
-  font-family: var(--font-display), serif;
-  font-size: clamp(2.4rem, 4.4vw, 3.45rem);
+  color: var(--foreground);
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.2rem, 4.4vw, 3.4rem);
   font-weight: 700;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   line-height: 1.02;
   text-wrap: balance;
 }

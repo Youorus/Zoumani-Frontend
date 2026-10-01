@@ -33,7 +33,7 @@ import styles from "./site-chrome.module.css";
 const PORTES = [
   { href: "/envoyer-un-colis", label: "Envoyer un colis" },
   { href: "/proposer-un-voyage", label: "Proposer un voyage" },
-  { href: "/preinscription", label: "Se pré-inscrire" },
+  { href: "/preinscription", label: "Être prévenu sur Android" },
 ] as const;
 
 const CONTRACTUEL = [
@@ -87,8 +87,9 @@ export function SiteFooter() {
         </nav>
 
         <p className={styles.legal}>
-          Zoumani met en relation des expéditeurs et des voyageurs. Le service n’est pas
-          encore ouvert : aucune transaction n’est possible à ce jour.
+          Zoumani met en relation des expéditeurs, des voyageurs et des compagnies de fret.
+          L’application est disponible sur l’App Store ; la version Android est en
+          préparation.
         </p>
       </div>
     </footer>

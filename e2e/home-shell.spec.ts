@@ -98,7 +98,7 @@ test("les réponses de la FAQ sont dans le HTML servi, dépliées ou non", async
 
   expect(html).toContain("Zoumani est une application de cotransportage");
   expect(html).toContain("Jamais avant la remise.");
-  expect((html.match(/<details/g) ?? []).length).toBe(9);
+  expect((html.match(/<details/g) ?? []).length).toBe(10);
 });
 
 test("la FAQ déplie ses réponses une à une", async ({ page }) => {

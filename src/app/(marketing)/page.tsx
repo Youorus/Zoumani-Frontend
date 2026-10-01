@@ -10,6 +10,7 @@ import {
   buildGraph,
   faqSchema,
   howToSchema,
+  mobileApplicationSchema,
   serviceSchema,
 } from "@/lib/seo/structured-data";
 
@@ -37,6 +38,7 @@ export default function MarketingHomePage() {
       <JsonLd
         schema={buildGraph(
           serviceSchema,
+          mobileApplicationSchema,
           // Le parcours de l'expéditeur : c'est celui que décrit le HowTo.
           howToSchema(howItWorks.tabs[0].steps),
           faqSchema(faq.items),

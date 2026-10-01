@@ -8,25 +8,26 @@ import { ZoumaniLogo } from "@/components/shared/zoumani-logo";
 
 import type { HomeContent, HomeLanguage } from "./home-content";
 import styles from "./hero-header.module.css";
+import { APP_STORE_URL } from "./hero/store-badges";
 import { LanguageSwitcher } from "./language-switcher";
 import { MobileNavigation } from "./mobile-navigation";
 
 /**
  * La barre de navigation de la page d'accueil.
  *
- * ═══ Le logo complet, symbole et mot ═══
+ * ═══ Elle vit sur deux fonds ═══
  *
- * Le symbole seul ne se lit pas encore — la marque est trop jeune pour
- * qu'on la reconnaisse à sa forme. Le mot seul n'a pas d'accroche. Les
- * deux ensemble, c'est le verrou de marque de la charte, et c'est ce que
- * porte aussi l'application mobile.
+ * En haut de page, elle est posée sur le hero sombre : ses textes sont
+ * clairs, et elle n'a pas de fond. Dès qu'on descend, elle prend une
+ * capsule crème translucide et repasse en sombre, pour rester lisible
+ * sur les sections claires. Le seuil est bas (24 px) : au-delà, on voit
+ * le changement d'état au milieu du geste.
  *
- * ═══ Elle s'opacifie au défilement ═══
+ * ═══ Le bouton est revenu, et il nomme sa destination ═══
  *
- * Posée sur le hero clair, elle est transparente en haut de page ; dès
- * qu'on descend, elle prend un fond pour rester lisible sur les sections
- * suivantes. Le seuil est bas (24 px) : au-delà, on voit passer un
- * changement d'état au milieu du geste.
+ * La barre a porté un « Rejoindre la liste » qui ne disait pas ce qu'on
+ * rejoignait, puis plus rien. Depuis que l'application est publiée, il
+ * y a une destination évidente : le magasin. « Télécharger » la nomme.
  */
 interface HeroHeaderProps {
   copy: HomeContent;
@@ -34,11 +35,7 @@ interface HeroHeaderProps {
   onLanguageChange: (language: HomeLanguage) => void;
 }
 
-export function HeroHeader({
-  copy,
-  language,
-  onLanguageChange,
-}: HeroHeaderProps) {
+export function HeroHeader({ copy, language, onLanguageChange }: HeroHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -62,8 +59,8 @@ export function HeroHeader({
           aria-label="Zoumani, accueil"
           className="focus-ring flex items-center gap-2.5 rounded-xl"
         >
-          <SymboleZoumani largeur={52} />
-          <ZoumaniLogo className="text-[1.7rem] sm:text-[2rem]" />
+          <SymboleZoumani largeur={48} />
+          <ZoumaniLogo className={`text-[1.55rem] sm:text-[1.8rem] ${styles.wordmark}`} />
         </Link>
 
         <nav className={styles.nav} aria-label="Navigation principale">
@@ -75,23 +72,29 @@ export function HeroHeader({
         </nav>
 
         <div className={styles.actions}>
-          <LanguageSwitcher
-            copy={copy.language}
+          <div className={styles.language}>
+            <LanguageSwitcher
+              copy={copy.language}
+              language={language}
+              onLanguageChange={onLanguageChange}
+              inverse={!isScrolled}
+            />
+          </div>
+          <a
+            href={APP_STORE_URL}
+            target="_blank"
+            rel="noreferrer"
+            className={`focus-ring ${styles.cta}`}
+            data-cta="header-store"
+          >
+            {copy.headerCta}
+          </a>
+          <MobileNavigation
+            copy={copy}
+            inverse={!isScrolled}
             language={language}
             onLanguageChange={onLanguageChange}
           />
-          {/* ═══ Pourquoi il n'y a plus de bouton ici ═══
-
-              La barre portait un « Rejoindre la liste » qui ne disait pas
-              ce qu'on rejoignait. Un bouton dont on ne devine pas la
-              destination ne convertit pas : il occupe la place et fait
-              douter.
-
-              Ce qu'il visait — /preinscription — reste atteignable par
-              l'entrée « Pré-inscription » de la navigation, et surtout
-              par les deux portes du hero, qui elles nomment l'intention :
-              « J'ai un colis à envoyer », « Je pars bientôt en voyage ». */}
-          <MobileNavigation copy={copy} />
         </div>
       </div>
     </header>

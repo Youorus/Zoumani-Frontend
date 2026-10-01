@@ -12,35 +12,43 @@
   display: flex;
   width: 100%;
   min-height: 4rem;
-  max-width: 96rem;
+  max-width: 90rem;
   align-items: center;
   justify-content: space-between;
   margin-inline: auto;
-  padding: 0.5rem clamp(0.75rem, 2.4vw, 2rem);
+  padding: 0.5rem clamp(0.75rem, 2.4vw, 1.5rem);
   border: 1px solid transparent;
   border-radius: var(--shape-radius-full);
+  color: var(--inverse-foreground);
   pointer-events: auto;
   transition:
     background-color 260ms ease,
     border-color 260ms ease,
     box-shadow 260ms ease,
-    transform 260ms ease;
+    color 260ms ease;
+}
+
+/* Sur le hero sombre : le mot-logo prend la couleur de la barre. */
+.wordmark {
+  color: currentcolor;
 }
 
 .header[data-scrolled="true"] .shell {
   border-color: var(--border);
-  background: color-mix(in srgb, var(--background) 88%, transparent);
+  background: color-mix(in srgb, var(--background) 86%, transparent);
   box-shadow: 0 1rem 2.5rem -1.5rem color-mix(in srgb, var(--foreground) 45%, transparent);
+  color: var(--foreground);
   backdrop-filter: blur(18px) saturate(125%);
 }
 
-/* La navigation centrale, masquée sous 64rem : les libellés ne tiennent
-   pas à côté du logo et du bouton, et les tasser les rend illisibles. Le
-   tiroir mobile prend le relais. */
+.header[data-scrolled="true"] .wordmark {
+  color: var(--wordmark);
+}
+
 .nav {
   display: none;
   align-items: center;
-  gap: clamp(1rem, 2.2vw, 2.25rem);
+  gap: clamp(1rem, 2vw, 2rem);
 }
 
 @media (min-width: 64rem) {
@@ -52,22 +60,29 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .navLink {
   position: relative;
   padding: 0.25rem;
-  color: var(--foreground);
-  font-size: 0.98rem;
+  color: currentcolor;
+  font-size: 0.95rem;
   font-weight: 600;
   white-space: nowrap;
+  opacity: 0.86;
+  transition: opacity 160ms ease;
+}
+
+.navLink:hover,
+.navLink:focus-visible {
+  opacity: 1;
 }
 
 .navLink::after {
   position: absolute;
   right: 0.25rem;
-  bottom: 0.25rem;
+  bottom: 0;
   left: 0.25rem;
   height: 1px;
   background: var(--primary);
@@ -85,7 +100,35 @@
   transform: scaleX(1);
 }
 
+.cta {
+  display: inline-grid;
+  place-items: center;
+  height: 2.75rem;
+  padding-inline: 1.15rem;
+  border-radius: var(--shape-radius-full);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  transition:
+    transform 180ms ease,
+    filter 180ms ease;
+}
+
+.cta:hover {
+  filter: brightness(0.94);
+  transform: translateY(-1px);
+}
+
+/* Sous 40rem, le logo, la langue, le bouton et le menu ne tiennent pas :
+   la langue passe dans le tiroir, le bouton reste — c'est lui qui compte. */
 @media (max-width: 39.99rem) {
+  .language {
+    display: none;
+  }
+
   .header {
     padding: 0.55rem 0.65rem 0;
   }
@@ -95,14 +138,17 @@
     padding-inline: 0.75rem;
   }
 
-  .header[data-scrolled="true"] .shell {
-    transform: translateY(0.05rem);
+  .cta {
+    height: 2.5rem;
+    padding-inline: 0.9rem;
+    font-size: 0.85rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .shell,
-  .navLink::after {
+  .navLink::after,
+  .cta {
     transition: none;
   }
 }

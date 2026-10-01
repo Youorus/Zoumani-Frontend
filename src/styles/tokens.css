@@ -9,9 +9,9 @@
   --vert-whatsapp: #25d366;
 
   --font-body: var(--font-manrope), "Avenir Next", sans-serif;
-  /* La même famille que le corps, en plus gras — comme dans
-     l'application, où `ManropeExtraBold` tient le rôle du display. */
-  --font-display: var(--font-manrope), "Avenir Next", sans-serif;
+  /* Bricolage Grotesque : la police d'affichage du site — et du site
+     seulement, l'application reste en Manrope. Voir `app/layout.tsx`. */
+  --font-display: var(--font-bricolage), var(--font-manrope), "Avenir Next", sans-serif;
 
   --lagoon-depth: #0f766e;
   --oasis-foam: #d9fff8;
@@ -103,6 +103,14 @@
   --about-muted-foreground: rgb(43 29 23 / 0.68);
   --about-border: rgb(141 46 46 / 0.17);
   --about-illustration: rgb(255 107 0 / 0.24);
+  /* Les trois chapitres de l'accueil : chacun a son canevas. */
+  --chapter-sender-canvas: #fff8f0;
+  --chapter-traveler-canvas: #ffc837;
+  --chapter-traveler-foreground: #2b1d17;
+  --chapter-business-canvas: #1d0f07;
+  --chapter-business-foreground: #fffaf5;
+  --download-canvas: #ff6b00;
+  --download-foreground: #2b1d17;
   --navigation-surface: rgb(43 22 9 / 0.88);
   --navigation-border: rgb(255 250 245 / 0.17);
   --navigation-foreground: var(--inverse-foreground);

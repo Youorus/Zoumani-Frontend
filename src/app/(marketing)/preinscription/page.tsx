@@ -22,11 +22,11 @@ import styles from "./page.module.css";
 
 export const metadata: Metadata = pageMetadata({
   path: "/preinscription",
-  title: "Se pré-inscrire à l’ouverture",
+  title: "Être prévenu sur votre trajet et sur Android",
   description:
-    "Dites-nous votre trajet : nous vous prévenons dès que Zoumani ouvre. Un colis à envoyer, ou des kilos libres dans votre valise.",
+    "Zoumani est disponible sur iPhone. Dites-nous votre trajet : nous vous prévenons dès qu’un voyageur part vers votre destination, et le jour de la sortie Android.",
   ogDescription:
-    "Dites-nous votre trajet : nous vous prévenons dès que Zoumani ouvre sur ce corridor.",
+    "Dites-nous votre trajet : nous vous prévenons dès qu’un départ est publié vers votre destination, et le jour de la sortie Android.",
 });
 
 const ETAPES = [
@@ -53,8 +53,9 @@ export default function PreinscriptionPage() {
         <header className={styles.header}>
           <h1 className={styles.title}>Envoyez vos colis. Rentabilisez vos voyages.</h1>
           <p className={styles.lede}>
-            Zoumani met en relation les expéditeurs et les voyageurs qui font déjà le même
-            trajet. Dites-nous le vôtre : nous vous préviendrons dès l’ouverture.
+            L’application est disponible sur iPhone ; la version Android arrive. Dites-nous
+            votre trajet : nous vous préviendrons dès qu’un départ est publié vers votre
+            destination, et le jour de la sortie sur Google Play.
           </p>
         </header>
 

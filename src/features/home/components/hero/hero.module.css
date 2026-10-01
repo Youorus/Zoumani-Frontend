@@ -1,183 +1,332 @@
 .hero {
   position: relative;
-  /* 52rem au minimum, c'était la hauteur qu'il fallait pour empiler le
-     titre, trois garanties et une carte. Il ne reste que le titre, une
-     phrase et deux boutons : à hauteur inchangée, le hero se serait
-     terminé par un grand vide. */
-  min-height: clamp(36rem, 84svh, 46rem);
   overflow: hidden;
-  background: #fff8f0;
+  background:
+    radial-gradient(
+      62% 55% at 14% 112%,
+      color-mix(in srgb, var(--primary) 46%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      44% 44% at 92% -8%,
+      color-mix(in srgb, var(--secondary) 18%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(180deg, var(--hero-canvas), var(--inverse-surface));
+  color: var(--inverse-foreground);
   isolation: isolate;
 }
 
-.photoLayer {
+/* Un grain. Les aplats numériques parfaits sont ce qui fait « rendu » ;
+   un bruit très léger en fusion douce leur rend une matière. */
+.hero::before {
   position: absolute;
-  z-index: -3;
-  /* La photo n'occupe plus que la moitié droite. Le texte est donc sur
-     du crème franc, pas sur un lavis. */
-  inset: 0 0 0 46%;
-}
-
-/* ═══ L'étalonnage ═══
-
-   La photo sort d'un rendu très orangé — même famille de teinte que le
-   bouton principal, à quelques pour cent près. Tant que le décor était
-   orange, le bouton ne se distinguait de rien.
-
-   `saturate(0.72)` la ramène vers un doré neutre, `contrast(1.06)`
-   récupère le piqué que la désaturation coûte. Le filtre est appliqué
-   une fois à la composition, il ne se recalcule pas au défilement. */
-.photo {
-  object-fit: cover;
-  object-position: 42% center;
-  filter: saturate(0.72) contrast(1.06);
-}
-
-/* Un raccord court, pas une coupe franche : un bord net à la verticale
-   se lirait comme une image mal détourée. Mais court vraiment — 6 %.
-   Étalé sur 9 %, le dégradé traversait le ciel en contre-jour de la
-   photo, où le peu de nuances disponibles le faisait apparaître en
-   bandes verticales. */
-.photoEdge {
-  position: absolute;
+  z-index: 0;
   inset: 0;
-  background: linear-gradient(90deg, #fff8f0 0%, rgb(255 248 240 / 0.5) 3%, transparent 6%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  content: "";
+  mix-blend-mode: soft-light;
+  opacity: 0.22;
+  pointer-events: none;
 }
 
 .inner {
   position: relative;
-  z-index: 3;
+  z-index: 1;
   display: grid;
   width: 100%;
-  min-height: clamp(36rem, 84svh, 46rem);
-  max-width: 96rem;
-  /* Une colonne, calée à gauche : la photo tient la droite à partir de
-     46 %, et le texte ne doit jamais courir dessous. */
-  align-content: center;
-  grid-template-columns: minmax(0, 42rem);
+  max-width: 90rem;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
   margin-inline: auto;
-  padding: clamp(7.5rem, 13vh, 9rem) clamp(2rem, 3.4vw, 3.5rem) 5rem;
+  padding: clamp(7.5rem, 14vh, 10rem) clamp(1.25rem, 4vw, 3.5rem) clamp(3rem, 6vh, 4.5rem);
 }
 
 .copy {
-  max-width: 44rem;
-  animation: reveal-copy 720ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  max-width: 40rem;
+  animation: reveal 760ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.eyebrow {
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 0;
+  padding: 0.45rem 0.95rem 0.45rem 0.7rem;
+  border: 1px solid var(--hero-glass-border);
+  border-radius: var(--shape-radius-full);
+  background: var(--hero-glass);
+  color: var(--inverse-foreground);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.pulse {
+  position: relative;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: var(--shape-radius-full);
+  background: var(--secondary);
+}
+
+.pulse::after {
+  position: absolute;
+  inset: -0.3rem;
+  border-radius: inherit;
+  background: var(--secondary);
+  content: "";
+  opacity: 0.45;
+  animation: pulse 2.2s ease-out infinite;
 }
 
 .title {
-  margin: clamp(1.55rem, 3vh, 2.15rem) 0 0;
-  font-family: var(--font-body), sans-serif;
-  font-size: clamp(3.65rem, 5.15vw, 5.15rem);
-  font-weight: 900;
-  letter-spacing: -0.058em;
-  line-height: 0.98;
-}
-
-.titlePrimary,
-.titleAccent {
-  display: block;
-}
-
-.titlePrimary {
-  color: #3b0711;
-}
-
-.titleAccent {
-  max-width: 9.1ch;
-  margin-top: 0.12em;
-  color: #ff5b0a;
+  margin: clamp(1.4rem, 3vh, 2rem) 0 0;
+  color: var(--inverse-foreground);
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.8rem, 5.6vw, 5rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.96;
   text-wrap: balance;
+}
+
+.em {
+  display: block;
+  color: var(--primary);
+  font-style: normal;
 }
 
 .description {
-  max-width: 35rem;
-  margin: clamp(1.45rem, 2.6vh, 2rem) 0 0;
-  color: rgb(26 14 6 / 0.88);
-  font-size: clamp(1rem, 1.35vw, 1.22rem);
+  max-width: 34rem;
+  margin: clamp(1.3rem, 2.6vh, 1.8rem) 0 0;
+  color: var(--inverse-muted-foreground);
+  font-size: clamp(1.02rem, 1.3vw, 1.2rem);
   line-height: 1.55;
-  text-wrap: balance;
+  text-wrap: pretty;
 }
 
 .description strong {
+  color: var(--inverse-foreground);
   font-weight: 600;
 }
 
-/* ═══ Les deux portes ═══
-
-   Elles étaient dans une carte, avec un titre et une phrase de
-   présentation. La carte disait « Zoumani ouvre bientôt » juste sous un
-   titre qui l'avait déjà dit, et son cadre séparait les boutons de la
-   phrase qui les amène. Elle est partie : il reste les deux portes et
-   une mention.
-
-   Même poids visuel pour les deux. Hiérarchiser l'une reviendrait à
-   choisir pour le visiteur de quel côté du marché il se place — alors
-   que c'est précisément ce qu'on lui demande. */
-.waitlist {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  width: min(100%, 34rem);
-  align-self: start;
-  margin-top: clamp(1.9rem, 3.4vh, 2.5rem);
-  animation: reveal-copy 720ms cubic-bezier(0.2, 0.8, 0.2, 1) 180ms both;
-}
-
-.waitlistActions {
+.actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-top: 0.35rem;
+  gap: 0.9rem 1.25rem;
+  align-items: center;
+  margin-top: clamp(1.75rem, 3.5vh, 2.4rem);
 }
 
-/* 3.25rem : la borne basse d'une cible tactile confortable au pouce, sur
-   laquelle arrivera l'essentiel du trafic. */
-.waitlistPrimary,
-.waitlistSecondary {
-  display: inline-grid;
-  place-items: center;
-  flex: 1 1 12rem;
+.secondary {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
   min-height: 3.25rem;
-  padding-inline: 1.15rem;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  text-align: center;
-  border-radius: 0.9rem;
-  transition:
-    filter 180ms ease,
-    border-color 180ms ease;
+  padding-inline: 0.25rem;
+  border-bottom: 1px solid var(--hero-glass-border);
+  color: var(--inverse-foreground);
+  font-size: 0.98rem;
+  font-weight: 600;
+  transition: border-color 180ms ease;
 }
 
-.waitlistPrimary {
-  color: #fff8f0;
-  background: #ff6b00;
+.secondary:hover {
+  border-color: var(--primary);
 }
 
-.waitlistPrimary:hover {
-  filter: brightness(0.94);
+.secondary span {
+  transition: transform 180ms ease;
 }
 
-.waitlistSecondary {
-  color: #3b1712;
-  background: rgb(255 255 255 / 0.72);
-  border: 1px solid rgb(141 46 46 / 0.22);
+.secondary:hover span {
+  transform: translateX(0.25rem);
 }
 
-.waitlistSecondary:hover {
-  border-color: #ff6b00;
-}
-
-.waitlistNote {
-  margin: 0;
-  color: rgb(59 23 18 / 0.58);
+.note {
+  margin: 0.9rem 0 0;
+  color: var(--inverse-muted-foreground);
   font-size: 0.82rem;
 }
 
-@keyframes reveal-copy {
+/* ═══ La scène du téléphone ═══ */
+.stage {
+  position: relative;
+  display: grid;
+  min-height: 34rem;
+  place-items: center;
+  animation: reveal 900ms cubic-bezier(0.2, 0.8, 0.2, 1) 160ms both;
+}
+
+.glow {
+  position: absolute;
+  width: 26rem;
+  height: 26rem;
+  border-radius: var(--shape-radius-full);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--primary) 55%, transparent),
+    transparent 68%
+  );
+  filter: blur(10px);
+  opacity: 0.6;
+}
+
+.device {
+  position: relative;
+  width: clamp(15rem, 19vw, 19rem);
+  aspect-ratio: 1290 / 2796;
+  margin: 0;
+  padding: 0.55rem;
+  border: 1px solid var(--hero-glass-border);
+  border-radius: 3.1rem;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--noir-ebene) 70%, var(--inverse-foreground)),
+    var(--noir-ebene) 40%,
+    color-mix(in srgb, var(--noir-ebene) 80%, var(--hero-canvas))
+  );
+  box-shadow:
+    0 50px 80px -30px color-mix(in srgb, var(--hero-canvas) 90%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--inverse-foreground) 8%, transparent) inset;
+  transform: rotate(-5deg) translateY(0.5rem);
+}
+
+.screen {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  border-radius: 2.6rem;
+  background: var(--background);
+}
+
+.screenImage {
+  object-fit: cover;
+  object-position: top;
+}
+
+.chips {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.chip {
+  position: absolute;
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--hero-glass-border);
+  border-radius: var(--shape-radius-full);
+  background: color-mix(in srgb, var(--inverse-surface) 72%, transparent);
+  box-shadow: var(--elevation-lifted);
+  color: var(--inverse-foreground);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+  animation: float 6s ease-in-out infinite;
+}
+
+.chip[data-index="0"] {
+  top: 14%;
+  left: 2%;
+}
+
+.chip[data-index="1"] {
+  top: 52%;
+  right: 0;
+  animation-delay: -2s;
+}
+
+.chip[data-index="2"] {
+  bottom: 10%;
+  left: 8%;
+  animation-delay: -4s;
+}
+
+.chipIcon {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: var(--primary);
+  stroke: var(--inverse-foreground);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chipIcon circle {
+  stroke: none;
+}
+
+/* ═══ La bande des trajets ═══ */
+.ticker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  border-top: 1px solid var(--hero-glass-border);
+  background: color-mix(in srgb, var(--hero-canvas) 55%, transparent);
+}
+
+.tickerLabel {
+  margin: 0;
+  padding: 1rem clamp(1.25rem, 3vw, 2.5rem);
+  border-right: 1px solid var(--hero-glass-border);
+  color: var(--inverse-muted-foreground);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tickerViewport {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, var(--noir-ebene) 6%, var(--noir-ebene) 94%, transparent);
+}
+
+.tickerTrack {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  --marquee-duration: 44s;
+}
+
+.tickerItem {
+  display: inline-flex;
+  align-items: center;
+  padding: 1rem 0;
+  color: var(--inverse-foreground);
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.tickerItem::after {
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-inline: 1.6rem;
+  border-radius: var(--shape-radius-full);
+  background: var(--primary);
+  content: "";
+}
+
+@keyframes reveal {
   from {
     opacity: 0;
-    transform: translateY(1rem);
+    transform: translateY(1.25rem);
   }
 
   to {
@@ -186,127 +335,104 @@
   }
 }
 
-@media (max-width: 79.99rem) {
-  .inner {
-    padding-inline: 2rem;
+@keyframes float {
+  0%,
+  100% {
+    translate: 0 0;
   }
 
-  .title {
-    font-size: clamp(3.4rem, 5.4vw, 4.5rem);
+  50% {
+    translate: 0 -0.5rem;
+  }
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(0.6);
+    opacity: 0.6;
   }
 
+  to {
+    transform: scale(1.8);
+    opacity: 0;
+  }
 }
 
 @media (max-width: 63.99rem) {
-  .hero,
   .inner {
-    min-height: 34rem;
-  }
-
-  .inner {
-    padding: 7rem 1.5rem 4rem;
-  }
-
-  .photoLayer {
-    inset: 0 0 0 52%;
-  }
-
-  .photo {
-    object-position: 38% center;
-  }
-
-  .title {
-    font-size: clamp(3rem, 5.7vw, 3.75rem);
-  }
-
-}
-
-@media (max-width: 47.99rem) {
-  .hero,
-  .inner {
-    min-height: auto;
-  }
-
-  .hero {
-    padding-bottom: 1.5rem;
-  }
-
-  /* Sous 768 px il n'y a plus deux colonnes à séparer. La photo sort du
-     positionnement absolu et redevient un bloc du flux, placé APRÈS le
-     texte par `order`. C'est la seule façon qu'elle commence là où le
-     pavé finit : sa hauteur dépend de la langue et de la largeur, aucune
-     valeur en dur ne peut la suivre. */
-  .hero {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .photoLayer {
-    position: relative;
-    order: 2;
-    inset: auto;
-    width: 100%;
-    height: clamp(17rem, 46vw, 22rem);
-  }
-
-  .inner {
-    order: 1;
-  }
-
-  .photo {
-    object-position: 58% 42%;
-  }
-
-  .photoEdge {
-    background: linear-gradient(180deg, #fff8f0 0%, rgb(255 248 240 / 0.45) 6%, transparent 13%);
-  }
-
-  .inner {
-    display: flex;
-    flex-direction: column;
-    padding: 6.5rem 1rem 3rem;
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 6.5rem;
+    padding-bottom: 2rem;
   }
 
   .copy {
-    text-align: center;
+    max-width: 38rem;
   }
 
-  .waitlist {
-    margin-inline: auto;
+  .stage {
+    min-height: 0;
+    padding-block: 2.5rem 1rem;
   }
 
-  .title {
-    margin-top: 1.35rem;
-    font-size: clamp(2.75rem, 13vw, 3.65rem);
-    line-height: 0.98;
+  .device {
+    width: 15.5rem;
+    transform: rotate(-4deg);
   }
 
-  .titleAccent {
-    max-width: 9.5ch;
-    margin-inline: auto;
+  .glow {
+    width: 20rem;
+    height: 20rem;
   }
 
-  .description {
-    max-width: 31rem;
-    margin: 1.25rem auto 0;
-    font-size: 0.96rem;
+  .chip[data-index="0"] {
+    top: 8%;
+    left: 0;
   }
 
+  .chip[data-index="1"] {
+    top: 46%;
+    right: 0;
+  }
+
+  .chip[data-index="2"] {
+    bottom: 6%;
+    left: 4%;
+  }
+
+  .ticker {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tickerLabel {
+    padding-bottom: 0;
+    border-right: 0;
+  }
 }
 
-@media (max-width: 25rem) {
-  .inner {
-    padding-inline: 0.75rem;
+@media (max-width: 39.99rem) {
+  .title {
+    font-size: clamp(2.6rem, 12vw, 3.4rem);
   }
 
-  .title {
-    font-size: clamp(2.45rem, 12.8vw, 3rem);
+  .actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chip {
+    font-size: 0.74rem;
+    padding: 0.5rem 0.75rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .copy,
-  .waitlist {
+  .stage {
+    animation: none;
+  }
+
+  .chip,
+  .pulse::after {
     animation: none;
   }
 }

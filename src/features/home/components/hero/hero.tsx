@@ -1,103 +1,124 @@
 import Image from "next/image";
-import Link from "next/link";
 
+import { buildWhatsAppUrl } from "@/lib/contact/build-whatsapp-url";
+
+import { Emphasis } from "../emphasis";
 import type { HomeContent } from "../home-content";
 import styles from "./hero.module.css";
+import { AppStoreBadge } from "./store-badges";
 
+/**
+ * Le hero : la promesse, l'application, et les trajets qu'on nous demande.
+ *
+ * ═══ Sombre, et c'est voulu ═══
+ *
+ * La page était crème de haut en bas, et le hero se confondait avec ce
+ * qui le suivait. Sur l'ébène de la charte, l'orange redevient une
+ * lumière et le téléphone une chose qu'on a envie de prendre. C'est
+ * aussi ce qui fait qu'on sait qu'on est arrivé quelque part.
+ *
+ * ═══ Le téléphone est revenu ═══
+ *
+ * Il avait été retiré parce que l'application n'existait pas : montrer
+ * une offre qu'on n'a pas est le plus court chemin vers la déception.
+ * Elle existe maintenant, sur l'App Store, et l'écran montré est le sien.
+ * Les étiquettes posées dessus sont des faits du produit, pas des
+ * slogans.
+ *
+ * ═══ La bande des trajets ═══
+ *
+ * Ce sont les trajets réellement demandés — préinscriptions, voyages
+ * publiés, agences démarchées — pas une liste de pays inventée. Le
+ * libellé le dit : « qu'on nous demande le plus », pas « desservis ».
+ */
 export function Hero({
   copy,
+  stores,
+  whatsapp,
 }: {
   copy: HomeContent["hero"];
+  stores: HomeContent["stores"];
+  whatsapp: HomeContent["whatsapp"];
 }) {
-  const [beforeAccent, afterAccent] = copy.description.split("{accent}");
+  const [avantAccent, apresAccent] = copy.description.split("{accent}");
 
   return (
-    <section id="telecharger" className={styles.hero}>
-      {/* ═══ La photo n'est plus un fond ═══
-
-          Elle couvrait toute la largeur sous un voile crème allant de
-          gauche à droite. Deux effets, tous deux mauvais : un lavis
-          laiteux traversait le sujet en son milieu, et surtout le
-          hero entier baignait dans le même orange que le bouton
-          principal — qui cessait donc de se voir.
-
-          Elle occupe maintenant sa moitié droite, nette, avec un
-          raccord court sur son bord gauche. Le texte est sur du crème
-          franc. Le seul orange saturé de l'écran redevient le bouton. */}
-      <div className={styles.photoLayer} aria-hidden="true">
-        <Image
-          src="/images/hero/zoumani-airport-campaign.webp"
-          alt=""
-          fill
-          preload
-          sizes="(max-width: 47.99rem) 100vw, 55vw"
-          className={styles.photo}
-        />
-        <span className={styles.photoEdge} />
-      </div>
-
-      {/* ═══ Ce que le hero ne fait plus ═══
-
-          Il portait une pastille « France · Afrique · Le monde », un
-          titre, une phrase, trois cartes de garantie et une carte de
-          préinscription à deux étages. Six blocs empilés : au premier
-          coup d'œil, on ne savait pas lequel regarder, et sur un
-          téléphone les boutons tombaient sous la ligne de flottaison.
-
-          Il ne reste que ce qui décide : la promesse, une phrase qui
-          l'explique, et les deux portes. Les trois garanties sont
-          parties avec le reste — « Comment ça marche » les démontre en
-          trois étapes et la FAQ les détaille, là où le hero n'en
-          donnait que des slogans. */}
+    <section id="telecharger" className={styles.hero} aria-labelledby="hero-title">
       <div className={styles.inner}>
         <div className={styles.copy}>
-          <h1 className={styles.title}>
-            <span className={styles.titlePrimary}>{copy.titleLineOne}</span>
-            <span className={styles.titleAccent}>{copy.titleLineTwo}</span>
+          <p className={styles.eyebrow}>
+            <span className={styles.pulse} aria-hidden="true" />
+            {copy.eyebrow}
+          </p>
+
+          <h1 id="hero-title" className={styles.title}>
+            <Emphasis text={copy.title} emphasis={copy.titleEmphasis} className={styles.em} />
           </h1>
 
           <p className={styles.description}>
-            {beforeAccent}
+            {avantAccent}
             <strong>{copy.descriptionAccent}</strong>
-            {afterAccent}
+            {apresAccent}
           </p>
+
+          <div className={styles.actions}>
+            <AppStoreBadge copy={stores} cta="hero-store" />
+            <a
+              href={buildWhatsAppUrl(whatsapp.businessMessage)}
+              target="_blank"
+              rel="noreferrer"
+              className={`focus-ring ${styles.secondary}`}
+              data-cta="hero-business"
+            >
+              {copy.secondaryCta}
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          <p className={styles.note}>{copy.note}</p>
         </div>
 
-        {/* ═══ Ce qui a remplacé le téléphone ═══
+        <div className={styles.stage} aria-hidden="false">
+          <div className={styles.glow} aria-hidden="true" />
+          <figure className={styles.device}>
+            <div className={styles.screen}>
+              <Image
+                src="/images/hero/zoumani-app-screen.webp"
+                alt={copy.phoneAlt}
+                fill
+                priority
+                sizes="(max-width: 64rem) 16rem, 20rem"
+                className={styles.screenImage}
+              />
+            </div>
+          </figure>
+          <ul className={styles.chips} aria-label={copy.eyebrow}>
+            {copy.chips.map((chip, index) => (
+              <li key={chip} className={styles.chip} data-index={index}>
+                <svg viewBox="0 0 20 20" aria-hidden="true" className={styles.chipIcon}>
+                  <circle cx="10" cy="10" r="9" />
+                  <path d="m6 10.5 2.6 2.5L14 7.5" />
+                </svg>
+                {chip}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
 
-            Le hero montrait une maquette d'application avec trois
-            voyageurs — Alex D., Fatou N., Samuel K. — leurs prix et une
-            pastille « vérifié ». Personne n'existait. Montrer une offre
-            qu'on n'a pas est le plus court chemin vers la déception au
-            premier vrai écran, et vers un magasin d'applications où rien
-            n'est encore publié.
-
-            À la place, la seule chose qu'on puisse honnêtement demander
-            aujourd'hui : votre trajet. Deux portes, parce que les deux
-            versants du marché ne se reconnaissent pas dans les mêmes
-            mots — et parce qu'un bouton qui nomme l'intention de celui
-            qui le lit vaut tous les « Rejoindre la liste » du monde.
-
-            Plus de carte autour : le titre porte déjà l'annonce, les
-            boutons n'ont plus besoin d'être présentés. */}
-        <div className={styles.waitlist}>
-          <div className={styles.waitlistActions}>
-            <Link
-              href="/preinscription?type=sender"
-              className={styles.waitlistPrimary}
-              data-cta="hero-sender"
-            >
-              {copy.waitlist.senderCta}
-            </Link>
-            <Link
-              href="/preinscription?type=traveler"
-              className={styles.waitlistSecondary}
-              data-cta="hero-traveler"
-            >
-              {copy.waitlist.travelerCta}
-            </Link>
-          </div>
-          <p className={styles.waitlistNote}>{copy.waitlist.note}</p>
+      <div className={styles.ticker}>
+        <p className={styles.tickerLabel}>{copy.tickerLabel}</p>
+        <div className={styles.tickerViewport}>
+          <ul className={`marquee ${styles.tickerTrack}`}>
+            {[...copy.ticker, ...copy.ticker].map((trajet, index) => (
+              <li
+                key={`${trajet}-${index}`}
+                className={styles.tickerItem}
+                aria-hidden={index >= copy.ticker.length}
+              >
+                {trajet}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

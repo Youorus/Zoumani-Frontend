@@ -69,6 +69,27 @@ describe("le dictionnaire de la page d'accueil", () => {
     }
   });
 
+  it("garde le marqueur {em} dans chaque titre qui met un mot en couleur", () => {
+    // Sans lui, le mot accentué n'est pas rendu du tout : `Emphasis`
+    // rend le texte tel quel quand il ne trouve pas le marqueur.
+    for (const langue of LANGUES) {
+      const contenu = homeContent[langue];
+      const titres = [
+        contenu.hero.title,
+        contenu.download.title,
+        ...contenu.audiences.chapters.map((chapitre) => chapitre.title),
+      ];
+      for (const titre of titres) {
+        expect(titre.split("{em}")).toHaveLength(2);
+      }
+    }
+  });
+
+  it("garde le slogan de la marque en tête de page", () => {
+    expect(homeContent.fr.hero.title).toBe("Envoyez vos colis. {em}");
+    expect(homeContent.fr.hero.titleEmphasis).toBe("Rentabilisez vos voyages.");
+  });
+
   it("donne deux parcours de trois étapes à « Comment ça marche »", () => {
     // Les étapes sont posées sur un rail à trois colonnes, et les deux
     // onglets doivent décrire le même nombre d'étapes : sinon le panneau

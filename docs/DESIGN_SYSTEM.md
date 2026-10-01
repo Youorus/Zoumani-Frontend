@@ -84,10 +84,14 @@ Cela permet :
 
 ## Typography
 
-- texte courant : `Manrope`
-- titres : `Fraunces`
+- texte courant : `Manrope` (`--font-body`)
+- titres et chiffres : `Bricolage Grotesque` (`--font-display`), variable, axes `opsz` et `wdth`
 
-Le contraste typographique evite un rendu trop standard tout en restant lisible.
+Deux grotesques, pas une seule : Manrope porte la lecture, Bricolage porte
+l'affichage. Les titres sont en 700, serrés (`-0.035em`), avec `opsz 96`.
+L'insistance dans un titre se fait par la couleur (`<em>` en orange), jamais
+par une italique — Bricolage n'en a pas. L'application mobile reste en
+Manrope seule : une application n'est pas une affiche.
 
 ## Radius et ombres
 

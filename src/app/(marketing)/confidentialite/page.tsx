@@ -89,8 +89,9 @@ export default function ConfidentialitePage() {
       <main className={styles.page}>
         <h1 className={styles.title}>Politique de confidentialité</h1>
         <p className={styles.lede}>
-          Zoumani n’est pas encore ouvert. Ce que nous recueillons d’ici là tient en
-          une phrase : de quoi vous prévenir, et de quoi savoir où ouvrir en premier.
+          Sur ce site, ce que nous recueillons tient en une phrase : de quoi vous prévenir
+          sur votre trajet, et de quoi savoir où ouvrir en premier. Les données traitées
+          dans l’application sont décrites dans ses conditions générales.
         </p>
 
         {SECTIONS.map((section) => (

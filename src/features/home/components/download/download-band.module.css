@@ -1,0 +1,96 @@
+.section {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(4rem, 8vw, 7rem);
+  background:
+    radial-gradient(
+      50% 70% at 90% 10%,
+      color-mix(in srgb, var(--secondary) 55%, transparent),
+      transparent 70%
+    ),
+    var(--download-canvas);
+  color: var(--download-foreground);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: end;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--download-foreground);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.title {
+  margin: 1rem 0 0;
+  color: var(--download-foreground);
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.6rem, 6vw, 5rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.title em {
+  color: var(--inverse-foreground);
+}
+
+.description {
+  max-width: 34rem;
+  margin: 1.4rem 0 0;
+  color: color-mix(in srgb, var(--download-foreground) 82%, transparent);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+.badge {
+  transform: scale(1.15);
+  transform-origin: left center;
+}
+
+.android {
+  margin: 0.5rem 0 0;
+  color: color-mix(in srgb, var(--download-foreground) 82%, transparent);
+  font-size: 0.95rem;
+}
+
+.androidLink {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--download-foreground) 40%, transparent);
+  color: var(--download-foreground);
+  font-weight: 700;
+  transition: border-color 180ms ease;
+}
+
+.androidLink:hover {
+  border-color: var(--download-foreground);
+}
+
+@media (max-width: 63.99rem) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .badge {
+    transform: none;
+  }
+}

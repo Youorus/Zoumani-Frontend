@@ -21,6 +21,7 @@ export const schemaIds = {
   organization: `${siteUrl}/#organization`,
   website: `${siteUrl}/#website`,
   service: `${siteUrl}/#service`,
+  app: `${siteUrl}/#app`,
 } as const;
 
 export const organizationSchema = {
@@ -68,9 +69,10 @@ export const serviceSchema = {
   audience: [
     { "@type": "Audience", audienceType: "Expéditeurs de colis" },
     { "@type": "Audience", audienceType: "Voyageurs avec bagage disponible" },
+    { "@type": "Audience", audienceType: "Compagnies de fret" },
   ],
   description:
-    "Zoumani facilite la recherche d'un voyage correspondant à une destination, la mise en relation, la vérification des utilisateurs, la déclaration du colis, le paiement sécurisé et le suivi de la transaction. Le transport est effectué par les voyageurs utilisant la plateforme.",
+    "Zoumani facilite la recherche d'un voyage correspondant à une destination, la mise en relation, la vérification des utilisateurs et des entreprises, la déclaration du colis, le paiement sécurisé et le suivi de la transaction. Le transport est effectué par les voyageurs et les compagnies de fret utilisant la plateforme.",
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name: "Étapes du service Zoumani",
@@ -85,6 +87,34 @@ export const serviceSchema = {
       itemOffered: { "@type": "Service", name },
     })),
   },
+} as const;
+
+/**
+ * L'application elle-même, telle que les moteurs la décrivent.
+ *
+ * `MobileApplication` relie la page à la fiche App Store : c'est ce qui
+ * permet un résultat enrichi « application » et une entité commune
+ * entre le site et le magasin. Un seul système d'exploitation est
+ * déclaré tant que Google Play n'a pas sa fiche : annoncer Android
+ * avant qu'il existe serait du balisage trompeur.
+ *
+ * Aucune note (`aggregateRating`) : elle n'existe pas encore, et un
+ * chiffre inventé ici est le plus sûr moyen de perdre tous les résultats
+ * enrichis du domaine.
+ */
+export const mobileApplicationSchema = {
+  "@type": "MobileApplication",
+  "@id": schemaIds.app,
+  name: siteConfig.name,
+  operatingSystem: "iOS",
+  applicationCategory: "TravelApplication",
+  installUrl: siteConfig.appStoreUrl,
+  downloadUrl: siteConfig.appStoreUrl,
+  url: siteUrl,
+  description: siteConfig.shortDescription,
+  author: { "@id": schemaIds.organization },
+  offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+  inLanguage: ["fr-FR", "en-US"],
 } as const;
 
 /**

@@ -182,32 +182,23 @@ revalidé, et l'on ne peut pas prouver qu'il est encore éclairé.
 et `readConsent` qui rend `null` au-delà de six mois. À faire avant que
 la première cohorte de visiteurs n'atteigne cet âge, soit mars 2027.
 
-### La section des logos partenaires est masquée, pas supprimée
+### Les logos des réseaux sont affichés, sous un titre qui ne dit pas « partenaire »
 
-`AFFICHER_PARTENAIRES` vaut `false` dans
-`features/home/components/hero-section.tsx`. La section montrait treize
-marques — La Poste, DHL, UPS, FedEx, AXA, Allianz… — sous « Zoumani
-s'appuie sur les acteurs de l'acheminement et de l'assurance », alors
-qu'aucun partenariat n'est conclu. L'avertissement existait, en petit et
-sous les logos.
+Depuis le 1er octobre 2026, `TrustedPartners` est de nouveau rendu, à la
+demande de Marc. Le cadre a changé pour rester défendable : le titre dit
+« emprunte des réseaux qui existent déjà », les transporteurs et les
+assureurs sont deux groupes étiquetés — « Transport », « Assurance — à
+l'étude » — et l'avertissement est sous la bande, lisible, pas en pied de
+page. Les transporteurs sont ceux que l'étiquette créée dans l'application
+permet d'atteindre ; aucun assureur n'a signé.
 
-Une régie refuse une annonce dont la page laisse croire à un partenariat
-qui n'existe pas, et le refus tombe à l'examen de l'annonce — au moment
-précis où l'on veut lancer.
-
-**Ce que ça coûte :** la page perd un argument de réassurance, qui n'en
-était pas vraiment un puisqu'il n'était pas vrai.
-**Déclencheur :** un partenariat réellement signé. Repasser la valeur à
-`true`, ne garder que les marques concernées, et réécrire le titre pour
-qu'il dise ce qui est.
-
-Depuis le 27 septembre 2026, l'ancre `#partenaires` est tenue par
-`NetworkSection`, qui ne nomme que ce qui fonctionne : les entreprises de
-fret vérifiées et le dépôt en point relais Mondial Relay — **par son nom,
-sans logo** : un logo se lit comme un partenariat, et il n'y en a pas
-avec Mondial Relay, dont on utilise le réseau à travers Sendcloud.
-Réactiver les logos impose donc de choisir une autre ancre, ou de les
-fondre dans cette section.
+**Ce que ça coûte :** une régie publicitaire peut encore lire la bande
+comme une revendication de partenariat, surtout pour les assureurs. Le
+risque est réduit par le cadre, pas supprimé.
+**Déclencheur :** la première annonce refusée pour ce motif, ou une
+réclamation d'une marque citée — retirer alors le groupe concerné, le
+reste de la page n'en dépend pas. À l'inverse, un accord signé fait
+passer la marque dans `NetworkSection`, nommée au présent.
 
 ### L'assurance est annoncée au futur, sans assureur nommé
 

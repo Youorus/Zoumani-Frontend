@@ -9,7 +9,7 @@
   html {
     min-height: 100%;
     scroll-behavior: smooth;
-    scroll-padding-top: 6rem;
+    scroll-padding-top: 5.5rem;
     background-color: var(--background);
     color: var(--foreground);
   }
@@ -19,10 +19,6 @@
     font-family: var(--font-body), sans-serif;
     font-optical-sizing: auto;
     line-height: 1.6;
-    background-image:
-      radial-gradient(circle at top left, rgb(255 107 0 / 0.18), transparent 28%),
-      radial-gradient(circle at top right, rgb(255 200 55 / 0.18), transparent 24%),
-      linear-gradient(180deg, rgb(255 255 255 / 0.24), transparent 24%);
   }
 
   h1,
@@ -30,11 +26,17 @@
   h3,
   h4 {
     font-family: var(--font-display), sans-serif;
-    /* 800 : c'est `ManropeExtraBold` qui tient le rôle du display dans
-       l'application. Sans cette graisse, les titres perdraient le poids
-       que le serif leur donnait, et la page paraîtrait plate. */
-    font-weight: 800;
-    letter-spacing: -0.03em;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    font-variation-settings: "opsz" 96, "wdth" 100;
+  }
+
+  /* L'insistance dans un titre se dit par la couleur, jamais par une
+     italique : Bricolage n'en a pas, et une italique synthétique se voit. */
+  h1 em,
+  h2 em,
+  h3 em {
+    font-style: normal;
   }
 
   ::selection {
@@ -77,4 +79,36 @@
 
 @utility interactive-surface {
   @apply transition-colors duration-200 ease-out hover:border-primary/25 hover:bg-surface-elevated;
+}
+
+/* ═══ La bande qui défile ═══
+
+   Les trajets du hero et les faits du bandeau de preuve passent en
+   continu. Deux copies du même contenu, décalées de 50 % : la fin de
+   la première coïncide avec le début de la seconde, et la boucle ne
+   saute jamais. En mouvement réduit, elle s'arrête et se laisse lire. */
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 48s) linear infinite;
+}
+
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    animation: none;
+  }
 }

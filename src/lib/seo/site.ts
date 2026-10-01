@@ -15,15 +15,15 @@ export const siteConfig = {
   themeColor: "#ff6b00",
   backgroundColor: "#fff8f0",
 
-  title: "Zoumani | Envoyez vos colis avec des voyageurs de confiance",
+  title: "Zoumani | Envoyez vos colis en Afrique avec des voyageurs et des compagnies vérifiés",
   shortTitle: "Zoumani",
   titleTemplate: "%s | Zoumani",
 
   description:
-    "Zoumani met en relation les expéditeurs de colis et les voyageurs qui ont de la place dans leurs bagages. Trouvez un voyage vers votre destination, vérifiez le profil du voyageur, déclarez votre colis, payez en toute sécurité et suivez la livraison.",
+    "Zoumani relie les expéditeurs de colis, les voyageurs qui ont de la place dans leurs bagages et les compagnies de fret, entre l’Europe et l’Afrique. Identités vérifiées, vols confirmés, paiement retenu jusqu’à la remise. Disponible sur l’App Store.",
 
   shortDescription:
-    "La marketplace qui relie expéditeurs de colis et voyageurs entre l’Afrique et le reste du monde.",
+    "La place de marché qui relie expéditeurs, voyageurs et compagnies de fret entre l’Europe et l’Afrique.",
 
   keywords: [
     "envoi de colis",
@@ -37,6 +37,10 @@ export const siteConfig = {
     "mise en relation expéditeur voyageur",
     "suivi de colis",
     "marketplace colis",
+    "compagnie de fret Afrique",
+    "GP Paris Dakar",
+    "envoyer un colis au Cameroun",
+    "envoyer un colis au Sénégal",
     "Zoumani",
   ],
 
@@ -82,6 +86,8 @@ export const siteConfig = {
     bing: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION,
     yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
   },
+  /** La fiche App Store, publiée le 1er octobre 2026. */
+  appStoreUrl: "https://apps.apple.com/fr/app/zoumani/id6803543420",
 } as const;
 
 /** Construit une URL absolue à partir d'un chemin relatif. */

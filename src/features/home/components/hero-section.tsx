@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { Audiences } from "./audiences/audiences";
+import { DownloadBand } from "./download/download-band";
 import { FaqSection } from "./faq/faq-section";
 import { HomeFooter } from "./footer/home-footer";
 import { Hero } from "./hero/hero";
@@ -10,65 +12,31 @@ import { homeContent } from "./home-content";
 import type { HomeLanguage } from "./home-content";
 import { HowItWorks } from "./how-it-works/how-it-works";
 import { NetworkSection } from "./network/network-section";
+import { SignalsStrip } from "./proof/signals-strip";
 import { TrustedPartners } from "./trusted-partners";
 
 /**
  * La page d'accueil, assemblée.
  *
- * ═══ Quatre sections, et rien d'autre ═══
+ * ═══ L'ordre raconte une histoire ═══
  *
- * Le slogan et les magasins ; comment ça marche ; avec qui le colis
- * avance ; les questions que l'on se pose. Puis le pied de page. Chaque
- * section répond à une question qu'un visiteur se pose vraiment, dans
- * l'ordre où elle lui vient — et « avec qui » ne se pose qu'une fois
- * qu'on a compris le principe.
+ * La promesse et l'application (hero) ; les chiffres qui disent qu'on
+ * joue déjà ; les réseaux qu'on emprunte ; à qui l'on parle, un chapitre par public (expéditeur,
+ * voyageur, entreprise) ; comment ça marche ; avec qui le colis avance
+ * (réseau) ; les questions ; le dernier appel à télécharger ; le pied.
  *
- * ═══ Ce qui a disparu ═══
- *
- * `PromoCards` (deux cartes qui redisaient le slogan), `AboutSection` (un
- * manifeste de six paragraphes), la frise photographique à six étapes, et
- * le bouton WhatsApp flottant. WhatsApp reste joignable depuis la FAQ et
- * le pied de page — deux endroits où l'on va quand on a une question, au
- * lieu d'une pastille qui suit le défilement.
+ * C'est l'ordre dans lequel un visiteur se pose les questions : est-ce
+ * pour moi, est-ce sûr, comment, avec qui, et maintenant quoi.
  *
  * ═══ Pourquoi la langue vit ici ═══
  *
  * C'est le plus haut composant client de la page, donc le seul endroit
  * d'où l'état peut descendre à la fois vers l'en-tête — qui porte le
- * sélecteur — et vers les sections qui affichent les textes. Le remonter
- * plus haut ferait basculer le layout racine en composant client, et la
- * page cesserait d'être pré-calculée.
+ * sélecteur — et vers les sections. Le remonter plus haut ferait
+ * basculer le layout racine en composant client, et la page cesserait
+ * d'être pré-calculée. Les sections elles-mêmes sont rendues par le
+ * serveur : le HTML servi contient tout le texte français.
  */
-/**
- * La section des logos est-elle affichée ?
- *
- * ═══ Pourquoi elle ne l'est pas ═══
- *
- * Elle montre treize marques — La Poste, DHL, UPS, FedEx, Chronopost,
- * Mondial Relay, Colis Privé, Asendia, AXA, Allianz, Chubb, Curacel,
- * Secursus — sous le titre « Zoumani s'appuie sur les acteurs de
- * l'acheminement et de l'assurance ». Aucun de ces partenariats n'est
- * conclu. L'avertissement existe, mais il est en petit et sous les logos.
- *
- * Une régie publicitaire refuse une annonce dont la page laisse croire à
- * un partenariat qui n'existe pas — et le refus tombe à l'examen de
- * l'annonce, c'est-à-dire au moment précis où l'on veut lancer. Le risque
- * de mise en demeure, lui, ne dépend d'aucune campagne.
- *
- * ═══ Pourquoi masquer plutôt que supprimer ═══
- *
- * Le composant, les logos et leurs sources restent en place : le jour
- * où un partenariat est signé, la section revient en repassant cette
- * valeur à `true` et en corrigeant le titre pour ne nommer que les
- * partenaires réels. Supprimer le travail obligerait à le refaire.
- *
- * ⚠️ Elle porte l'ancre `#partenaires`, aujourd'hui tenue par
- * `NetworkSection`. La réactiver demande d'en choisir une autre, ou de
- * la fondre dans le réseau : deux sections au même `id` casseraient le
- * menu.
- */
-const AFFICHER_PARTENAIRES = false;
-
 export function HeroSection() {
   const [language, setLanguage] = useState<HomeLanguage>("fr");
   const copy = homeContent[language];
@@ -77,9 +45,7 @@ export function HeroSection() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const root = document.documentElement;
-    const chapters = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-story-section]"),
-    );
+    const chapters = Array.from(document.querySelectorAll<HTMLElement>("[data-story-section]"));
 
     chapters.forEach((chapter) => {
       chapter.dataset.storyVisible = "false";
@@ -94,7 +60,7 @@ export function HeroSection() {
           observer.unobserve(entry.target);
         });
       },
-      { rootMargin: "0px 0px -8%", threshold: 0.08 },
+      { rootMargin: "0px 0px -8%", threshold: 0.06 },
     );
 
     chapters.forEach((chapter) => observer.observe(chapter));
@@ -107,21 +73,16 @@ export function HeroSection() {
 
   return (
     <>
-      <HeroHeader
-        copy={copy}
-        language={language}
-        onLanguageChange={setLanguage}
-      />
-      <Hero copy={copy.hero} />
-      {AFFICHER_PARTENAIRES && <TrustedPartners copy={copy.partners} />}
+      <HeroHeader copy={copy} language={language} onLanguageChange={setLanguage} />
+      <Hero copy={copy.hero} stores={copy.stores} whatsapp={copy.whatsapp} />
+      <SignalsStrip copy={copy.signals} />
+      <TrustedPartners copy={copy.partners} />
+      <Audiences copy={copy.audiences} stores={copy.stores} whatsapp={copy.whatsapp} />
       <HowItWorks copy={copy.howItWorks} />
       <NetworkSection copy={copy.network} />
       <FaqSection copy={copy.faq} whatsapp={copy.whatsapp} />
-      <HomeFooter
-        copy={copy.footer}
-        stores={copy.stores}
-        whatsapp={copy.whatsapp}
-      />
+      <DownloadBand copy={copy.download} stores={copy.stores} />
+      <HomeFooter copy={copy.footer} stores={copy.stores} whatsapp={copy.whatsapp} />
     </>
   );
 }

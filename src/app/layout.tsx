@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope } from "next/font/google";
+import { Bricolage_Grotesque, Manrope } from "next/font/google";
 import type { PropsWithChildren } from "react";
 
 import "./globals.css";
@@ -17,31 +17,34 @@ import { MetaPixel } from "@/components/analytics/meta-pixel";
 import { AppProviders } from "./providers";
 
 /**
- * Manrope, et elle seule.
+ * Deux familles : Manrope pour ce qui se lit, Bricolage Grotesque pour ce
+ * qui s'affiche.
  *
- * ═══ Pourquoi le serif est parti ═══
+ * ═══ Pourquoi une seconde grotesque, et pas un serif ═══
  *
- * Les titres étaient en Cormorant Garamond. L'application mobile, elle,
- * n'utilise que Manrope — corps et titres, jusqu'à l'ExtraBold. Deux
- * typographies pour une seule marque : le site et l'application ne se
- * ressemblaient pas, et c'est le genre d'écart qu'on ne sait pas nommer
- * mais qu'on ressent.
+ * Le site n'utilisait que Manrope : cohérent avec l'application, et
+ * interchangeable avec mille vitrines. Un serif a été essayé — trop
+ * éditorial pour une plateforme qui veut se lire comme une startup.
+ * Bricolage Grotesque garde le registre des grandes marques logicielles
+ * — une grotesque serrée, des titres en gras, des chiffres qui tiennent
+ * la page — avec des formes assez singulières (le « g », le « a », les
+ * terminaisons) pour qu'on la reconnaisse sans la nommer. Ses axes
+ * optique et de chasse permettent des titres très grands sans lourdeur.
  *
- * ═══ Ce qu'on y gagne au passage ═══
- *
- * Une famille au lieu de deux : une requête de moins, quelques dizaines
- * de kilo-octets de moins, et un basculement de police en moins au
- * premier affichage — ce que les Core Web Vitals comptent en CLS.
- *
- * Manrope couvre tout le registre nécessaire, du 400 au 800, et c'est une
- * police pensée pour l'écran : hauteur d'x généreuse, formes ouvertes,
- * excellente à petite taille sur un téléphone — d'où la majorité du
- * trafic viendra.
+ * L'application, elle, reste en Manrope : une application n'est pas une
+ * affiche.
  */
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
   display: "swap",
+});
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-bricolage",
+  display: "swap",
+  axes: ["opsz", "wdth"],
 });
 
 export const metadata: Metadata = {
@@ -161,7 +164,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html
       lang="fr"
-      className={manrope.variable}
+      className={`${manrope.variable} ${bricolage.variable}`}
       suppressHydrationWarning
     >
       <body>

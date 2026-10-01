@@ -67,7 +67,7 @@ export default function NotFound() {
       <p className={styles.more}>
         Ou revenez à <Link href="/">l’accueil</Link>, lisez la{" "}
         <Link href="/cgu">notice du service</Link>, ou{" "}
-        <Link href="/preinscription">pré-inscrivez-vous à l’ouverture</Link>.
+        <Link href="/preinscription">dites-nous votre trajet</Link>.
       </p>
     </main>
   );
