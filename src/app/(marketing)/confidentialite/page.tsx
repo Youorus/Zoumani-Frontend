@@ -4,7 +4,6 @@ import { SiteFooter, SiteHeader } from "@/components/layout/site-chrome";
 
 import { pageMetadata } from "@/lib/seo/metadata";
 
-import { siteConfig } from "@/lib/seo/site";
 import styles from "./page.module.css";
 
 /**
@@ -38,7 +37,8 @@ const SECTIONS = [
   {
     titre: "Qui traite vos données",
     corps: [
-      `Zoumani, éditeur de ce site, joignable à ${siteConfig.name.toLowerCase()} par l’adresse indiquée en pied de page. Aucune donnée n’est vendue, louée ou cédée à un tiers.`,
+      "Le responsable de traitement est Nkue Takoumba Marc Junior (EI), entreprise individuelle, 23 avenue Léon Bollée, 75013 Paris, immatriculée au R.C.S. de Paris sous le numéro 130 777 196. Zoumani est le service qu'elle édite. Pour toute question sur vos données : contact@zoumani.fr.",
+      "Aucune donnée n’est vendue, louée ou cédée à un tiers.",
     ],
   },
   {

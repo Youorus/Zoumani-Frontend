@@ -10,18 +10,21 @@ import styles from "../confidentialite/page.module.css";
 /**
  * Les mentions légales.
  *
- * ═══ Ce qui manque, et comment on le traite ═══
+ * ═══ L'identité de l'éditeur ═══
  *
- * L'identité de l'éditeur — raison sociale, forme juridique, siège,
- * immatriculation, directeur de publication — n'est connue de personne
- * dans ce dépôt. Elle est donc rassemblée dans `EDITEUR`, un seul objet
- * à compléter.
+ * Elle est connue depuis le 5 octobre 2026 : l'activité est immatriculée au
+ * R.C.S. de Paris, et l'extrait Kbis mentionne explicitement l'exploitation
+ * d'une plateforme de mise en relation pour l'envoi de colis — c'est Zoumani.
  *
- * Tant qu'il est vide, la page **le dit** plutôt que d'afficher des
- * crochets. Une mention légale qui annonce « [raison sociale] » en
- * production est pire qu'une page absente : elle donne l'apparence de la
- * conformité sans en avoir la substance, et c'est ce qu'un contrôle
- * relèverait en premier.
+ * Tout tient dans `EDITEUR`. Le repli qui disait « projet en cours de
+ * constitution » reste en place : si quelqu'un vidait ces champs, la page le
+ * dirait plutôt que d'afficher des crochets. Une mention légale qui annonce
+ * « [raison sociale] » en production est pire qu'une page absente : elle donne
+ * l'apparence de la conformité sans en avoir la substance.
+ *
+ * ⚠️ Zoumani n'est pas une société : c'est une activité exercée en entreprise
+ * individuelle. D'où « adresse de l'établissement » et non « siège social »,
+ * et le « (EI) » accolé au nom — la loi du 14 février 2022 l'impose.
  *
  * ═══ Ce qui est vrai dès aujourd'hui ═══
  *
@@ -38,21 +41,20 @@ export const metadata: Metadata = pageMetadata({
 });
 
 /**
- * L'identité de l'éditeur.
+ * L'identité de l'éditeur, relevée sur l'extrait Kbis du 5 octobre 2026.
  *
- * ⚠️ À compléter avant toute campagne publicitaire : la loi pour la
- * confiance dans l'économie numérique les rend obligatoires, et une régie
- * peut refuser une annonce pointant vers un site qui n'en a pas.
- *
- * Renseigner ces cinq champs suffit : la page s'affiche alors
- * entièrement, sans autre changement de code.
+ * La TVA : l'activité a commencé le 1er octobre 2026 et relève de la franchise
+ * en base. Si un numéro de TVA intracommunautaire est obtenu, il remplace cette
+ * ligne — annoncer la franchise en facturant de la TVA serait une erreur
+ * visible par les clients.
  */
 const EDITEUR = {
-  raisonSociale: "",
-  formeJuridique: "",
-  siege: "",
-  immatriculation: "",
-  directeurDePublication: "",
+  raisonSociale: "Nkue Takoumba Marc Junior (EI)",
+  formeJuridique: "entreprise individuelle (entrepreneur individuel)",
+  siege: "23 avenue Léon Bollée, 75013 Paris, France",
+  immatriculation: "R.C.S. Paris 130 777 196 — SIREN 130 777 196",
+  tva: "TVA non applicable, article 293 B du Code général des impôts",
+  directeurDePublication: "Marc Junior Nkue Takoumba",
   contact: "contact@zoumani.fr",
 } as const;
 
@@ -72,11 +74,14 @@ export default function MentionsLegalesPage() {
           <h2 className={styles.sectionTitle}>Éditeur du site</h2>
           {IDENTITE_CONNUE ? (
             <p className={styles.paragraph}>
-              {EDITEUR.raisonSociale}, {EDITEUR.formeJuridique}.
+              Zoumani est un service édité par {EDITEUR.raisonSociale},{" "}
+              {EDITEUR.formeJuridique}.
               <br />
-              Siège social : {EDITEUR.siege}.
+              Adresse de l’établissement : {EDITEUR.siege}.
               <br />
               {EDITEUR.immatriculation}.
+              <br />
+              {EDITEUR.tva}.
               <br />
               Directeur de la publication : {EDITEUR.directeurDePublication}.
               <br />
@@ -141,7 +146,7 @@ export default function MentionsLegalesPage() {
           </p>
         </section>
 
-        <p className={styles.updated}>Dernière mise à jour : 30 août 2026.</p>
+        <p className={styles.updated}>Dernière mise à jour : 5 octobre 2026.</p>
       </main>
       <SiteFooter />
     </>
