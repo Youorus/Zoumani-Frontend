@@ -60,7 +60,11 @@ export interface HomeContent {
     /** La bande qui défile sous le hero. */
     tickerLabel: string;
     ticker: readonly string[];
-    phoneAlt: string;
+    /** Le portrait qui occupe la scène, et la carte posée dessus. */
+    portraitAlt: string;
+    arrivalRoute: string;
+    arrivalStatus: string;
+    appChipAlt: string;
   };
 
   /**
@@ -282,7 +286,11 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         "Milan → Dakar",
         "Rome → Addis-Abeba",
       ],
-      phoneAlt: "L’application Zoumani : la recherche d’un voyageur vers Abidjan.",
+      portraitAlt:
+        "Une femme sourit, chez elle, après avoir reçu un colis envoyé d’Europe.",
+      arrivalRoute: "Paris → Douala",
+      arrivalStatus: "Colis remis",
+      appChipAlt: "L’application Zoumani : la recherche d’un voyageur vers Abidjan.",
     },
 
     signals: {
@@ -756,7 +764,11 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         "Milan → Dakar",
         "Rome → Addis Ababa",
       ],
-      phoneAlt: "The Zoumani app: searching for a traveller to Abidjan.",
+      portraitAlt:
+        "A woman smiling at home after receiving a parcel sent from Europe.",
+      arrivalRoute: "Paris → Douala",
+      arrivalStatus: "Parcel delivered",
+      appChipAlt: "The Zoumani app: searching for a traveller to Abidjan.",
     },
 
     signals: {

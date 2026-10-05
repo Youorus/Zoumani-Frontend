@@ -210,127 +210,10 @@
   opacity: 0.55;
 }
 
-/*
- * Le cadre, en trois couches.
- *
- * La tranche : un dégradé métallique sombre, avec un liseré clair sur
- * l'arête éclairée (`::before`). La lunette : un anneau noir, en ombre
- * interne. L'écran : la capture, aux coins calés sur ceux du cadre.
- * L'inclinaison est en perspective — rotation sur Y et X — et non un
- * simple pivot : c'est ce qui donne l'épaisseur.
- */
-.device {
-  position: relative;
-  width: clamp(16rem, 20vw, 20.5rem);
-  aspect-ratio: 1290 / 2796;
-  margin: 0;
-  padding: 0.7rem;
-  border-radius: 3.4rem;
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--noir-ebene) 55%, var(--inverse-foreground)) 0%,
-    color-mix(in srgb, var(--noir-ebene) 88%, var(--inverse-foreground)) 18%,
-    var(--noir-ebene) 50%,
-    color-mix(in srgb, var(--noir-ebene) 86%, var(--inverse-foreground)) 100%
-  );
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--inverse-foreground) 14%, transparent),
-    0 70px 120px -40px color-mix(in srgb, var(--hero-canvas) 95%, transparent),
-    0 40px 60px -30px color-mix(in srgb, var(--primary) 35%, transparent),
-    0 2px 0 0 color-mix(in srgb, var(--inverse-foreground) 10%, transparent);
-  transform: rotateZ(-3deg);
-  transform-style: preserve-3d;
-  animation: hover 7s ease-in-out infinite;
-}
-
-/* Le liseré de l'arête éclairée. */
-.device::before {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    150deg,
-    color-mix(in srgb, var(--inverse-foreground) 55%, transparent) 0%,
-    transparent 28%,
-    transparent 72%,
-    color-mix(in srgb, var(--inverse-foreground) 22%, transparent) 100%
-  );
-  content: "";
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
 /* Les boutons, en relief sur la tranche. */
 .buttonMute,
 .buttonVolumeUp,
 .buttonVolumeDown,
-.buttonPower {
-  position: absolute;
-  width: 3px;
-  border-radius: 2px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--noir-ebene) 70%, var(--inverse-foreground)),
-    var(--noir-ebene)
-  );
-}
-
-.buttonMute {
-  top: 17%;
-  left: -3px;
-  height: 4%;
-}
-
-.buttonVolumeUp {
-  top: 24%;
-  left: -3px;
-  height: 7%;
-}
-
-.buttonVolumeDown {
-  top: 32.5%;
-  left: -3px;
-  height: 7%;
-}
-
-.buttonPower {
-  top: 26%;
-  right: -3px;
-  height: 11%;
-}
-
-.screen {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  border-radius: 2.75rem;
-  background: var(--background);
-  box-shadow: inset 0 0 0 0.3rem var(--noir-ebene);
-}
-
-.screenImage {
-  object-fit: cover;
-  object-position: top;
-}
-
-/* Le reflet de la vitre : une diagonale claire, très légère. */
-.glare {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    115deg,
-    color-mix(in srgb, var(--inverse-foreground) 16%, transparent) 0%,
-    color-mix(in srgb, var(--inverse-foreground) 4%, transparent) 28%,
-    transparent 42%
-  );
-  pointer-events: none;
-}
-
 /* ═══ La bande des trajets ═══ */
 .ticker {
   position: relative;
@@ -449,8 +332,19 @@
     height: 20rem;
   }
 
-  .device {
-    width: 16rem;
+  .portrait {
+    width: 17rem;
+  }
+
+  .appChip {
+    width: 3.8rem;
+    right: -1rem;
+    bottom: -0.9rem;
+  }
+
+  .arrival {
+    left: -1rem;
+    bottom: 1.2rem;
   }
 
   .tilt {
@@ -490,7 +384,7 @@
     animation: none;
   }
 
-  .device,
+  .portrait,
   .satellite,
   .satelliteSlow,
   .pulse::after {
@@ -500,4 +394,104 @@
   .tilt {
     transition: none;
   }
+}
+
+/* ═══ La carte postale ═══
+
+   Le portrait occupe la place qu'avait le téléphone : même inclinaison,
+   mêmes orbites derrière, même halo dessous. Deux objets s'y posent — la
+   carte d'arrivée et la vignette de l'application — et c'est leur
+   décalage hors du cadre qui donne la profondeur. */
+
+.portrait {
+  position: relative;
+  width: clamp(17rem, 23vw, 23rem);
+  aspect-ratio: 2 / 3;
+  margin: 0;
+  transform: rotateZ(-3deg);
+  transform-style: preserve-3d;
+  animation: hover 7s ease-in-out infinite;
+}
+
+.portraitFrame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  border-radius: 1.75rem;
+  background: var(--noir-ebene);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--inverse-foreground) 16%, transparent),
+    0 70px 120px -40px color-mix(in srgb, var(--hero-canvas) 95%, transparent),
+    0 40px 60px -30px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+.portraitImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* La carte d'arrivée : elle déborde à gauche, pour qu'on la lise comme
+   posée SUR la photo et non dedans. */
+.arrival {
+  position: absolute;
+  bottom: 1.6rem;
+  left: -1.6rem;
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--inverse-foreground) 94%, transparent);
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 45%);
+  backdrop-filter: blur(6px);
+  transform: translateZ(40px);
+}
+
+.arrivalRoute {
+  font-weight: 650;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  color: var(--noir-ebene);
+}
+
+.arrivalStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--noir-ebene) 62%, transparent);
+}
+
+.arrivalCheck {
+  width: 0.85rem;
+  height: 0.85rem;
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* La vignette de l'application : en bas à droite, elle fait contrepoids à la
+   carte d'arrivée. En haut elle entrait en concurrence avec le visage, et une
+   scène ne peut pas avoir deux sujets. Petite, et inclinée à l'inverse du
+   portrait : une seconde carte glissée derrière la première. */
+.appChip {
+  position: absolute;
+  right: -1.5rem;
+  bottom: -1.2rem;
+  overflow: hidden;
+  width: 4.6rem;
+  aspect-ratio: 9 / 16;
+  border-radius: 0.8rem;
+  background: var(--noir-ebene);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--inverse-foreground) 22%, transparent),
+    0 20px 44px -18px rgb(0 0 0 / 55%);
+  transform: translateZ(60px) rotateZ(6deg);
+}
+
+.appChipImage {
+  object-fit: cover;
+  object-position: top;
 }

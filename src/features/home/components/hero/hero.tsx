@@ -18,19 +18,23 @@ import { AppStoreBadge } from "./store-badges";
  * lumière et le téléphone une chose qu'on a envie de prendre. C'est
  * aussi ce qui fait qu'on sait qu'on est arrivé quelque part.
  *
- * ═══ Le téléphone est revenu ═══
+ * ═══ Un visage, pas un téléphone ═══
  *
- * Il avait été retiré parce que l'application n'existait pas : montrer
- * une offre qu'on n'a pas est le plus court chemin vers la déception.
- * Elle existe maintenant, sur l'App Store, et l'écran montré est le sien.
+ * La scène montrait l'application. Elle montre maintenant quelqu'un qui
+ * sourit : « ça fait plaisir de tomber sur une page et de voir des gens
+ * avec le sourire » (une amie de Marc, 5 octobre 2026). Le mécanisme —
+ * place de marché, identités vérifiées — est déjà dit par le texte à
+ * gauche ; la scène n'a pas à le répéter, elle doit donner envie.
  *
- * Le cadre est dessiné en CSS, en trois couches — tranche, lunette,
- * écran — avec ses boutons, un reflet sur la vitre et une inclinaison en
- * perspective : c'est ce qui le fait lire comme un objet et non comme
- * une capture dans un rectangle arrondi. Il flotte lentement, suit le
- * pointeur de quelques degrés, et trois orbites fines tournent derrière
- * lui. Rien d'autre : les étiquettes qui le survolaient cachaient
- * l'écran et disaient ce que le reste de la page dit mieux.
+ * Trois couches, comme une carte postale posée sur la table :
+ *
+ *   - le portrait, incliné et flottant, dans le cadre que le téléphone
+ *     occupait — mêmes orbites derrière, même halo orange dessous ;
+ *   - la carte d'arrivée en bas à gauche, qui dit le corridor et son
+ *     issue, dans le vocabulaire de la bande qui défile en dessous ;
+ *   - la vignette de l'application en haut à droite, petite : le bandeau
+ *     promet un App Store, la page doit le montrer, mais ce n'est plus
+ *     le sujet.
  *
  * ═══ La bande des corridors ═══
  *
@@ -99,22 +103,41 @@ export function Hero({
           </svg>
           <div className={styles.glow} aria-hidden="true" />
           <DeviceTilt className={styles.tilt}>
-            <figure className={styles.device}>
-              <span className={styles.buttonMute} aria-hidden="true" />
-              <span className={styles.buttonVolumeUp} aria-hidden="true" />
-              <span className={styles.buttonVolumeDown} aria-hidden="true" />
-              <span className={styles.buttonPower} aria-hidden="true" />
-              <div className={styles.screen}>
+            <figure className={styles.portrait}>
+              <div className={styles.portraitFrame}>
                 <Image
-                  src="/images/hero/zoumani-app-screen.webp"
-                  alt={copy.phoneAlt}
+                  src="/images/hero/zoumani-sourire-pagne.webp"
+                  alt={copy.portraitAlt}
                   fill
                   priority
-                  sizes="(max-width: 64rem) 17rem, 21rem"
-                  className={styles.screenImage}
+                  sizes="(max-width: 64rem) 18rem, 23rem"
+                  className={styles.portraitImage}
                 />
-                <span className={styles.glare} aria-hidden="true" />
               </div>
+
+              {/* L'arrivée, posée sur la photo : le corridor et son issue. Le
+                  même vocabulaire que la bande qui défile en dessous. */}
+              <figcaption className={styles.arrival}>
+                <span className={styles.arrivalRoute}>{copy.arrivalRoute}</span>
+                <span className={styles.arrivalStatus}>
+                  <svg viewBox="0 0 16 16" aria-hidden="true" className={styles.arrivalCheck}>
+                    <path d="M3 8.4l3.2 3.2L13 4.8" />
+                  </svg>
+                  {copy.arrivalStatus}
+                </span>
+              </figcaption>
+
+              {/* L'application ne disparaît pas : elle passe au second plan.
+                  Le bandeau promet un App Store, la page doit le montrer. */}
+              <span className={styles.appChip}>
+                <Image
+                  src="/images/hero/zoumani-app-screen.webp"
+                  alt={copy.appChipAlt}
+                  fill
+                  sizes="7rem"
+                  className={styles.appChipImage}
+                />
+              </span>
             </figure>
           </DeviceTilt>
         </div>
