@@ -495,3 +495,94 @@
   object-fit: cover;
   object-position: top;
 }
+
+/* ═══ Les gages, et les chiffres ═══
+
+   La référence que Marc a montrée tire sa crédibilité de deux choses : un
+   visage qui regarde, et des chiffres sous l'appel à l'action. On fait la
+   même chose, avec nos chiffres — ceux qui sont vrais et datés. */
+
+.badge {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--inverse-foreground) 94%, transparent);
+  box-shadow: 0 14px 34px -14px rgb(0 0 0 / 45%);
+  backdrop-filter: blur(6px);
+  font-size: 0.78rem;
+  font-weight: 560;
+  white-space: nowrap;
+  color: var(--noir-ebene);
+  transform: translateZ(50px);
+}
+
+.badgeOne {
+  top: 14%;
+  left: -2.6rem;
+}
+
+.badgeTwo {
+  top: 38%;
+  right: -2.2rem;
+}
+
+.badgeCheck {
+  width: 0.8rem;
+  height: 0.8rem;
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.6rem 2.4rem;
+  margin: 1.8rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--inverse-foreground) 12%, transparent);
+}
+
+.proofItem {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.proofValue {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  color: var(--inverse-foreground);
+}
+
+.proofLabel {
+  margin: 0;
+  font-size: 0.82rem;
+  color: color-mix(in srgb, var(--inverse-foreground) 62%, transparent);
+}
+
+@media (max-width: 63.99rem) {
+  .badgeOne {
+    left: -1.4rem;
+  }
+
+  .badgeTwo {
+    right: -1.2rem;
+  }
+}
+
+@media (max-width: 39.99rem) {
+  .proof {
+    gap: 1.2rem 1.6rem;
+  }
+
+  .proofValue {
+    font-size: 1.25rem;
+  }
+}

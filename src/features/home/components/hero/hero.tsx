@@ -49,10 +49,12 @@ export function Hero({
   copy,
   stores,
   whatsapp,
+  signals,
 }: {
   copy: HomeContent["hero"];
   stores: HomeContent["stores"];
   whatsapp: HomeContent["whatsapp"];
+  signals: HomeContent["signals"];
 }) {
   const [avantAccent, apresAccent] = copy.description.split("{accent}");
 
@@ -89,6 +91,19 @@ export function Hero({
             </a>
           </div>
           <p className={styles.note}>{copy.note}</p>
+
+          {/* Trois chiffres, au-dessus de la ligne de flottaison. Ils sont
+              répétés plus bas en détail ; ici ils ne font qu'une chose,
+              rassurer avant que le visiteur ait décidé de descendre. Ce sont
+              les mêmes, pris à la même source : pas de second jeu à tenir. */}
+          <dl className={styles.proof}>
+            {signals.items.slice(0, 3).map((item) => (
+              <div key={item.label} className={styles.proofItem}>
+                <dt className={styles.proofValue}>{item.value}</dt>
+                <dd className={styles.proofLabel}>{item.label}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
 
         <div className={styles.stage}>
@@ -126,6 +141,20 @@ export function Hero({
                   {copy.arrivalStatus}
                 </span>
               </figcaption>
+
+              {/* Les gages, posés sur la photo : ce que la description promet
+                  à gauche, montré là où le regard se pose. */}
+              {copy.badges.map((badge, rang) => (
+                <span
+                  key={badge}
+                  className={`${styles.badge} ${rang === 0 ? styles.badgeOne : styles.badgeTwo}`}
+                >
+                  <svg viewBox="0 0 16 16" aria-hidden="true" className={styles.badgeCheck}>
+                    <path d="M3 8.4l3.2 3.2L13 4.8" />
+                  </svg>
+                  {badge}
+                </span>
+              ))}
 
               {/* L'application ne disparaît pas : elle passe au second plan.
                   Le bandeau promet un App Store, la page doit le montrer. */}
