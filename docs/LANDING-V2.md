@@ -34,6 +34,10 @@ Fichiers de production modifiés : `hero/hero.tsx`, `hero/hero.module.css`,
 `page-instrumentation.tsx` et `src/app/sitemap.ts`. Le sitemap date la
 modification de l’accueil au 6 octobre 2026.
 
+Le portrait intégré est désormais un diaporama de quatre photographies
+Pexels locales, toutes les cinq secondes, avec pause et mouvement réduit.
+Voir `HERO-PHOTOS.md` pour le catalogue et les choix de chargement.
+
 Les tests couvrent les téléchargements, la mesure unique du clic Apple,
 les corridors, le mouvement réduit, la largeur mobile et le maintien FR/EN.
 Après restauration : TypeScript, lint (0 erreur ; 1 avertissement préexistant),

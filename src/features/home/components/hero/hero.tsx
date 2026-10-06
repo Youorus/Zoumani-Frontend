@@ -5,6 +5,7 @@ import { buildWhatsAppUrl } from "@/lib/contact/build-whatsapp-url";
 
 import type { HomeContent } from "../home-content";
 import styles from "./hero.module.css";
+import { HeroPortrait } from "./hero-portrait";
 import { StoreBadges } from "./store-badges";
 
 export function Hero({ copy, stores, whatsapp }: {
@@ -47,20 +48,11 @@ export function Hero({ copy, stores, whatsapp }: {
         </div>
         <div className={styles.stage}>
           <div className={styles.orbit} aria-hidden="true" />
-          <figure className={styles.portrait}>
-            <Image
-              src="/images/hero/zoumani-sourire-pagne.webp"
-              alt={copy.portraitAlt}
-              fill
-              sizes="(max-width: 600px) 82vw, (max-width: 1000px) 55vw, 440px"
-              loading="eager"
-              fetchPriority="high"
-              className={styles.portraitImage}
-            />
-            <figcaption className={styles.caption}>
-              {copy.photoCaption}<br /><strong>{copy.photoCaptionEmphasis}</strong>
-            </figcaption>
-          </figure>
+          <HeroPortrait
+            language={stores.locale}
+            caption={copy.photoCaption}
+            captionEmphasis={copy.photoCaptionEmphasis}
+          />
           <div className={styles.device}>
             <Image
               src="/images/hero/zoumani-app-screen.webp"

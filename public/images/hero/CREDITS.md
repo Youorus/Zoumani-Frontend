@@ -1,43 +1,49 @@
-# Les images, et ce qu'elles disent
+# Photographies du Hero Zoumani
 
-Toutes sous [licence Pexels](https://www.pexels.com/license/) : usage commercial
-libre, modification autorisée, attribution non obligatoire. Elle est écrite ici
-quand même — dans deux ans, personne ne saura d'où vient une image sans ça.
+Photographies sous [licence Pexels](https://www.pexels.com/license/), vérifiée
+le 6 octobre 2026 : utilisation gratuite sur un site et dans des campagnes
+commerciales, recadrage autorisé, attribution appréciée mais non obligatoire.
+Les images restent protégées par cette licence ; « libres de droits » ne
+signifie pas domaine public. Les personnes photographiées illustrent le lien
+humain, sans être présentées comme clientes ou comme recommandant Zoumani.
 
-## En place
+## Catalogue intégré
 
-| Fichier | Auteur | Source |
-|---|---|---|
-| `zoumani-sourire-pagne.webp` | hashtag-melvin | [pexels.com/photo/36039096](https://www.pexels.com/photo/36039096/) |
+| Fichier | Thème | Auteur | Source |
+|---|---|---|---|
+| `zoumani-sourire-pagne.webp` | Le plaisir de retrouver un sourire | hashtag-melvin | [Pexels 36039096](https://www.pexels.com/photo/36039096/) |
+| `zoumani-trois-generations.webp` | Le lien entre générations | macd | [Pexels 38405256](https://www.pexels.com/photo/38405256/) |
+| `zoumani-plaisir-colis.webp` | Le sourire à l’ouverture d’un colis | Mikhail Nilov | [Pexels 6969689](https://www.pexels.com/photo/6969689/) |
+| `zoumani-lien-video.webp` | Partager un moment malgré la distance | Askar Abayev | [Pexels 6193635](https://www.pexels.com/photo/6193635/) |
 
-Recadrée depuis l'original 4160 × 6240, exportée en WebP qualité 84,
-1200 × 1800.
+La liste exécutable, les textes alternatifs FR/EN et le délai de rotation sont
+dans `src/features/home/model/hero-photos.ts`. Les crédits des nouvelles
+photos reprennent la présélection déjà documentée dans ce dépôt. Les fichiers
+ont été téléchargés depuis le CDN officiel `images.pexels.com` le 6 octobre
+2026 ; aucune image générée ni retouche des personnes n’a été ajoutée.
 
-## Les autres candidates, si l'on veut changer
+## Préparation
 
-Elles ne sont pas versionnées — cinq images inutilisées pèsent huit cents
-kilo-octets dans l'historique pour toujours. Leurs sources suffisent à les
-refaire en deux minutes.
+Le portrait initial est conservé : original 4160 × 6240, WebP qualité 84,
+1200 × 1800. Pour les nouvelles images, téléchargement à 1600 px de large,
+recadrage local puis WebP qualité 83 ; aucun agrandissement.
 
-| Ce qu'elle montre | Auteur | Source |
-|---|---|---|
-| Trois générations — grand-mère, mère, enfant | macd | [pexels.com/photo/38405256](https://www.pexels.com/photo/38405256/) |
-| Un portrait, adossée au mur ocre | tkirkgoz | [pexels.com/photo/11459125](https://www.pexels.com/photo/11459125/) |
-| La surprise — elle soulève le couvercle | Mikhail Nilov | [pexels.com/photo/6970008](https://www.pexels.com/photo/6970008/) |
-| L'ouverture — le geste complet | Mikhail Nilov | [pexels.com/photo/6969689](https://www.pexels.com/photo/6969689/) |
-| L'appel vidéo, en dashiki | Askar Abayev | [pexels.com/photo/6193635](https://www.pexels.com/photo/6193635/) |
+| Fichier | Recadrage dans le JPEG téléchargé | Export | Taille |
+|---|---|---|---|
+| `zoumani-trois-generations.webp` | 1600 × 1600, origine (0, 0) | 1200 × 1200 | 145 728 octets |
+| `zoumani-plaisir-colis.webp` | 1600 × 1600, origine (0, 0) | 1200 × 1200 | 56 316 octets |
+| `zoumani-lien-video.webp` | 1068 × 1068, origine (280, 0) | 1068 × 1068 | 146 942 octets |
 
-## La règle de casting
+Les trois ajouts représentent environ 341 Kio avant optimisation par
+`next/image`. Les JPEG temporaires ne sont pas versionnés. Le catalogue
+visuel est dans `docs/HERO-PHOTOS.md`.
 
-Le sujet de Zoumani n'est pas la livraison : c'est **le lien**. Un coursier au
-pas de la porte raconte Amazon. Une grand-mère qui rit, un couvercle qu'on
-soulève, un appel vidéo — ça raconte pourquoi on envoie quelque chose au pays.
+## Autres candidates non intégrées
 
-Un cadrage qui coupe le haut d'un crâne est refusé : chaque image garde le
-format qui lui va, 2:3 ou 4:5, plutôt qu'un gabarit unique imposé.
+| Ce qu’elle montre | Auteur | Source | Choix |
+|---|---|---|---|
+| Portrait devant un mur ocre | tkirkgoz | [Pexels 11459125](https://www.pexels.com/photo/11459125/) | Moins de contexte sur le lien ou les colis. |
+| Ouverture d’une boîte, second angle | Mikhail Nilov | [Pexels 6970008](https://www.pexels.com/photo/6970008/) | Le sourire est plus net dans l’angle retenu. |
 
-**Et ce qu'on refuse.** Une photo de bénévoles nigérianes, colis dans les bras,
-sourires francs — écartée : les cartons portent le logo de la *Lagos Food Bank
-Initiative*, une organisation réelle. L'afficher laisserait croire à un
-partenariat ; les mentions légales disent l'inverse. Pas de marque, pas de logo,
-pas d'organisation identifiable.
+Pas de coursier générique, de logo d’organisation identifiable, de faux
+partenariat ou de témoignage attribué aux personnes photographiées.

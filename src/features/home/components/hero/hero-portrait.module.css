@@ -1,0 +1,32 @@
+.portrait { position: absolute; top: 0; left: 24px; width: calc(100% - 81px); height: 464px; margin: 0; overflow: hidden; border-radius: 140px 140px 20px 20px; background: var(--hero-canvas); }
+.portrait::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(transparent 57%, color-mix(in srgb, var(--chapter-business-canvas) 82%, transparent)); }
+.photo { object-fit: cover; object-position: center; opacity: 0; transition: opacity 700ms ease-in-out; }
+.photo[data-active="true"] { opacity: 1; }
+.photo[data-photo="sourire-pagne"] { object-position: 50% 43%; }
+.caption { position: absolute; bottom: 91px; left: 27px; z-index: 1; font-size: 15px; line-height: 1.45; color: var(--inverse-foreground); }
+.caption strong { font-family: var(--font-display); font-size: 24px; letter-spacing: -0.025em; font-weight: 700; }
+.pauseButton { position: absolute; z-index: 3; top: 18px; left: calc(50% - 22px); display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--hero-glass-border); border-radius: 50%; background: color-mix(in srgb, var(--chapter-business-canvas) 65%, transparent); color: var(--inverse-foreground); cursor: pointer; }
+.pauseButton:hover { background: var(--chapter-business-canvas); }
+.pauseButton:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+@media (max-width: 1100px) {
+  .portrait { height: 425px; width: calc(100% - 45px); left: 0; }
+}
+@media (max-width: 800px) {
+  .portrait { height: 374px; border-radius: 110px 110px 16px 16px; }
+  .caption { left: 19px; bottom: 86px; font-size: 13px; }
+  .caption strong { font-size: 19px; }
+}
+@media (max-width: 600px) {
+  .portrait { left: 14px; width: calc(100% - 54px); height: 324px; border-radius: 100px 100px 14px 14px; }
+  .photo[data-photo="sourire-pagne"] { object-position: 50% 53%; }
+  .caption { left: 19px; bottom: 86px; }
+  .caption strong { font-size: 22px; }
+}
+@media (max-width: 360px) {
+  .portrait { height: 295px; left: 8px; }
+  .caption strong { font-size: 19px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .photo { transition: none; }
+  .pauseButton { display: none; }
+}

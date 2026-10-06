@@ -28,6 +28,17 @@ les badges App Store et Google Play, ainsi que les 34 corridors défilants.
 Le badge Google Play reste « Bientôt » tant que son URL de publication n’est
 pas configurée ; le lien entreprise rejoint le contact WhatsApp existant.
 
+## Photos du Hero
+
+La photo change toutes les **5 secondes**, avec un fondu de 700 ms. Le bouton
+pause permet d’arrêter et de reprendre la rotation. Elle s’arrête aussi hors
+du Hero, dans un onglet masqué ou avec `prefers-reduced-motion`.
+
+Les quatre photographies Pexels sont hébergées localement. Leur catalogue,
+leurs crédits et leurs cadrages sont dans [HERO-PHOTOS.md](docs/HERO-PHOTOS.md)
+et [CREDITS.md](public/images/hero/CREDITS.md). La liste et le délai se règlent
+dans `src/features/home/model/hero-photos.ts`.
+
 Ce dépôt portait aussi l'espace connecté — envois, voyages, paiements,
 suivi, vérification d'identité — et l'administration. Le 20 août 2026, les
 deux sont partis : l'espace utilisateur vers l'application mobile
@@ -36,7 +47,7 @@ et qui en garde l'historique.
 
 ## Ce qu'il contient
 
-- `/` — le Hero « Envoyez vos colis. Rentabilisez vos voyages. », une photo humaine et la capture de l’application, quatre indicateurs datés, les réseaux de transport, trois chapitres (expéditeur, voyageur, entreprise de fret), fonctionnement, réseau (fret, vols confirmés, relais, assurance à venir), FAQ, téléchargement.
+- `/` — le Hero « Envoyez vos colis. Rentabilisez vos voyages. », quatre photographies en rotation et la capture de l’application, quatre indicateurs datés, les réseaux de transport, trois chapitres (expéditeur, voyageur, entreprise de fret), fonctionnement, réseau (fret, vols confirmés, relais, assurance à venir), FAQ, téléchargement.
 - `/envoyer-un-colis` et `/proposer-un-voyage` — deux pages d'entrée.
   « Envoyer un colis » et « rentabiliser ses kilos » ne sont pas la même
   recherche, ne se formulent pas dans les mêmes mots, et ne s'achètent
