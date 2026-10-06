@@ -23,8 +23,10 @@ npm run dev
 
 Le quota se règle dans `src/features/home-preview/model/preview-config.ts`.
 Le remplacement des autres sections attend une validation distincte.
-Les boutons du Hero rejoignent les sections expéditeur, voyageur et entreprise
-existantes ; le téléchargement reste accessible dans la navigation et le bas de page.
+Le Hero conserve le slogan « Envoyez vos colis. Rentabilisez vos voyages. »,
+les badges App Store et Google Play, ainsi que les 34 corridors défilants.
+Le badge Google Play reste « Bientôt » tant que son URL de publication n’est
+pas configurée ; le lien entreprise rejoint le contact WhatsApp existant.
 
 Ce dépôt portait aussi l'espace connecté — envois, voyages, paiements,
 suivi, vérification d'identité — et l'administration. Le 20 août 2026, les
@@ -34,7 +36,7 @@ et qui en garde l'historique.
 
 ## Ce qu'il contient
 
-- `/` — le Hero « Vos colis voyagent. Vos liens restent proches. », une photo humaine et la capture de l’application, quatre indicateurs datés, les réseaux de transport, trois chapitres (expéditeur, voyageur, entreprise de fret), fonctionnement, réseau (fret, vols confirmés, relais, assurance à venir), FAQ, téléchargement.
+- `/` — le Hero « Envoyez vos colis. Rentabilisez vos voyages. », une photo humaine et la capture de l’application, quatre indicateurs datés, les réseaux de transport, trois chapitres (expéditeur, voyageur, entreprise de fret), fonctionnement, réseau (fret, vols confirmés, relais, assurance à venir), FAQ, téléchargement.
 - `/envoyer-un-colis` et `/proposer-un-voyage` — deux pages d'entrée.
   « Envoyer un colis » et « rentabiliser ses kilos » ne sont pas la même
   recherche, ne se formulent pas dans les mêmes mots, et ne s'achètent

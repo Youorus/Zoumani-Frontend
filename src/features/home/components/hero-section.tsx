@@ -75,7 +75,7 @@ export function HeroSection() {
   return (
     <>
       <HeroHeader copy={copy} language={language} onLanguageChange={setLanguage} />
-      <Hero copy={copy.hero} />
+      <Hero copy={copy.hero} stores={copy.stores} whatsapp={copy.whatsapp} />
       <SignalsStrip copy={copy.signals} />
       <TrustedPartners copy={copy.partners} />
       <ReachSection copy={copy.reach} />

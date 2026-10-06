@@ -76,9 +76,9 @@ describe("le dictionnaire de la page d'accueil", () => {
     }
   });
 
-  it("garde la promesse du Hero validé en tête de page", () => {
-    expect(homeContent.fr.hero.title).toBe("Vos colis voyagent. {em}");
-    expect(homeContent.fr.hero.titleEmphasis).toBe("Vos liens restent proches.");
+  it("garde le slogan de la marque en tête de page", () => {
+    expect(homeContent.fr.hero.title).toBe("Envoyez vos colis. {em}");
+    expect(homeContent.fr.hero.titleEmphasis).toBe("Rentabilisez vos voyages.");
   });
 
   it("donne deux parcours de trois étapes à « Comment ça marche »", () => {

@@ -52,10 +52,11 @@ export interface HomeContent {
     title: string;
     titleEmphasis: string;
     description: string;
-    primaryCta: string;
-    travelerCta: string;
+    descriptionAccent: string;
     secondaryCta: string;
     note: string;
+    tickerLabel: string;
+    ticker: readonly string[];
     /** Le portrait qui occupe la scène, et la carte posée dessus. */
     portraitAlt: string;
     arrivalRoute: string;
@@ -240,15 +241,51 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
 
     hero: {
-      eyebrow: "ENVOYER · VOYAGER · CONNECTER",
-      title: "Vos colis voyagent. {em}",
-      titleEmphasis: "Vos liens restent proches.",
+      eyebrow: "Disponible sur l’App Store · Android arrive",
+      title: "Envoyez vos colis. {em}",
+      titleEmphasis: "Rentabilisez vos voyages.",
       description:
-        "Trouvez un voyageur ou une entreprise de fret pour vos colis. Vous voyagez ? Valorisez vos kilos libres.",
-      primaryCta: "Envoyer un colis",
-      travelerCta: "Je voyage",
+        "La place de marché qui relie expéditeurs, voyageurs et compagnies de fret entre l’Europe et l’Afrique. {accent}",
+      descriptionAccent: "Identités vérifiées, vols confirmés, entreprises établies.",
       secondaryCta: "Je suis une entreprise de fret",
-      note: "Entre l’Europe, l’Afrique et ceux qui comptent.",
+      note: "Gratuit pour les particuliers. Sans engagement.",
+      tickerLabel: "Corridors Europe → Afrique",
+      ticker: [
+        "Paris → Dakar",
+        "Paris → Douala",
+        "Paris → Abidjan",
+        "Paris → Bamako",
+        "Paris → Yaoundé",
+        "Paris → Casablanca",
+        "Paris → Alger",
+        "Paris → Tunis",
+        "Paris → Kinshasa",
+        "Paris → Lomé",
+        "Paris → Cotonou",
+        "Paris → Conakry",
+        "Paris → Libreville",
+        "Paris → Brazzaville",
+        "Paris → Ouagadougou",
+        "Paris → Niamey",
+        "Paris → Nouakchott",
+        "Paris → Antananarivo",
+        "Bruxelles → Kinshasa",
+        "Bruxelles → Dakar",
+        "Bruxelles → Abidjan",
+        "Lyon → Casablanca",
+        "Lyon → Alger",
+        "Marseille → Alger",
+        "Marseille → Tunis",
+        "Genève → Dakar",
+        "Londres → Lagos",
+        "Londres → Accra",
+        "Londres → Nairobi",
+        "Lisbonne → Luanda",
+        "Lisbonne → Praia",
+        "Madrid → Malabo",
+        "Milan → Dakar",
+        "Rome → Addis-Abeba",
+      ],
       portraitAlt:
         "Un sourire chaleureux, avec une proche en arrière-plan.",
       arrivalRoute: "Paris → Douala",
@@ -685,15 +722,51 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
 
     hero: {
-      eyebrow: "SEND · TRAVEL · CONNECT",
-      title: "Your parcels travel. {em}",
-      titleEmphasis: "Your loved ones stay close.",
+      eyebrow: "Available on the App Store · Android coming",
+      title: "Send your parcels. {em}",
+      titleEmphasis: "Make your trips pay.",
       description:
-        "Find a traveller or freight company for your parcels. Travelling? Make the most of your spare kilos.",
-      primaryCta: "Send a parcel",
-      travelerCta: "I’m travelling",
+        "The marketplace connecting senders, travellers and freight companies between Europe and Africa. {accent}",
+      descriptionAccent: "Verified identities, confirmed flights, established companies.",
       secondaryCta: "I’m a freight company",
-      note: "Between Europe, Africa and the people who matter.",
+      note: "Free for individuals. No commitment.",
+      tickerLabel: "Europe → Africa corridors",
+      ticker: [
+        "Paris → Dakar",
+        "Paris → Douala",
+        "Paris → Abidjan",
+        "Paris → Bamako",
+        "Paris → Yaoundé",
+        "Paris → Casablanca",
+        "Paris → Algiers",
+        "Paris → Tunis",
+        "Paris → Kinshasa",
+        "Paris → Lomé",
+        "Paris → Cotonou",
+        "Paris → Conakry",
+        "Paris → Libreville",
+        "Paris → Brazzaville",
+        "Paris → Ouagadougou",
+        "Paris → Niamey",
+        "Paris → Nouakchott",
+        "Paris → Antananarivo",
+        "Brussels → Kinshasa",
+        "Brussels → Dakar",
+        "Brussels → Abidjan",
+        "Lyon → Casablanca",
+        "Lyon → Algiers",
+        "Marseille → Algiers",
+        "Marseille → Tunis",
+        "Geneva → Dakar",
+        "London → Lagos",
+        "London → Accra",
+        "London → Nairobi",
+        "Lisbon → Luanda",
+        "Lisbon → Praia",
+        "Madrid → Malabo",
+        "Milan → Dakar",
+        "Rome → Addis Ababa",
+      ],
       portraitAlt:
         "A warm smile, with a loved one in the background.",
       arrivalRoute: "Paris → Douala",

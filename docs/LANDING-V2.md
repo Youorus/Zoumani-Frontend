@@ -12,29 +12,34 @@ push sur la version de base. Le dépôt et GitHub `main` pointaient sur `2aa85be
 avant cette intégration ; le contenu et le CSS de l’accueil en ligne sur
 `https://zoumani.fr` correspondaient à cette base.
 
-Seul le Hero reprend la proposition : photo arrondie, téléphone superposé,
-carte de trajet d’exemple, promesse et actions. La navigation, le choix FR/EN,
-les indicateurs, les partenaires, la carte, les chapitres, le fonctionnement,
-le réseau, la FAQ, le téléchargement et le footer restent ceux du site existant.
+Le Hero reprend la disposition visuelle validée : photo arrondie, téléphone
+superposé et carte de trajet d’exemple. À la demande de Marc, le slogan
+« Envoyez vos colis. Rentabilisez vos voyages. », les téléchargements et les
+34 corridors défilants sont restaurés le même jour. Le sous-titre, le statut
+des stores et le contact entreprise reprennent également le contenu d’origine.
+La navigation, le choix FR/EN et toutes les sections après le Hero restent
+ceux du site existant. La recherche et l’offre de 10 expéditions restent dans
+la proposition ; elles ne sont pas intégrées à l’accueil.
 
-En production, « Envoyer un colis » rejoint `#envoyer`, « Je voyage » rejoint
-`#voyager`, et le lien entreprise rejoint `#entreprises`. La recherche de la
-preview et son offre de 10 expéditions ne sont pas intégrées à l’accueil.
-Les CTA passent par l’unique écouteur existant, avec le rôle de leur public.
-Le sitemap date la modification de l’accueil au 6 octobre 2026.
+Les deux badges réutilisent `StoreBadges`. Apple mène directement à l’App Store.
+Google Play est cliquable lorsque `NEXT_PUBLIC_PLAY_STORE_URL` est configurée ;
+sinon son badge affiche « Bientôt ». Le lien déclaré dans `zoumani_app/app.json`
+(`com.zoumani.app`) renvoyait 404 lors de la vérification du 6 octobre 2026 :
+aucune disponibilité Android n’est inventée. Les CTA passent par l’unique
+écouteur existant. Le bandeau des corridors reprend les 34 entrées FR/EN de
+la base, la boucle continue, l’arrêt au survol et le mouvement réduit.
 
 Fichiers de production modifiés : `hero/hero.tsx`, `hero/hero.module.css`,
 `home-content.ts` (uniquement le Hero FR/EN), `hero-section.tsx`,
-`page-instrumentation.tsx` et `src/app/sitemap.ts`. Les tests existants couvrent
-le maintien des sections, le basculement en anglais, le mobile 320–430 px et
-les trois actions du Hero avec une seule mesure par clic.
+`page-instrumentation.tsx` et `src/app/sitemap.ts`. Le sitemap date la
+modification de l’accueil au 6 octobre 2026.
 
-Vérifications après intégration : TypeScript, lint (aucune erreur, avertissement
-préexistant dans `src/app/error.tsx`), 67 tests unitaires, 13 parcours Playwright
-et build de production réussis. Toutes les routes restent statiques. Captures
-FR/EN sur desktop, mobile 390 px et contrôle de largeur à 320, 360, 390, 430,
-600, 768, 1024 et 1440 px : aucune erreur JavaScript, aucun débordement,
-images chargées, CTA de 52 px et lien entreprise de 44 px.
+Les tests couvrent les téléchargements, la mesure unique du clic Apple,
+les corridors, le mouvement réduit, la largeur mobile et le maintien FR/EN.
+Après restauration : TypeScript, lint (0 erreur ; 1 avertissement préexistant),
+67 tests unitaires, 13 tests Playwright et build réussis. Toutes les routes
+restent statiques. Contrôle visuel de 320 à 1440 px : aucun débordement,
+aucune erreur JavaScript ; téléchargement Apple direct et corridors présents.
 
 ## Audit rapide
 

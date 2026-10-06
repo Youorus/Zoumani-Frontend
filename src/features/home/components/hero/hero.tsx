@@ -1,11 +1,19 @@
-import { ArrowRight, ArrowUpRight, Globe2, Package, Plane } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Package } from "lucide-react";
 import Image from "next/image";
+
+import { buildWhatsAppUrl } from "@/lib/contact/build-whatsapp-url";
 
 import type { HomeContent } from "../home-content";
 import styles from "./hero.module.css";
+import { StoreBadges } from "./store-badges";
 
-export function Hero({ copy }: { copy: HomeContent["hero"] }) {
+export function Hero({ copy, stores, whatsapp }: {
+  copy: HomeContent["hero"];
+  stores: HomeContent["stores"];
+  whatsapp: HomeContent["whatsapp"];
+}) {
   const [title, afterTitle] = copy.title.split("{em}");
+  const [beforeAccent, afterAccent] = copy.description.split("{accent}");
   const [origin, destination] = copy.arrivalRoute.split(" → ");
 
   return (
@@ -19,19 +27,23 @@ export function Hero({ copy }: { copy: HomeContent["hero"] }) {
           <h1 id="hero-title" className={styles.title}>
             {title}<br /><em>{copy.titleEmphasis}</em>{afterTitle}
           </h1>
-          <p className={styles.description}>{copy.description}</p>
-          <div className={styles.actions}>
-            <a href="#envoyer" className={styles.primary} data-cta="hero-sender" data-intent-role="sender">
-              {copy.primaryCta}<ArrowRight size={19} aria-hidden="true" />
-            </a>
-            <a href="#voyager" className={styles.secondary} data-cta="hero-traveler" data-intent-role="traveler">
-              {copy.travelerCta}<Plane size={19} aria-hidden="true" />
-            </a>
+          <p className={styles.description}>
+            {beforeAccent}<strong>{copy.descriptionAccent}</strong>{afterAccent}
+          </p>
+          <div className={styles.downloads}>
+            <StoreBadges copy={stores} cta="hero-stores" alwaysInline className={styles.storeBadges} />
           </div>
-          <a href="#entreprises" className={styles.business} data-cta="hero-business" data-intent-role="business">
+          <a
+            href={buildWhatsAppUrl(whatsapp.businessMessage)}
+            target="_blank"
+            rel="noreferrer"
+            className={styles.business}
+            data-cta="hero-business"
+            data-intent-role="business"
+          >
             {copy.secondaryCta}<ArrowUpRight size={15} aria-hidden="true" />
           </a>
-          <p className={styles.note}><Globe2 size={17} aria-hidden="true" />{copy.note}</p>
+          <p className={styles.note}>{copy.note}</p>
         </div>
         <div className={styles.stage}>
           <div className={styles.orbit} aria-hidden="true" />
@@ -67,6 +79,18 @@ export function Hero({ copy }: { copy: HomeContent["hero"] }) {
               <span className={styles.routeTypes}>{copy.routeTypes}</span>
             </div>
           </div>
+        </div>
+      </div>
+      <div className={styles.ticker}>
+        <p className={styles.tickerLabel}>{copy.tickerLabel}</p>
+        <div className={styles.tickerViewport}>
+          <ul className={`marquee ${styles.tickerTrack}`}>
+            {[...copy.ticker, ...copy.ticker].map((corridor, index) => (
+              <li key={`${corridor}-${index}`} className={styles.tickerItem} aria-hidden={index >= copy.ticker.length}>
+                {corridor}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
