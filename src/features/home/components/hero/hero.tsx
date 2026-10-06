@@ -142,20 +142,6 @@ export function Hero({
                 </span>
               </figcaption>
 
-              {/* Les gages, posés sur la photo : ce que la description promet
-                  à gauche, montré là où le regard se pose. */}
-              {copy.badges.map((badge, rang) => (
-                <span
-                  key={badge}
-                  className={`${styles.badge} ${rang === 0 ? styles.badgeOne : styles.badgeTwo}`}
-                >
-                  <svg viewBox="0 0 16 16" aria-hidden="true" className={styles.badgeCheck}>
-                    <path d="M3 8.4l3.2 3.2L13 4.8" />
-                  </svg>
-                  {badge}
-                </span>
-              ))}
-
               {/* L'application ne disparaît pas : elle passe au second plan.
                   Le bandeau promet un App Store, la page doit le montrer. */}
               <span className={styles.appChip}>

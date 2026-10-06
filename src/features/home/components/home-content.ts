@@ -65,8 +65,6 @@ export interface HomeContent {
     arrivalRoute: string;
     arrivalStatus: string;
     appChipAlt: string;
-    /** Les gages posés sur la photo : ce qui est vérifié avant un départ. */
-    badges: readonly string[];
   };
 
   /**
@@ -293,7 +291,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       arrivalRoute: "Paris → Douala",
       arrivalStatus: "Colis remis",
       appChipAlt: "L’application Zoumani : la recherche d’un voyageur vers Abidjan.",
-      badges: ["Identité vérifiée", "Vol confirmé"],
     },
 
     signals: {
@@ -772,7 +769,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       arrivalRoute: "Paris → Douala",
       arrivalStatus: "Parcel delivered",
       appChipAlt: "The Zoumani app: searching for a traveller to Abidjan.",
-      badges: ["Verified identity", "Confirmed flight"],
     },
 
     signals: {
