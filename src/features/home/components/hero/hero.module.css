@@ -1,547 +1,106 @@
 .hero {
   position: relative;
   overflow: hidden;
-  background:
-    radial-gradient(
-      62% 55% at 14% 112%,
-      color-mix(in srgb, var(--primary) 46%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      44% 44% at 92% -8%,
-      color-mix(in srgb, var(--secondary) 18%, transparent),
-      transparent 70%
-    ),
-    linear-gradient(180deg, var(--hero-canvas), var(--inverse-surface));
+  background: var(--chapter-business-canvas);
   color: var(--inverse-foreground);
-  isolation: isolate;
 }
-
-/* Un grain. Les aplats numériques parfaits sont ce qui fait « rendu » ;
-   un bruit très léger en fusion douce leur rend une matière. */
-.hero::before {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  content: "";
-  mix-blend-mode: soft-light;
-  opacity: 0.22;
-  pointer-events: none;
-}
-
 .inner {
-  position: relative;
-  z-index: 1;
   display: grid;
-  width: 100%;
-  max-width: 90rem;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  gap: clamp(2rem, 5vw, 5rem);
+  width: min(1200px, calc(100% - 80px));
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
   align-items: center;
+  gap: 45px;
   margin-inline: auto;
-  padding: clamp(6rem, 11vh, 9rem) clamp(1.25rem, 4vw, 3.5rem) clamp(2.5rem, 5vh, 4rem);
+  padding-block: 158px 82px;
 }
-
-.copy {
-  max-width: 40rem;
-  animation: reveal 760ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+.copy { min-width: 0; }
+.eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 25px; color: var(--primary); font-size: 10px; font-weight: 800; letter-spacing: 0.16em; line-height: 1.6; }
+.eyebrow > span { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+.title { margin: 0; color: var(--inverse-foreground); font-size: clamp(49px, 5.25vw, 75px); line-height: 1.035; letter-spacing: -0.058em; font-weight: 700; }
+.title em { color: var(--primary); }
+.description { max-width: 500px; margin: 25px 0 0; font-size: 15px; line-height: 1.8; color: color-mix(in srgb, var(--inverse-foreground) 78%, transparent); }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 29px; }
+.primary, .secondary { display: inline-flex; align-items: center; justify-content: center; gap: 15px; min-height: 52px; padding: 13px 22px; border-radius: 8px; font-size: 13px; font-weight: 800; line-height: 1.6; transition: background-color 160ms; }
+.primary { background: var(--primary); border: 1px solid var(--primary); color: var(--noir-ebene); }
+.primary:hover { background: color-mix(in srgb, var(--primary) 85%, var(--soleil-africain)); }
+.secondary { color: var(--inverse-foreground); border: 1px solid color-mix(in srgb, var(--inverse-foreground) 34%, transparent); }
+.secondary:hover { background: color-mix(in srgb, var(--inverse-foreground) 9%, transparent); }
+.business { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 5px; font-size: 11px; color: color-mix(in srgb, var(--inverse-foreground) 78%, transparent); }
+.note { display: flex; align-items: center; gap: 8px; margin: 25px 0 0; font-size: 11px; color: color-mix(in srgb, var(--inverse-foreground) 75%, transparent); }
+.hero a:focus-visible { outline: 3px solid var(--primary); outline-offset: 5px; }
+.stage { min-width: 0; position: relative; height: 495px; }
+.orbit { position: absolute; width: 490px; height: 490px; border: 1px solid color-mix(in srgb, var(--primary) 17%, transparent); border-radius: 50%; top: -5px; left: -5px; }
+.orbit::after { content: ""; position: absolute; inset: -25px; border: 1px solid color-mix(in srgb, var(--primary) 9%, transparent); border-radius: 50%; }
+.portrait { position: absolute; top: 0; left: 24px; width: calc(100% - 81px); height: 464px; margin: 0; overflow: hidden; border-radius: 140px 140px 20px 20px; background: var(--hero-canvas); }
+.portrait::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 57%, color-mix(in srgb, var(--chapter-business-canvas) 82%, transparent)); }
+.portraitImage { object-fit: cover; object-position: 50% 43%; }
+.caption { position: absolute; bottom: 91px; left: 27px; z-index: 1; font-size: 15px; line-height: 1.45; color: var(--inverse-foreground); }
+.caption strong { font-family: var(--font-display); font-size: 24px; letter-spacing: -0.025em; font-weight: 700; }
+.device { position: absolute; z-index: 2; width: 148px; right: -5px; top: 168px; padding: 5px; border-radius: 25px; background: var(--noir-ebene); border: 1px solid color-mix(in srgb, var(--inverse-foreground) 26%, transparent); box-shadow: var(--elevation-lifted); transform: rotate(7deg); overflow: hidden; }
+.appImage { display: block; width: 100%; height: auto; border-radius: 20px; }
+.route { position: absolute; z-index: 3; left: 1px; bottom: -5px; display: flex; gap: 13px; align-items: center; border: 1px solid color-mix(in srgb, var(--noir-ebene) 14%, var(--sable-clair)); background: var(--sable-clair); color: var(--noir-ebene); border-radius: 12px; padding: 16px 20px; box-shadow: var(--elevation-soft); }
+.routeIcon { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: color-mix(in srgb, var(--primary) 12%, var(--sable-clair)); color: var(--primary); }
+.route > div { display: flex; flex-direction: column; gap: 3px; }
+.routeLabel { color: color-mix(in srgb, var(--noir-ebene) 72%, var(--sable-clair)); font-size: 9px; font-weight: 800; letter-spacing: 0.08em; }
+.route strong { font-size: 17px; display: flex; align-items: center; gap: 16px; font-family: var(--font-display); }
+.routeTypes { font-size: 10px; color: color-mix(in srgb, var(--noir-ebene) 72%, var(--sable-clair)); }
+@media (max-width: 1100px) {
+  .inner { width: calc(100% - 64px); gap: 30px; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .title { font-size: 59px; }
+  .stage { height: 455px; }
+  .portrait { height: 425px; width: calc(100% - 45px); left: 0; }
+  .orbit { width: 390px; height: 390px; left: -20px; top: 20px; }
+  .device { width: 128px; top: 150px; }
+  .route { padding: 13px 16px; left: -10px; }
+  .actions { gap: 10px; }
+  .actions a { padding-inline: 16px; }
 }
-
-.eyebrow {
-  display: inline-flex;
-  gap: 0.6rem;
-  align-items: center;
-  margin: 0;
-  padding: 0.45rem 0.95rem 0.45rem 0.7rem;
-  border: 1px solid var(--hero-glass-border);
-  border-radius: var(--shape-radius-full);
-  background: var(--hero-glass);
-  color: var(--inverse-foreground);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+@media (max-width: 800px) {
+  .inner { gap: 20px; }
+  .title { font-size: 48px; }
+  .description { font-size: 13px; }
+  .stage { height: 405px; }
+  .portrait { height: 374px; border-radius: 110px 110px 16px 16px; }
+  .caption { left: 19px; bottom: 86px; font-size: 13px; }
+  .caption strong { font-size: 19px; }
+  .device { width: 105px; top: 151px; border-radius: 19px; }
+  .appImage { border-radius: 14px; }
+  .route { padding: 12px; gap: 8px; left: -12px; }
+  .route strong { font-size: 15px; }
+  .routeIcon { width: 33px; height: 33px; }
+  .orbit { width: 300px; height: 300px; }
 }
-
-.pulse {
-  position: relative;
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: var(--shape-radius-full);
-  background: var(--secondary);
+@media (max-width: 600px) {
+  .inner { width: calc(100% - 40px); grid-template-columns: minmax(0, 1fr); gap: 29px; padding-block: 108px 45px; }
+  .eyebrow { font-size: 8px; letter-spacing: 0.13em; margin-bottom: 17px; }
+  .title { font-size: clamp(40px, 10.9vw, 57px); line-height: 1.045; letter-spacing: -0.055em; max-width: 450px; }
+  .description { font-size: 13px; line-height: 1.7; margin-top: 18px; max-width: 390px; }
+  .actions { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); margin-top: 22px; gap: 9px; }
+  .actions a { min-width: 0; font-size: 12px; min-height: 52px; gap: 9px; padding: 12px 10px; }
+  .business { font-size: 11px; margin-top: 4px; }
+  .note { font-size: 10px; margin-top: 9px; }
+  .stage { height: 350px; width: min(100%, 400px); margin-inline: auto; }
+  .portrait { left: 14px; width: calc(100% - 54px); height: 324px; border-radius: 100px 100px 14px 14px; }
+  .portraitImage { object-position: 50% 53%; }
+  .caption { left: 19px; bottom: 86px; }
+  .caption strong { font-size: 22px; }
+  .device { width: 108px; top: 119px; right: 0; }
+  .route { left: 0; bottom: -2px; padding: 12px 14px; gap: 11px; }
+  .route strong { font-size: 17px; }
+  .orbit { width: 310px; height: 310px; left: 10px; top: 10px; }
+  .orbit::after { inset: -12px; }
 }
-
-.pulse::after {
-  position: absolute;
-  inset: -0.3rem;
-  border-radius: inherit;
-  background: var(--secondary);
-  content: "";
-  opacity: 0.45;
-  animation: pulse 2.2s ease-out infinite;
+@media (max-width: 360px) {
+  .inner { width: calc(100% - 32px); }
+  .title { font-size: 39px; }
+  .actions a { font-size: 11px; gap: 6px; }
+  .stage { height: 320px; }
+  .portrait { height: 295px; left: 8px; }
+  .caption strong { font-size: 19px; }
+  .device { width: 99px; top: 110px; }
+  .orbit { width: 270px; height: 270px; }
+  .route { padding: 10px; gap: 7px; }
 }
-
-.title {
-  margin: clamp(1.4rem, 3vh, 2rem) 0 0;
-  color: var(--inverse-foreground);
-  font-family: var(--font-display), sans-serif;
-  font-size: clamp(2.8rem, 5.6vw, 5rem);
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  line-height: 0.96;
-  text-wrap: balance;
-}
-
-.em {
-  display: block;
-  color: var(--primary);
-  font-style: normal;
-}
-
-.description {
-  max-width: 34rem;
-  margin: clamp(1.3rem, 2.6vh, 1.8rem) 0 0;
-  color: var(--inverse-muted-foreground);
-  font-size: clamp(1.02rem, 1.3vw, 1.2rem);
-  line-height: 1.55;
-  text-wrap: pretty;
-}
-
-.description strong {
-  color: var(--inverse-foreground);
-  font-weight: 600;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.9rem 1.25rem;
-  align-items: center;
-  margin-top: clamp(1.75rem, 3.5vh, 2.4rem);
-}
-
-.secondary {
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  min-height: 3.25rem;
-  padding-inline: 0.25rem;
-  border-bottom: 1px solid var(--hero-glass-border);
-  color: var(--inverse-foreground);
-  font-size: 0.98rem;
-  font-weight: 600;
-  transition: border-color 180ms ease;
-}
-
-.secondary:hover {
-  border-color: var(--primary);
-}
-
-.secondary span {
-  transition: transform 180ms ease;
-}
-
-.secondary:hover span {
-  transform: translateX(0.25rem);
-}
-
-.note {
-  margin: 0.9rem 0 0;
-  color: var(--inverse-muted-foreground);
-  font-size: 0.82rem;
-}
-
-/* ═══ La scène du téléphone ═══ */
-.stage {
-  position: relative;
-  display: grid;
-  min-height: 40rem;
-  place-items: center;
-  perspective: 1800px;
-  animation: reveal 900ms cubic-bezier(0.2, 0.8, 0.2, 1) 160ms both;
-}
-
-.orbits {
-  position: absolute;
-  width: min(52rem, 125%);
-  height: auto;
-  fill: none;
-  stroke: color-mix(in srgb, var(--inverse-foreground) 9%, transparent);
-  stroke-width: 1;
-  pointer-events: none;
-}
-
-.satellite,
-.satelliteSlow {
-  fill: var(--secondary);
-  stroke: none;
-  transform-box: view-box;
-  transform-origin: 300px 300px;
-  animation: orbit 26s linear infinite;
-}
-
-.satelliteSlow {
-  fill: var(--primary);
-  animation-duration: 44s;
-  animation-direction: reverse;
-}
-
-/* L'inclinaison au repos, plus celle du pointeur. */
-.tilt {
-  --tilt-x: 0deg;
-  --tilt-y: 0deg;
-  position: relative;
-  transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  transform: rotateY(calc(-14deg + var(--tilt-y))) rotateX(calc(5deg + var(--tilt-x)));
-  transform-style: preserve-3d;
-}
-
-.glow {
-  position: absolute;
-  width: 38rem;
-  height: 38rem;
-  border-radius: var(--shape-radius-full);
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--primary) 50%, transparent),
-    transparent 66%
-  );
-  filter: blur(14px);
-  opacity: 0.55;
-}
-
-/* Les boutons, en relief sur la tranche. */
-.buttonMute,
-.buttonVolumeUp,
-.buttonVolumeDown,
-/* ═══ La bande des trajets ═══ */
-.ticker {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  border-top: 1px solid var(--hero-glass-border);
-  background: color-mix(in srgb, var(--hero-canvas) 55%, transparent);
-}
-
-.tickerLabel {
-  margin: 0;
-  padding: 1rem clamp(1.25rem, 3vw, 2.5rem);
-  border-right: 1px solid var(--hero-glass-border);
-  color: var(--inverse-muted-foreground);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.tickerViewport {
-  overflow: hidden;
-  mask-image: linear-gradient(90deg, transparent, var(--noir-ebene) 6%, var(--noir-ebene) 94%, transparent);
-}
-
-.tickerTrack {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.tickerItem {
-  display: inline-flex;
-  align-items: center;
-  padding: 1rem 0;
-  color: var(--inverse-foreground);
-  font-family: var(--font-display), sans-serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-
-.tickerItem::after {
-  display: inline-block;
-  width: 0.4rem;
-  height: 0.4rem;
-  margin-inline: 1.6rem;
-  border-radius: var(--shape-radius-full);
-  background: var(--primary);
-  content: "";
-}
-
-@keyframes reveal {
-  from {
-    opacity: 0;
-    transform: translateY(1.25rem);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes hover {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-
-  50% {
-    translate: 0 -0.7rem;
-  }
-}
-
-@keyframes orbit {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes pulse {
-  from {
-    transform: scale(0.6);
-    opacity: 0.6;
-  }
-
-  to {
-    transform: scale(1.8);
-    opacity: 0;
-  }
-}
-
-@media (max-width: 63.99rem) {
-  .inner {
-    grid-template-columns: minmax(0, 1fr);
-    padding-top: 6.5rem;
-    padding-bottom: 2rem;
-  }
-
-  .copy {
-    max-width: 38rem;
-  }
-
-  .stage {
-    min-height: 0;
-    padding-block: 2.5rem 1rem;
-  }
-
-  .glow {
-    width: 20rem;
-    height: 20rem;
-  }
-
-  .portrait {
-    width: 17rem;
-  }
-
-  .appChip {
-    width: 3.8rem;
-    right: -1rem;
-    bottom: -0.9rem;
-  }
-
-  .arrival {
-    left: -1rem;
-    bottom: 1.2rem;
-  }
-
-  .tilt {
-    transform: rotateY(-8deg) rotateX(3deg);
-  }
-
-  .orbits {
-    width: 30rem;
-  }
-
-
-  .ticker {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .tickerLabel {
-    padding-bottom: 0;
-    border-right: 0;
-  }
-}
-
-@media (max-width: 39.99rem) {
-  .title {
-    font-size: clamp(2.6rem, 12vw, 3.4rem);
-  }
-
-  .actions {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .copy,
-  .stage {
-    animation: none;
-  }
-
-  .portrait,
-  .satellite,
-  .satelliteSlow,
-  .pulse::after {
-    animation: none;
-  }
-
-  .tilt {
-    transition: none;
-  }
-}
-
-/* ═══ La carte postale ═══
-
-   Le portrait occupe la place qu'avait le téléphone : même inclinaison,
-   mêmes orbites derrière, même halo dessous. Deux objets s'y posent — la
-   carte d'arrivée et la vignette de l'application — et c'est leur
-   décalage hors du cadre qui donne la profondeur. */
-
-.portrait {
-  position: relative;
-  width: clamp(20rem, 32vw, 31rem);
-  aspect-ratio: 2 / 3;
-  margin: 0;
-  transform: rotateZ(-3deg);
-  transform-style: preserve-3d;
-  animation: hover 7s ease-in-out infinite;
-}
-
-.portraitFrame {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  border-radius: 1.75rem;
-  background: var(--noir-ebene);
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--inverse-foreground) 16%, transparent),
-    0 70px 120px -40px color-mix(in srgb, var(--hero-canvas) 95%, transparent),
-    0 40px 60px -30px color-mix(in srgb, var(--primary) 35%, transparent);
-}
-
-.portraitImage {
-  object-fit: cover;
-  object-position: center;
-}
-
-/* La carte d'arrivée : elle déborde à gauche, pour qu'on la lise comme
-   posée SUR la photo et non dedans. */
-.arrival {
-  position: absolute;
-  bottom: 1.6rem;
-  left: -1.6rem;
-  display: grid;
-  gap: 0.15rem;
-  padding: 0.7rem 1rem;
-  border-radius: 0.9rem;
-  background: color-mix(in srgb, var(--inverse-foreground) 94%, transparent);
-  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 45%);
-  backdrop-filter: blur(6px);
-  transform: translateZ(40px);
-}
-
-.arrivalRoute {
-  font-weight: 650;
-  font-size: 1.02rem;
-  letter-spacing: -0.01em;
-  color: var(--noir-ebene);
-}
-
-.arrivalStatus {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.8rem;
-  color: color-mix(in srgb, var(--noir-ebene) 62%, transparent);
-}
-
-.arrivalCheck {
-  width: 0.85rem;
-  height: 0.85rem;
-  fill: none;
-  stroke: var(--primary);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* La vignette de l'application : en bas à droite, elle fait contrepoids à la
-   carte d'arrivée. En haut elle entrait en concurrence avec le visage, et une
-   scène ne peut pas avoir deux sujets. Petite, et inclinée à l'inverse du
-   portrait : une seconde carte glissée derrière la première. */
-.appChip {
-  position: absolute;
-  right: -1.5rem;
-  bottom: -1.2rem;
-  overflow: hidden;
-  width: 5.6rem;
-  aspect-ratio: 9 / 16;
-  border-radius: 0.8rem;
-  background: var(--noir-ebene);
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--inverse-foreground) 22%, transparent),
-    0 20px 44px -18px rgb(0 0 0 / 55%);
-  transform: translateZ(60px) rotateZ(6deg);
-}
-
-.appChipImage {
-  object-fit: cover;
-  object-position: top;
-}
-
-/* ═══ Les gages, et les chiffres ═══
-
-   La référence que Marc a montrée tire sa crédibilité de deux choses : un
-   visage qui regarde, et des chiffres sous l'appel à l'action. On garde les
-   chiffres — les nôtres, vrais et datés.
-
-   Les pastilles « Identité vérifiée » et « Vol confirmé » qui flottaient autour
-   de la photo sont parties : « sans les pastilles inutiles autour » (Marc,
-   5 octobre 2026). La description les dit déjà, à gauche, et une belle scène
-   n'a pas besoin d'être annotée. */
-
-.proof {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.6rem 2.4rem;
-  margin: 1.8rem 0 0;
-  padding-top: 1.5rem;
-  border-top: 1px solid color-mix(in srgb, var(--inverse-foreground) 12%, transparent);
-}
-
-.proofItem {
-  display: grid;
-  gap: 0.15rem;
-}
-
-.proofValue {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 680;
-  letter-spacing: -0.02em;
-  color: var(--inverse-foreground);
-}
-
-.proofLabel {
-  margin: 0;
-  font-size: 0.82rem;
-  color: color-mix(in srgb, var(--inverse-foreground) 62%, transparent);
-}
-
-
-@media (max-width: 39.99rem) {
-  .proof {
-    gap: 1.2rem 1.6rem;
-  }
-
-  .proofValue {
-    font-size: 1.25rem;
-  }
+  .primary, .secondary { transition: none; }
 }

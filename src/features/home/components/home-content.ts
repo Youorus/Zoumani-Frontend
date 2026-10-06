@@ -47,23 +47,22 @@ export interface HomeContent {
   };
 
   hero: {
-    /** « Disponible sur l'App Store · Android bientôt » */
     eyebrow: string;
     /** Le titre, en deux lignes. `{em}` marque le mot en italique orange. */
     title: string;
     titleEmphasis: string;
-    /** `{accent}` y marque le fragment à mettre en gras. */
     description: string;
-    descriptionAccent: string;
+    primaryCta: string;
+    travelerCta: string;
     secondaryCta: string;
     note: string;
-    /** La bande qui défile sous le hero. */
-    tickerLabel: string;
-    ticker: readonly string[];
     /** Le portrait qui occupe la scène, et la carte posée dessus. */
     portraitAlt: string;
     arrivalRoute: string;
-    arrivalStatus: string;
+    routeExampleLabel: string;
+    routeTypes: string;
+    photoCaption: string;
+    photoCaptionEmphasis: string;
     appChipAlt: string;
   };
 
@@ -241,56 +240,23 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
 
     hero: {
-      eyebrow: "Disponible sur l’App Store · Android arrive",
-      title: "Envoyez vos colis. {em}",
-      titleEmphasis: "Rentabilisez vos voyages.",
+      eyebrow: "ENVOYER · VOYAGER · CONNECTER",
+      title: "Vos colis voyagent. {em}",
+      titleEmphasis: "Vos liens restent proches.",
       description:
-        "La place de marché qui relie expéditeurs, voyageurs et compagnies de fret entre l’Europe et l’Afrique. {accent}",
-      descriptionAccent: "Identités vérifiées, vols confirmés, entreprises établies.",
+        "Trouvez un voyageur ou une entreprise de fret pour vos colis. Vous voyagez ? Valorisez vos kilos libres.",
+      primaryCta: "Envoyer un colis",
+      travelerCta: "Je voyage",
       secondaryCta: "Je suis une entreprise de fret",
-      note: "Gratuit pour les particuliers. Sans engagement.",
-      tickerLabel: "Corridors Europe → Afrique",
-      ticker: [
-        "Paris → Dakar",
-        "Paris → Douala",
-        "Paris → Abidjan",
-        "Paris → Bamako",
-        "Paris → Yaoundé",
-        "Paris → Casablanca",
-        "Paris → Alger",
-        "Paris → Tunis",
-        "Paris → Kinshasa",
-        "Paris → Lomé",
-        "Paris → Cotonou",
-        "Paris → Conakry",
-        "Paris → Libreville",
-        "Paris → Brazzaville",
-        "Paris → Ouagadougou",
-        "Paris → Niamey",
-        "Paris → Nouakchott",
-        "Paris → Antananarivo",
-        "Bruxelles → Kinshasa",
-        "Bruxelles → Dakar",
-        "Bruxelles → Abidjan",
-        "Lyon → Casablanca",
-        "Lyon → Alger",
-        "Marseille → Alger",
-        "Marseille → Tunis",
-        "Genève → Dakar",
-        "Londres → Lagos",
-        "Londres → Accra",
-        "Londres → Nairobi",
-        "Lisbonne → Luanda",
-        "Lisbonne → Praia",
-        "Madrid → Malabo",
-        "Milan → Dakar",
-        "Rome → Addis-Abeba",
-      ],
+      note: "Entre l’Europe, l’Afrique et ceux qui comptent.",
       portraitAlt:
-        "Une femme sourit, chez elle, après avoir reçu un colis envoyé d’Europe.",
+        "Un sourire chaleureux, avec une proche en arrière-plan.",
       arrivalRoute: "Paris → Douala",
-      arrivalStatus: "Colis remis",
-      appChipAlt: "L’application Zoumani : la recherche d’un voyageur vers Abidjan.",
+      routeExampleLabel: "EXEMPLE DE TRAJET",
+      routeTypes: "Voyageurs & entreprises de fret",
+      photoCaption: "Un colis, c’est aussi",
+      photoCaptionEmphasis: "une façon d’être là.",
+      appChipAlt: "Capture de Zoumani : recherche de trajets, voyageurs et kilos disponibles.",
     },
 
     signals: {
@@ -719,56 +685,23 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
 
     hero: {
-      eyebrow: "Available on the App Store · Android coming",
-      title: "Send your parcels. {em}",
-      titleEmphasis: "Make your trips pay.",
+      eyebrow: "SEND · TRAVEL · CONNECT",
+      title: "Your parcels travel. {em}",
+      titleEmphasis: "Your loved ones stay close.",
       description:
-        "The marketplace connecting senders, travellers and freight companies between Europe and Africa. {accent}",
-      descriptionAccent: "Verified identities, confirmed flights, established companies.",
+        "Find a traveller or freight company for your parcels. Travelling? Make the most of your spare kilos.",
+      primaryCta: "Send a parcel",
+      travelerCta: "I’m travelling",
       secondaryCta: "I’m a freight company",
-      note: "Free for individuals. No commitment.",
-      tickerLabel: "Europe → Africa corridors",
-      ticker: [
-        "Paris → Dakar",
-        "Paris → Douala",
-        "Paris → Abidjan",
-        "Paris → Bamako",
-        "Paris → Yaoundé",
-        "Paris → Casablanca",
-        "Paris → Algiers",
-        "Paris → Tunis",
-        "Paris → Kinshasa",
-        "Paris → Lomé",
-        "Paris → Cotonou",
-        "Paris → Conakry",
-        "Paris → Libreville",
-        "Paris → Brazzaville",
-        "Paris → Ouagadougou",
-        "Paris → Niamey",
-        "Paris → Nouakchott",
-        "Paris → Antananarivo",
-        "Brussels → Kinshasa",
-        "Brussels → Dakar",
-        "Brussels → Abidjan",
-        "Lyon → Casablanca",
-        "Lyon → Algiers",
-        "Marseille → Algiers",
-        "Marseille → Tunis",
-        "Geneva → Dakar",
-        "London → Lagos",
-        "London → Accra",
-        "London → Nairobi",
-        "Lisbon → Luanda",
-        "Lisbon → Praia",
-        "Madrid → Malabo",
-        "Milan → Dakar",
-        "Rome → Addis Ababa",
-      ],
+      note: "Between Europe, Africa and the people who matter.",
       portraitAlt:
-        "A woman smiling at home after receiving a parcel sent from Europe.",
+        "A warm smile, with a loved one in the background.",
       arrivalRoute: "Paris → Douala",
-      arrivalStatus: "Parcel delivered",
-      appChipAlt: "The Zoumani app: searching for a traveller to Abidjan.",
+      routeExampleLabel: "EXAMPLE ROUTE",
+      routeTypes: "Travellers & freight companies",
+      photoCaption: "A parcel is also",
+      photoCaptionEmphasis: "a way to be there.",
+      appChipAlt: "Zoumani screenshot: route search, travellers and available kilos.",
     },
 
     signals: {

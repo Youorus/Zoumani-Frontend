@@ -15,6 +15,23 @@ Le pendant de ce fichier côté serveur est `zoumani_api/docs/PLUS-TARD.md`.
 
 ## Conformité
 
+### Valider les sections de la landing V2 après le Hero
+
+Le Hero est validé et intégré à l’accueil le 6 octobre 2026, en FR/EN.
+Les autres sections restent celles du site existant. `/preview/v2` présente
+la proposition complète pour une éventuelle validation ultérieure.
+L’audit, la nouvelle architecture et les vérifications sont dans `LANDING-V2.md`.
+Le quota de 10 premières expéditions sans abonnement et le dashboard sont des
+propositions visuelles : ils ne changent ni facturation ni conditions réelles.
+
+**Ce que ça coûte :** l’accueil actuel reste long et conserve l’ancien message
+de 60 jours ; la V2 française ne remplace pas encore son fonctionnement FR/EN.
+**Déclencheur :** validation visuelle et métier du reste de la page par Marc, puis version anglaise,
+destination des contenus SEO longs et cohérence de l’offre dans toute la copie.
+La mesure des inscriptions mobiles demande aussi une vérification distincte
+de l’attribution entre la vitrine, les stores et l’application. Le site public
+ne possède actuellement ni recherche connectée ni tunnel d’inscription ouvert.
+
 ### L'identité de l'éditeur manque aux mentions légales
 
 `src/app/(marketing)/mentions-legales/page.tsx` porte une constante

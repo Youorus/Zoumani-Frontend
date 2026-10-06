@@ -45,7 +45,7 @@ import { absoluteUrl } from "@/lib/seo/site";
  * second il n'écoute plus.
  */
 const MODIFIE_LE: Readonly<Record<string, string>> = {
-  "/": "2026-08-30",
+  "/": "2026-10-06",
   "/envoyer-un-colis": "2026-08-29",
   "/proposer-un-voyage": "2026-08-29",
   "/cgu": "2026-08-30",

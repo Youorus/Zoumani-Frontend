@@ -7,6 +7,25 @@ compte.
 
 Les directives de développement sont dans [`AGENTS.md`](AGENTS.md).
 
+## Proposition de landing V2
+
+Le Hero de la proposition, validé le 6 octobre 2026, est intégré à l’accueil `/`
+en français et en anglais. Les autres sections de l’accueil sont conservées.
+La proposition complète se visite sur `/preview/v2` pour comparaison. La preview est statique, non indexable et absente du sitemap.
+Elle réutilise la charte et les assets existants. Le quota partenaire de
+10 expéditions sans abonnement et la carte d’activité sont des propositions
+visuelles, sans changement de facturation. Voir l’[audit et les vérifications](docs/LANDING-V2.md).
+
+```bash
+npm run dev
+# http://localhost:3000/preview/v2
+```
+
+Le quota se règle dans `src/features/home-preview/model/preview-config.ts`.
+Le remplacement des autres sections attend une validation distincte.
+Les boutons du Hero rejoignent les sections expéditeur, voyageur et entreprise
+existantes ; le téléchargement reste accessible dans la navigation et le bas de page.
+
 Ce dépôt portait aussi l'espace connecté — envois, voyages, paiements,
 suivi, vérification d'identité — et l'administration. Le 20 août 2026, les
 deux sont partis : l'espace utilisateur vers l'application mobile
@@ -15,7 +34,7 @@ et qui en garde l'historique.
 
 ## Ce qu'il contient
 
-- `/` — le slogan et l'application (App Store), quatre indicateurs datés, les réseaux de transport, trois chapitres (expéditeur, voyageur, entreprise de fret), fonctionnement, réseau (fret, vols confirmés, relais, assurance à venir), FAQ, téléchargement.
+- `/` — le Hero « Vos colis voyagent. Vos liens restent proches. », une photo humaine et la capture de l’application, quatre indicateurs datés, les réseaux de transport, trois chapitres (expéditeur, voyageur, entreprise de fret), fonctionnement, réseau (fret, vols confirmés, relais, assurance à venir), FAQ, téléchargement.
 - `/envoyer-un-colis` et `/proposer-un-voyage` — deux pages d'entrée.
   « Envoyer un colis » et « rentabiliser ses kilos » ne sont pas la même
   recherche, ne se formulent pas dans les mêmes mots, et ne s'achètent

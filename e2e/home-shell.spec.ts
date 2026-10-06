@@ -1,7 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const LARGEURS = [
+  { width: 320, height: 740 },
   { width: 390, height: 844 },
+  { width: 430, height: 932 },
   { width: 768, height: 900 },
   { width: 1440, height: 960 },
 ] as const;
@@ -26,7 +28,7 @@ test("la page enchaîne ses quatre sections et son pied de page", async ({ page 
   }
 
   await expect(
-    page.getByRole("heading", { level: 1, name: /Envoyez vos colis/ }),
+    page.getByRole("heading", { level: 1, name: /Vos colis voyagent/ }),
   ).toBeVisible();
   await expect(
     page.locator("footer").getByRole("heading", {
@@ -168,8 +170,10 @@ test("le passage à l'anglais traduit toute la page", async ({ page }) => {
   await page.getByRole("menuitem", { name: "English" }).click();
 
   await expect(
-    page.getByRole("heading", { level: 1, name: /Send your parcels/ }),
+    page.getByRole("heading", { level: 1, name: /Your parcels travel/ }),
   ).toBeVisible();
+  await expect(page.locator("#telecharger [data-cta=hero-traveler]")).toHaveText("I’m travelling");
+  await expect(page.locator("#telecharger")).toContainText("EXAMPLE ROUTE");
   await expect(
     page.locator("#fonctionnement").getByRole("tab", { name: "I’m travelling" }),
   ).toBeVisible();
@@ -179,4 +183,40 @@ test("le passage à l'anglais traduit toute la page", async ({ page }) => {
       name: "Your parcel leaves with the next traveller.",
     }),
   ).toBeVisible();
+});
+
+
+test("le Hero rejoint les trois parcours et mesure chaque action une seule fois", async ({ page }) => {
+  await page.route("https://**/*", (route) => route.abort());
+  await page.addInitScript(() => {
+    (window as unknown as { dataLayer: unknown[] }).dataLayer = [];
+  });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await attendreHydratation(page);
+  const hero = page.locator("#telecharger:visible");
+  for (const [cta, target, role] of [
+    ["hero-sender", "#envoyer", "sender"],
+    ["hero-traveler", "#voyager", "traveler"],
+    ["hero-business", "#entreprises", "business"],
+  ]) {
+    const link = hero.locator(`[data-cta="${cta}"]`);
+    await expect(link).toHaveAttribute("href", target);
+    expect((await link.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+    await link.click();
+    await expect(page).toHaveURL(new RegExp(`${target}$`));
+    await expect(page.locator(`${target}:visible`)).toBeInViewport();
+    const events = await page.evaluate(() => {
+      const entries = (window as unknown as { dataLayer: unknown[] }).dataLayer;
+      return entries.flatMap((entry) => {
+        const candidate = entry as { 0?: string; 1?: string; 2?: Record<string, unknown>; event?: string };
+        if (candidate[0] === "event" && candidate[1] === "cta_clicked") return [candidate[2] ?? {}];
+        if (candidate.event === "cta_clicked") return [entry as Record<string, unknown>];
+        return [];
+      });
+    });
+    const action = events.filter((entry) => entry.cta === cta);
+    expect(action).toHaveLength(1);
+    expect(action[0]).toMatchObject({ href: target, intent_role: role });
+  }
 });

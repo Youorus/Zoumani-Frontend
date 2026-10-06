@@ -103,6 +103,7 @@ export function PageInstrumentation() {
       if (!cible) return;
       track(EVENTS.ctaClicked, {
         cta: cible.dataset.cta,
+        intent_role: cible.dataset.intentRole,
         href: cible.getAttribute("href") ?? undefined,
       });
     };

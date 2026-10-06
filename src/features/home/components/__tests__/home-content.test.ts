@@ -14,10 +14,8 @@ import { homeContent } from "../home-content";
  * basculé en anglais, c'est-à-dire pour personne pendant le
  * développement.
  *
- * Les tests sur `{accent}` portent sur un marqueur, pas sur du texte. Le
- * hero et la ligne de garantie coupent leur phrase dessus pour mettre un
- * fragment en gras. S'il disparaît d'une traduction, la phrase s'affiche
- * entière sans gras — ou pire, avec le marqueur visible au milieu.
+ * Les titres partagés gardent un marqueur `{em}` dans les deux langues
+ * pour que le fragment accentué soit toujours rendu.
  */
 
 const LANGUES = ["fr", "en"] as const;
@@ -61,14 +59,6 @@ describe("le dictionnaire de la page d'accueil", () => {
     expect(vides).toEqual([]);
   });
 
-  it("garde le marqueur {accent} là où une phrase est coupée en deux", () => {
-    for (const langue of LANGUES) {
-      expect(homeContent[langue].hero.description.split("{accent}")).toHaveLength(
-        2,
-      );
-    }
-  });
-
   it("garde le marqueur {em} dans chaque titre qui met un mot en couleur", () => {
     // Sans lui, le mot accentué n'est pas rendu du tout : `Emphasis`
     // rend le texte tel quel quand il ne trouve pas le marqueur.
@@ -86,9 +76,9 @@ describe("le dictionnaire de la page d'accueil", () => {
     }
   });
 
-  it("garde le slogan de la marque en tête de page", () => {
-    expect(homeContent.fr.hero.title).toBe("Envoyez vos colis. {em}");
-    expect(homeContent.fr.hero.titleEmphasis).toBe("Rentabilisez vos voyages.");
+  it("garde la promesse du Hero validé en tête de page", () => {
+    expect(homeContent.fr.hero.title).toBe("Vos colis voyagent. {em}");
+    expect(homeContent.fr.hero.titleEmphasis).toBe("Vos liens restent proches.");
   });
 
   it("donne deux parcours de trois étapes à « Comment ça marche »", () => {
