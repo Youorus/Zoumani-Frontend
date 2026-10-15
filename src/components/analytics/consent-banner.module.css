@@ -1,73 +1,170 @@
-.banner {
+/* ═══ Le voile ═══
+
+   Il couvre la page le temps de répondre ; rien n'est à fermer, la
+   fenêtre se retire d'elle-même une fois le choix fait. */
+.backdrop {
   position: fixed;
   z-index: 60;
-  right: 1rem;
-  bottom: 1rem;
-  left: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-  max-width: 32rem;
-  margin-inline: auto;
-  padding: 1.15rem 1.25rem;
-  background: var(--surface-elevated);
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: color-mix(in srgb, var(--inverse-surface) 58%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.dialog {
+  position: relative;
+  width: min(31rem, 100%);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  padding: 1.75rem 1.75rem 1.5rem;
+  background: var(--background);
+  color: var(--foreground);
   border: 1px solid var(--border);
-  border-radius: var(--shape-radius-md);
+  border-radius: var(--shape-radius-lg);
   box-shadow: var(--elevation-lifted);
+  outline: none;
+}
+
+/* Le liseré orange de la charte, comme un ruban sur le colis. */
+.dialog::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: var(--primary);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 1rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.title em {
+  color: var(--primary);
+  font-style: normal;
 }
 
 .text {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.55;
+  margin: 0.75rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
   color: var(--muted-foreground);
 }
 
 .link {
   color: var(--foreground);
+  font-weight: 600;
   text-decoration: underline;
-  text-underline-offset: 0.15em;
+  text-decoration-color: var(--primary);
+  text-underline-offset: 0.18em;
 }
 
+/* ═══ Les réponses ═══
+
+   « Refuser » et « Accepter » côte à côte, même taille, même poids :
+   un refus plus petit ou plus pâle est précisément ce que la CNIL
+   sanctionne. « Personnaliser » vient dessous, sur toute la largeur. */
 .actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.6rem;
+  margin-top: 1.4rem;
 }
 
-/* Même taille, même poids : un « refuser » plus petit ou plus pâle que
-   l'« accepter » est précisément ce que la CNIL sanctionne. */
+.wide {
+  grid-column: 1 / -1;
+}
+
 .button {
-  flex: 1;
-  min-height: 2.9rem;
+  min-height: 3rem;
   padding-inline: 1rem;
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  border-radius: var(--shape-radius-sm);
+  border-radius: var(--shape-radius-full);
   cursor: pointer;
+  transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
 }
 
 .accept {
   color: var(--primary-foreground);
   background: var(--primary);
-  border: 1px solid var(--primary);
+  border: 2px solid var(--primary);
 }
 
 .refuse {
   color: var(--foreground);
   background: transparent;
-  border: 1px solid var(--border);
+  border: 2px solid var(--foreground);
+}
+
+.customize {
+  min-height: 2.75rem;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--foreground);
+  background: transparent;
+  border: 0;
+  text-decoration: underline;
+  text-decoration-color: var(--primary);
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.button:focus-visible,
+.customize:focus-visible,
+.link:focus-visible,
+.toggle:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .banner {
-    animation: rise 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  .backdrop {
+    animation: fade 220ms ease-out;
+  }
+
+  .dialog {
+    animation: rise 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
   }
 
   @keyframes rise {
     from {
       opacity: 0;
-      transform: translateY(0.75rem);
+      transform: translateY(0.75rem) scale(0.98);
     }
   }
 }
@@ -79,9 +176,10 @@
 .panel {
   display: grid;
   gap: 0.9rem;
-  margin: 0.2rem 0 0.4rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--border);
+  margin-top: 1.2rem;
+  padding: 1rem;
+  background: var(--muted);
+  border-radius: var(--shape-radius-sm);
 }
 
 .row {
@@ -98,24 +196,23 @@ label.row {
 .rowTitle {
   display: block;
   color: var(--foreground);
-  font-size: 0.86rem;
+  font-size: 0.88rem;
   font-weight: 700;
 }
 
 .rowText {
   display: block;
   margin-top: 0.2rem;
-  max-width: 34rem;
   color: var(--muted-foreground);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   line-height: 1.5;
 }
 
 .always {
   flex: 0 0 auto;
-  color: var(--muted-foreground);
+  color: var(--primary);
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 800;
   white-space: nowrap;
 }
 
@@ -128,4 +225,14 @@ label.row {
   margin-top: 0.15rem;
   accent-color: var(--primary);
   cursor: pointer;
+}
+
+@media (max-width: 400px) {
+  .dialog {
+    padding: 1.4rem 1.25rem 1.2rem;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
 }

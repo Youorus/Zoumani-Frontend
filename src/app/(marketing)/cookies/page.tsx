@@ -149,7 +149,7 @@ export default function CookiesPage() {
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Ce qui n’est déposé qu’avec votre accord</h2>
           <p className={styles.paragraph}>
-            Deux finalités, deux questions distinctes. Le bandeau vous permet de
+            Deux finalités, deux questions distinctes. La fenêtre de consentement vous permet de
             répondre séparément à chacune : accepter la mesure n’autorise pas la
             publicité, et refuser l’une n’oblige pas à refuser l’autre.
           </p>

@@ -28,12 +28,35 @@ import { defineConfig, devices } from "@playwright/test";
  * `node .next/standalone/server.js` obligerait à recopier `.next/static`
  * et `public` à la main — de la plomberie pour un gain nul.
  */
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000";
+
+/**
+ * ═══ Pourquoi chaque test part d'un refus déjà donné ═══
+ *
+ * La fenêtre de consentement est modale : tant qu'on n'a pas répondu,
+ * elle couvre la page et intercepte les clics. Dès qu'un identifiant de
+ * mesure est posé (`.env.local` en développement), chaque test
+ * cliquerait sur le voile au lieu du bouton visé. On part donc d'un
+ * visiteur qui a déjà refusé — le cas le plus restrictif — et
+ * `e2e/consent.spec.ts` vide ce stockage pour tester la fenêtre.
+ */
+const consentRefused = {
+  cookies: [],
+  origins: [
+    {
+      origin: new URL(baseURL).origin,
+      localStorage: [{ name: "zoumani.consent.v2", value: JSON.stringify({ analytics: false, marketing: false }) }],
+    },
+  ],
+};
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000",
+    baseURL,
+    storageState: consentRefused,
     trace: "on-first-retry",
   },
   webServer: {
