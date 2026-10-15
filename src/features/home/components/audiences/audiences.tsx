@@ -6,7 +6,7 @@ import { buildWhatsAppUrl } from "@/lib/contact/build-whatsapp-url";
 
 import { Emphasis } from "../emphasis";
 import type { HomeContent } from "../home-content";
-import { AppStoreBadge } from "../hero/store-badges";
+import { AppBadges, APP_STORE_URL } from "../hero/store-badges";
 import styles from "./audiences.module.css";
 
 /**
@@ -50,7 +50,7 @@ function Action({
   if (action.kind === "store") {
     return secondary ? (
       <a
-        href="https://apps.apple.com/fr/app/zoumani/id6803543420"
+        href={APP_STORE_URL}
         target="_blank"
         rel="noreferrer"
         className={`focus-ring ${styles.linkCta}`}
@@ -60,7 +60,7 @@ function Action({
         <span aria-hidden="true">→</span>
       </a>
     ) : (
-      <AppStoreBadge copy={stores} cta={cta} />
+      <AppBadges copy={stores} cta={cta} />
     );
   }
   if (action.kind === "whatsapp") {

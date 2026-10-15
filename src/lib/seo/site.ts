@@ -88,6 +88,8 @@ export const siteConfig = {
   },
   /** La fiche App Store, publiée le 1er octobre 2026. */
   appStoreUrl: "https://apps.apple.com/fr/app/zoumani/id6803543420",
+  /** La fiche Google Play, publiée le 15 octobre 2026. */
+  playStoreUrl: "https://play.google.com/store/apps/details?id=com.zoumani.app",
 } as const;
 
 /** Construit une URL absolue à partir d'un chemin relatif. */

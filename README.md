@@ -25,8 +25,8 @@ Le quota se règle dans `src/features/home-preview/model/preview-config.ts`.
 Le remplacement des autres sections attend une validation distincte.
 Le Hero conserve le slogan « Envoyez vos colis. Rentabilisez vos voyages. »,
 les badges App Store et Google Play, ainsi que les 34 corridors défilants.
-Le badge Google Play reste « Bientôt » tant que son URL de publication n’est
-pas configurée ; le lien entreprise rejoint le contact WhatsApp existant.
+Les deux badges mènent aux fiches publiées ; le lien entreprise rejoint le
+contact WhatsApp existant.
 
 ## Photos du Hero
 
@@ -107,8 +107,8 @@ Deux valeurs méritent une phrase :
 site répond `noindex` et un `robots.txt` bloquant — un domaine temporaire
 ne doit jamais finir dans un index.
 
-**`NEXT_PUBLIC_APP_STORE_URL` / `NEXT_PUBLIC_PLAY_STORE_URL`** : tant
-qu'elles sont vides, le bloc de téléchargement annonce « bientôt
-disponible » au lieu d'afficher des boutons menant à une page introuvable.
-Le jour de la publication, ces deux lignes suffisent — aucun code à
-toucher.
+**`NEXT_PUBLIC_APP_STORE_URL` / `NEXT_PUBLIC_PLAY_STORE_URL`** :
+facultatives. Les fiches App Store (1er octobre 2026) et Google Play
+(15 octobre 2026) sont figées par défaut dans `store-badges.tsx` ; ces
+variables ne servent qu'à les remplacer, par exemple par un lien de
+campagne.

@@ -169,7 +169,6 @@
 .downloadLinks { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 24px; margin-top: 24px; }
 .storeBadge { display: inline-flex; align-items: center; min-height: 44px; }
 .storeBadge img { width: 132px; height: auto; }
-.androidNote { min-height: 44px; display: flex; align-items: center; gap: 5px; color: var(--v2-muted); font-size: 10px; }
 .footer { background: var(--v2-dark); color: var(--v2-white); padding-block: 38px 20px; }
 .footerTop { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 30px; }
 .footerTop > div > p { font-size: 11px; color: color-mix(in srgb, var(--v2-white) 74%, transparent); margin-top: 14px; }
@@ -343,7 +342,6 @@
   .finalSection h2 { font-size: 42px; }
   .finalSection .darkButton { width: min(100%, 330px); }
   .downloadLinks { flex-direction: column; gap: 6px; margin-top: 18px; }
-  .androidNote { font-size: 11px; }
   .footer { padding-block: 30px 19px; }
   .footerTop { grid-template-columns: 1fr 1fr; gap: 25px 15px; }
   .footerTop > div { grid-column: 1 / -1; }

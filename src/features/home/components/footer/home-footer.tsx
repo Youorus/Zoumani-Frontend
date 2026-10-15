@@ -57,7 +57,7 @@ export function HomeFooter({
           </div>
 
           <div className={styles.actions}>
-            <StoreBadges copy={stores} tone="light" className={styles.stores} cta="footer" />
+            <StoreBadges copy={stores} className={styles.stores} cta="footer" />
             <a
               className={`focus-ring ${styles.contact}`}
               href={buildWhatsAppUrl(whatsapp.message)}

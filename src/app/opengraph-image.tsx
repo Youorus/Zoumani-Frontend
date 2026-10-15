@@ -201,7 +201,7 @@ export default async function OpengraphImage() {
           }}
         >
           <div style={{ display: "flex", fontWeight: 600, color: CREME }}>zoumani.fr</div>
-          <div style={{ display: "flex" }}>Sur iPhone aujourd’hui · Android bientôt</div>
+          <div style={{ display: "flex" }}>Sur iPhone et Android</div>
         </div>
       </div>
     </div>,

@@ -101,8 +101,7 @@ export function SiteFooter() {
 
         <p className={styles.legal}>
           Zoumani met en relation des expéditeurs, des voyageurs et des compagnies de fret.
-          L’application est disponible sur l’App Store ; la version Android est en
-          préparation.
+          L’application est disponible sur l’App Store et sur Google Play.
         </p>
       </div>
     </footer>

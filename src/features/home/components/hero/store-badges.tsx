@@ -19,8 +19,16 @@ export const APP_STORE_URL =
   process.env.NEXT_PUBLIC_APP_STORE_URL ||
   "https://apps.apple.com/fr/app/zoumani/id6803543420";
 
-/** Google Play : aucune valeur par défaut tant que la fiche n'existe pas. */
-export const PLAY_STORE_URL = process.env.NEXT_PUBLIC_PLAY_STORE_URL;
+/**
+ * L'adresse de l'application sur Google Play, publiée le 15 octobre 2026.
+ *
+ * Figée dans le code pour la même raison que l'App Store : sans valeur
+ * par défaut, un déploiement oublieux remettrait « Bientôt » sur une
+ * application disponible.
+ */
+export const PLAY_STORE_URL =
+  process.env.NEXT_PUBLIC_PLAY_STORE_URL ||
+  "https://play.google.com/store/apps/details?id=com.zoumani.app";
 
 const BADGES = {
   fr: {
@@ -33,7 +41,17 @@ const BADGES = {
   },
 } as const;
 
-type Tone = "dark" | "light";
+/**
+ * Les PNG de Google portent une marge vide autour du badge — 29 px sur
+ * 250 en haut et en bas pour le français, 41 px tout autour pour
+ * l'anglais. On les dessine plus grands, rognés par une marge négative,
+ * pour que le badge visible ait la hauteur du SVG d'Apple (3,25 rem).
+ */
+const PLAY_FIT = {
+  fr: { height: "4.23rem", margin: "-0.49rem 0" },
+  en: { height: "4.84rem", margin: "-0.79rem" },
+} as const;
+
 type Store = "apple" | "play";
 
 function Badge({
@@ -91,13 +109,45 @@ function Badge({
 }
 
 /**
- * Le seul badge App Store, cliquable.
+ * Les deux badges côte à côte, à la hauteur du badge App Store seul.
  *
- * C'est l'appel principal de la page depuis la publication : il est
- * posé dans le hero, dans chaque chapitre et dans le bandeau final.
- * `cta` nomme l'emplacement pour la mesure : on veut savoir lequel des
- * quatre convertit.
+ * C'est l'appel principal de la page : il est posé dans chaque chapitre
+ * et dans le bandeau final. `cta` nomme l'emplacement pour la mesure —
+ * suffixé `-apple` ou `-play`, il dit aussi quel magasin convertit.
  */
+export function AppBadges({
+  copy,
+  cta,
+  className,
+}: {
+  copy: HomeContent["stores"];
+  cta: string;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex flex-wrap items-center gap-2.5", className)}>
+      <AppStoreBadge copy={copy} cta={`${cta}-apple`} />
+      <a
+        href={PLAY_STORE_URL}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={`${copy.playTop} ${copy.playBottom}`}
+        data-cta={`${cta}-play`}
+        className="focus-ring inline-flex shrink-0 rounded-[0.7rem] transition-transform duration-200 hover:-translate-y-0.5"
+      >
+        <Image
+          src={BADGES[copy.locale].play}
+          alt=""
+          width={194}
+          height={75}
+          style={{ width: "auto", ...PLAY_FIT[copy.locale] }}
+        />
+      </a>
+    </div>
+  );
+}
+
+/** Le badge App Store seul, cliquable. */
 export function AppStoreBadge({
   copy,
   cta,
@@ -133,14 +183,12 @@ export function AppStoreBadge({
 
 export function StoreBadges({
   copy,
-  tone = "dark",
   stack = false,
   alwaysInline = false,
   className,
   cta = "stores",
 }: {
   copy: HomeContent["stores"];
-  tone?: Tone;
   stack?: boolean;
   alwaysInline?: boolean;
   className?: string;
@@ -169,29 +217,15 @@ export function StoreBadges({
         alwaysInline={alwaysInline}
         cta={`${cta}-apple`}
       />
-      <div className={cn("relative", stack ? "w-full" : "")}>
-        <Badge
-          href={PLAY_STORE_URL}
-          src={assets.play}
-          alt={`${copy.playTop} ${copy.playBottom}`}
-          store="play"
-          stack={stack}
-          alwaysInline={alwaysInline}
-          cta={`${cta}-play`}
-        />
-        {PLAY_STORE_URL ? null : (
-          <span
-            className={cn(
-              "pointer-events-none absolute -top-2 right-1 rounded-full px-2 py-0.5 text-[0.6rem] font-extrabold tracking-[0.14em] uppercase",
-              tone === "dark"
-                ? "bg-secondary text-secondary-foreground"
-                : "bg-inverse-foreground text-inverse-surface",
-            )}
-          >
-            {copy.soon}
-          </span>
-        )}
-      </div>
+      <Badge
+        href={PLAY_STORE_URL}
+        src={assets.play}
+        alt={`${copy.playTop} ${copy.playBottom}`}
+        store="play"
+        stack={stack}
+        alwaysInline={alwaysInline}
+        cta={`${cta}-play`}
+      />
     </div>
   );
 }

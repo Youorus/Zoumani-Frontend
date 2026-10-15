@@ -92,11 +92,11 @@ export const serviceSchema = {
 /**
  * L'application elle-même, telle que les moteurs la décrivent.
  *
- * `MobileApplication` relie la page à la fiche App Store : c'est ce qui
- * permet un résultat enrichi « application » et une entité commune
- * entre le site et le magasin. Un seul système d'exploitation est
- * déclaré tant que Google Play n'a pas sa fiche : annoncer Android
- * avant qu'il existe serait du balisage trompeur.
+ * `MobileApplication` relie la page aux fiches App Store et Google Play :
+ * c'est ce qui permet un résultat enrichi « application » et une entité
+ * commune entre le site et les magasins. Android n'est déclaré que depuis
+ * la publication de sa fiche, le 15 octobre 2026 : l'annoncer avant
+ * aurait été du balisage trompeur.
  *
  * Aucune note (`aggregateRating`) : elle n'existe pas encore, et un
  * chiffre inventé ici est le plus sûr moyen de perdre tous les résultats
@@ -106,10 +106,10 @@ export const mobileApplicationSchema = {
   "@type": "MobileApplication",
   "@id": schemaIds.app,
   name: siteConfig.name,
-  operatingSystem: "iOS",
+  operatingSystem: "iOS, Android",
   applicationCategory: "TravelApplication",
-  installUrl: siteConfig.appStoreUrl,
-  downloadUrl: siteConfig.appStoreUrl,
+  installUrl: [siteConfig.appStoreUrl, siteConfig.playStoreUrl],
+  downloadUrl: [siteConfig.appStoreUrl, siteConfig.playStoreUrl],
   url: siteUrl,
   description: siteConfig.shortDescription,
   author: { "@id": schemaIds.organization },

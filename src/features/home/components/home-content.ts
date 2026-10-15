@@ -182,8 +182,6 @@ export interface HomeContent {
     title: string;
     titleEmphasis: string;
     description: string;
-    android: string;
-    androidCta: string;
   };
 
   stores: {
@@ -192,7 +190,6 @@ export interface HomeContent {
     appleBottom: string;
     playTop: string;
     playBottom: string;
-    soon: string;
   };
 
   footer: {
@@ -216,8 +213,6 @@ export interface HomeContent {
     message: string;
     /** Le message préécrit d'une entreprise de fret. */
     businessMessage: string;
-    /** Le message préécrit de qui veut être prévenu de la sortie Android. */
-    androidMessage: string;
   };
 }
 
@@ -241,7 +236,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
 
     hero: {
-      eyebrow: "Disponible sur l’App Store · Android arrive",
+      eyebrow: "Disponible sur l’App Store et Google Play",
       title: "Envoyez vos colis. {em}",
       titleEmphasis: "Rentabilisez vos voyages.",
       description:
@@ -584,7 +579,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         {
           question: "L’application est-elle disponible sur iPhone et Android ?",
           answer:
-            "Zoumani est disponible dès maintenant sur l’App Store, pour iPhone. La version Android est en préparation : écrivez-nous sur WhatsApp et vous serez prévenu le jour de sa sortie sur Google Play.",
+            "Oui. Zoumani est disponible sur l’App Store pour iPhone, et sur Google Play pour Android.",
         },
         {
           question: "Comment envoyer un colis avec un voyageur ?",
@@ -635,8 +630,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       titleEmphasis: "votre poche",
       description:
         "Téléchargez Zoumani, décrivez votre colis ou publiez votre voyage. Tout se passe dans l’application : la recherche, la vérification, le paiement et le suivi.",
-      android: "Vous êtes sur Android ?",
-      androidCta: "Être prévenu de la sortie",
     },
 
     stores: {
@@ -645,7 +638,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       appleBottom: "App Store",
       playTop: "Disponible sur",
       playBottom: "Google Play",
-      soon: "Bientôt",
     },
 
     footer: {
@@ -659,7 +651,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
             { label: "Comment ça marche", href: "#fonctionnement" },
             { label: "Le réseau", href: "#partenaires" },
             { label: "Questions fréquentes", href: "#faq" },
-            { label: "Être prévenu sur Android", whatsapp: true },
           ],
         },
         {
@@ -698,8 +689,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       message: "Bonjour Zoumani, j’ai une question sur le service.",
       businessMessage:
         "Bonjour Zoumani, je représente une entreprise de fret et je souhaite publier mes vols sur la plateforme.",
-      androidMessage:
-        "Bonjour Zoumani, je suis sur Android : prévenez-moi le jour de la sortie de l’application.",
     },
   },
 
@@ -722,7 +711,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
     },
 
     hero: {
-      eyebrow: "Available on the App Store · Android coming",
+      eyebrow: "Available on the App Store and Google Play",
       title: "Send your parcels. {em}",
       titleEmphasis: "Make your trips pay.",
       description:
@@ -1062,7 +1051,7 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
         {
           question: "Is the app available on iPhone and Android?",
           answer:
-            "Zoumani is available now on the App Store, for iPhone. The Android version is in preparation: message us on WhatsApp and you will be told the day it reaches Google Play.",
+            "Yes. Zoumani is available on the App Store for iPhone, and on Google Play for Android.",
         },
         {
           question: "How do I send a parcel with a traveller?",
@@ -1113,8 +1102,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       titleEmphasis: "your pocket",
       description:
         "Download Zoumani, describe your parcel or post your trip. Everything happens in the app: the search, the verification, the payment and the tracking.",
-      android: "On Android?",
-      androidCta: "Get notified at launch",
     },
 
     stores: {
@@ -1123,7 +1110,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       appleBottom: "App Store",
       playTop: "Get it on",
       playBottom: "Google Play",
-      soon: "Soon",
     },
 
     footer: {
@@ -1137,7 +1123,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
             { label: "How it works", href: "#fonctionnement" },
             { label: "The network", href: "#partenaires" },
             { label: "FAQ", href: "#faq" },
-            { label: "Get notified on Android", whatsapp: true },
           ],
         },
         {
@@ -1176,8 +1161,6 @@ export const homeContent: Record<HomeLanguage, HomeContent> = {
       message: "Hello Zoumani, I have a question about the service.",
       businessMessage:
         "Hello Zoumani, I represent a freight company and would like to publish my flights on the platform.",
-      androidMessage:
-        "Hello Zoumani, I’m on Android: let me know the day the app is released.",
     },
   },
 };

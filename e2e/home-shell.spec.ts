@@ -198,13 +198,10 @@ test("le Hero conserve les téléchargements directs, les corridors et une seule
   await expect(apple).toHaveAttribute("href", /apps\.apple\.com\/fr\/app\/zoumani\/id6803543420/);
   const playBadge = hero.getByRole("img", { name: "Disponible sur Google Play" });
   await expect(playBadge).toBeVisible();
-  const playLink = hero.locator('[data-cta="hero-stores-play"]');
-  if (await playLink.count()) {
-    await expect(playLink).toHaveAttribute("href", /play\.google\.com/);
-  } else {
-    await expect(playBadge.locator('..')).toHaveAttribute("aria-disabled", "true");
-    await expect(hero.getByText("Bientôt", { exact: true })).toBeVisible();
-  }
+  await expect(hero.locator('[data-cta="hero-stores-play"]')).toHaveAttribute(
+    "href",
+    /play\.google\.com\/store\/apps\/details\?id=com\.zoumani\.app/,
+  );
   for (const width of [320, 390, 430, 1440]) {
     await page.setViewportSize({ width, height: 960 });
     expect((await apple.boundingBox())?.height).toBeGreaterThanOrEqual(44);
