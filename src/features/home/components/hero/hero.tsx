@@ -8,6 +8,12 @@ import styles from "./hero.module.css";
 import { HeroPortrait } from "./hero-portrait";
 import { StoreBadges } from "./store-badges";
 
+/**
+ * Sur grand écran, la photo prend la hauteur de la colonne de texte, et
+ * la légende comme la carte de trajet s'effacent pour laisser le visage
+ * porter le hero (validé le 15 octobre 2026). En dessous de 1 100 px, la
+ * photo passe sous les téléchargements et garde ses deux surimpressions.
+ */
 export function Hero({ copy, stores, whatsapp }: {
   copy: HomeContent["hero"];
   stores: HomeContent["stores"];

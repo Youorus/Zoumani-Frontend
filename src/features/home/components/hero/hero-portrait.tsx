@@ -100,7 +100,7 @@ export function HeroPortrait({ language, caption, captionEmphasis }: {
             src={photo.src}
             alt={photo.alt[language]}
             fill
-            sizes="(max-width: 600px) 82vw, (max-width: 1000px) 55vw, 480px"
+            sizes="(max-width: 600px) 82vw, (max-width: 1100px) 55vw, 620px"
             loading="eager"
             fetchPriority={index === 0 ? "high" : "low"}
             className={styles.photo}

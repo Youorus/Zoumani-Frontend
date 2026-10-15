@@ -2,8 +2,11 @@
 
 Quatre photographies, choisies pour les sourires et le lien humain que raconte
 Zoumani : famille, générations, colis et proximité malgré la distance.
-Le slogan, les téléchargements, les corridors, le téléphone et la carte de
-trajet du Hero restent en place.
+Le slogan, les téléchargements, les corridors et le téléphone du Hero
+restent en place. Depuis le 15 octobre 2026, sur grand écran (plus de
+1 100 px), la photo occupe 554 × 620 px au lieu de 464 × 464, et la
+légende comme la carte de trajet s'effacent pour ne pas couvrir le visage ;
+en dessous, elles restent.
 
 Les photos sont proposées sous la [licence Pexels](https://www.pexels.com/license/),
 qui permet leur emploi sur un site commercial et leur recadrage. Les sources,
